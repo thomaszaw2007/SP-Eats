@@ -26,6 +26,10 @@ app.use('/persons', personRouter);
 app.use('/api/stalls', foodStallRouter);
 app.use('/api/menu-items', menuItemRouter);
 
+app.get("/.well-known/appspecific/com.chrome.devtools.json", (req, res) => {
+  res.status(204).end();
+});
+
 // 404 handler — if no route above matched the request,
 // create a 404 error and pass it to the error handler below.
 app.use((req, res, next) => {
