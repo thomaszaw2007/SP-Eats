@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stall Menu | SP QuickBite</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <span class="sp-badge">SP</span>
+      <span>QuickBite</span>
+    </div>
+
+    <div class="nav-links">
+      <a href="./index.html">Home</a>
+      <a href="./stalls.html" class="active">Browse Stalls</a>
+      <a href="./menu.html">Full Menu</a>
+    </div>
+  </nav>
+
+  <main class="page-container">
+    <a href="./stalls.html" class="back-link">← Back to Stalls</a>
+
+    <section id="stallHeader" class="stall-detail-header">
+      <p>Loading stall details...</p>
+    </section>
+
+    <section class="menu-control-section">
+      <div class="search-box menu-search-box">
+        <input 
+          type="text" 
+          id="menuSearchInput" 
+          placeholder="Search this stall menu..."
+        />
+        <button id="menuSearchButton">Search</button>
+      </div>
+
+      <div class="filter-section">
+        <button class="menu-filter-btn active" data-category="all">All</button>
+        <button class="menu-filter-btn" data-category="Sandwich">Sandwich</button>
+        <button class="menu-filter-btn" data-category="Chicken">Chicken</button>
+        <button class="menu-filter-btn" data-category="Burger">Burger</button>
+        <button class="menu-filter-btn" data-category="Sides">Sides</button>
+        <button class="menu-filter-btn" data-category="Drinks">Drinks</button>
+      </div>
+    </section>
+
+    <p id="menuResultCount" class="result-count">Loading menu...</p>
+
+    <section id="menuContainer" class="card-grid">
+      <!-- Menu item cards will appear here -->
+    </section>
+  </main>
+
+  <script src="./stall-detail.js"></script>
+</body>
+</html>
