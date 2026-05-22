@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full Menu | SP QuickBite</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <span class="sp-badge">SP</span>
+      <span>QuickBite</span>
+    </div>
+
+    <div class="nav-links">
+      <a href="./index.html">Home</a>
+      <a href="./stalls.html">Browse Stalls</a>
+      <a href="./menu.html" class="active">Full Menu</a>
+    </div>
+  </nav>
+
+  <main class="page-container">
+    <section class="page-header">
+      <p class="small-title">All Campus Food</p>
+      <h1>Full Menu</h1>
+      <p>Browse food items across all available campus stalls.</p>
+
+      <div class="search-box">
+        <input 
+          type="text" 
+          id="menuSearchInput" 
+          placeholder="Search chicken, burger, drinks..."
+        />
+        <button id="menuSearchButton">Search</button>
+      </div>
+    </section>
+
+    <section class="filter-section">
+      <button class="menu-filter-btn active" data-type="all" data-value="all">All</button>
+      <button class="menu-filter-btn" data-type="category" data-value="Chicken">Chicken</button>
+      <button class="menu-filter-btn" data-type="category" data-value="Burger">Burger</button>
+      <button class="menu-filter-btn" data-type="category" data-value="Sandwich">Sandwich</button>
+      <button class="menu-filter-btn" data-type="category" data-value="Drinks">Drinks</button>
+      <button class="menu-filter-btn" data-type="category" data-value="Sides">Sides</button>
+      <button class="menu-filter-btn" data-type="popular" data-value="true">Popular</button>
+      <button class="menu-filter-btn" data-type="available" data-value="true">Available</button>
+    </section>
+
+    <section class="sort-section">
+      <label for="sortSelect">Sort by:</label>
+      <select id="sortSelect">
+        <option value="">Default</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="name_asc">Name: A to Z</option>
+      </select>
+    </section>
+
+    <p id="menuResultCount" class="result-count">Loading menu items...</p>
+
+    <section id="menuContainer" class="card-grid">
+      <!-- Menu item cards will appear here -->
+    </section>
+  </main>
+
+  <script src="./menu.js"></script>
+</body>
+</html>

@@ -407,3 +407,24 @@ body {
   color: #666;
   cursor: not-allowed;
 }
+
+.sort-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.sort-section label {
+  font-weight: bold;
+  color: #444;
+}
+
+.sort-section select {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: white;
+  font-size: 14px;
+  outline: none;
+}
