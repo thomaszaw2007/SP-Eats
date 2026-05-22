@@ -5,8 +5,8 @@ const path = require('path');
 // Import route handlers
 const somethingRouter = require('./routers/Something.router');
 const personRouter = require('./routers/Person.router');
-const foodStallRouter = require('./routers/FoodStall.router');
-const menuItemRouter = require('./routers/MenuItem.router');
+const foodStallRouter = require('./routers/FoodStall_router');
+const menuItemRouter = require('./routers/MenuItem_router');
 
 const app = express();
 
