@@ -22,6 +22,7 @@ app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 app.use('/somethings', somethingRouter);
 app.use('/persons', personRouter);
+
 app.use('/api/stalls', foodStallRouter);
 app.use('/api/menu-items', menuItemRouter);
 
