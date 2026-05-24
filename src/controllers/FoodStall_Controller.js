@@ -1,102 +1,19 @@
 const foodStallModel = require("../models/FoodStall_model");
 
 //////////////////////////////////////////////////////
-// READ ALL STALLS / SEARCH / FILTER
+// READ STALLS WITH SEARCH AND FILTERS
 //////////////////////////////////////////////////////
 module.exports.readStalls = (req, res, next) =>
 {
     const data = {
         search: req.query.search,
         foodCourt: req.query.foodCourt,
-        category: req.query.category,
-        status: req.query.status
+        dietary: req.query.dietary,
+        status: req.query.status,
+        foodType: req.query.foodType
     };
 
-    if (data.search)
-    {
-        foodStallModel.searchStalls(data, (error, result) =>
-        {
-            if (error)
-            {
-                next(error);
-                return;
-            }
-
-            res.status(200).json({
-                success: true,
-                message: "Stalls retrieved successfully",
-                count: result.rows.length,
-                data: result.rows
-            });
-        });
-
-        return;
-    }
-
-    if (data.foodCourt)
-    {
-        foodStallModel.filterStallsByFoodCourt(data, (error, result) =>
-        {
-            if (error)
-            {
-                next(error);
-                return;
-            }
-
-            res.status(200).json({
-                success: true,
-                message: "Stalls retrieved successfully",
-                count: result.rows.length,
-                data: result.rows
-            });
-        });
-
-        return;
-    }
-
-    if (data.category)
-    {
-        foodStallModel.filterStallsByCuisine(data, (error, result) =>
-        {
-            if (error)
-            {
-                next(error);
-                return;
-            }
-
-            res.status(200).json({
-                success: true,
-                message: "Stalls retrieved successfully",
-                count: result.rows.length,
-                data: result.rows
-            });
-        });
-
-        return;
-    }
-
-    if (data.status)
-    {
-        foodStallModel.filterStallsByStatus(data, (error, result) =>
-        {
-            if (error)
-            {
-                next(error);
-                return;
-            }
-
-            res.status(200).json({
-                success: true,
-                message: "Stalls retrieved successfully",
-                count: result.rows.length,
-                data: result.rows
-            });
-        });
-
-        return;
-    }
-
-    foodStallModel.selectAllStalls((error, result) =>
+    foodStallModel.selectStalls(data, (error, result) =>
     {
         if (error)
         {
