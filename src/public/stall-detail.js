@@ -212,7 +212,7 @@ function prepareCartItem(itemId) {
       selectedItem = menuItemsData[i];
     }
   }
-
+A
   if (selectedItem === null) {
     alert("Item not found.");
     return;
