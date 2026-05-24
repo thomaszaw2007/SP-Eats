@@ -1,101 +1,122 @@
 const pool = require("./db");
 
-// Get all stalls
-module.exports.selectAllStalls = (callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM food_stalls
-    ORDER BY stall_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// GET ALL STALLS
+//////////////////////////////////////////////////////
+module.exports.selectAllStalls = (cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM food_stalls
+        ORDER BY stall_name ASC;
+    `;
 
-  pool.query(SQLSTATEMENT, callback);
+    pool.query(SQLSTATEMENT, cb);
 };
 
-// Search stalls by stall name, cuisine, food court, or menu item name
-module.exports.searchStalls = (searchText, callback) => {
-  const SQLSTATEMENT = `
-    SELECT DISTINCT food_stalls.*
-    FROM food_stalls
-    LEFT JOIN menu_items
-    ON food_stalls.stall_id = menu_items.stall_id
-    WHERE food_stalls.stall_name ILIKE $1
-    OR food_stalls.cuisine_type ILIKE $1
-    OR food_stalls.food_court ILIKE $1
-    OR menu_items.item_name ILIKE $1
-    OR menu_items.category ILIKE $1
-    ORDER BY food_stalls.stall_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// SEARCH STALLS
+//////////////////////////////////////////////////////
+module.exports.searchStalls = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT DISTINCT food_stalls.*
+        FROM food_stalls
+        LEFT JOIN menu_items
+            ON food_stalls.stall_id = menu_items.stall_id
+        WHERE food_stalls.stall_name ILIKE $1
+            OR food_stalls.cuisine_type ILIKE $1
+            OR food_stalls.food_court ILIKE $1
+            OR menu_items.item_name ILIKE $1
+            OR menu_items.category ILIKE $1
+        ORDER BY food_stalls.stall_name ASC;
+    `;
 
-  const VALUES = [`%${searchText}%`];
+    const VALUES = [`%${data.search}%`];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
-// Filter stalls by food court
-module.exports.filterStallsByFoodCourt = (foodCourt, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM food_stalls
-    WHERE food_court = $1
-    ORDER BY stall_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// FILTER STALLS BY FOOD COURT
+//////////////////////////////////////////////////////
+module.exports.filterStallsByFoodCourt = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM food_stalls
+        WHERE food_court = $1
+        ORDER BY stall_name ASC;
+    `;
 
-  const VALUES = [foodCourt];
+    const VALUES = [data.foodCourt];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
-// Filter stalls by cuisine/category
-module.exports.filterStallsByCuisine = (cuisine, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM food_stalls
-    WHERE cuisine_type ILIKE $1
-    ORDER BY stall_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// FILTER STALLS BY CUISINE
+//////////////////////////////////////////////////////
+module.exports.filterStallsByCuisine = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM food_stalls
+        WHERE cuisine_type ILIKE $1
+        ORDER BY stall_name ASC;
+    `;
 
-  const VALUES = [`%${cuisine}%`];
+    const VALUES = [`%${data.category}%`];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
-// Filter stalls by opening status
-module.exports.filterStallsByStatus = (status, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM food_stalls
-    WHERE opening_status = $1
-    ORDER BY stall_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// FILTER STALLS BY STATUS
+//////////////////////////////////////////////////////
+module.exports.filterStallsByStatus = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM food_stalls
+        WHERE opening_status = $1
+        ORDER BY stall_name ASC;
+    `;
 
-  const VALUES = [status];
+    const VALUES = [data.status];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
-// Get one stall by stall_id
-module.exports.selectStallById = (stallId, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM food_stalls
-    WHERE stall_id = $1;
-  `;
+//////////////////////////////////////////////////////
+// GET ONE STALL BY ID
+//////////////////////////////////////////////////////
+module.exports.selectStallById = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM food_stalls
+        WHERE stall_id = $1;
+    `;
 
-  const VALUES = [stallId];
+    const VALUES = [data.stall_id];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
-// Get all menu items from one stall
-module.exports.selectMenuByStallId = (stallId, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    WHERE stall_id = $1
-    ORDER BY is_available DESC, item_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// GET MENU ITEMS FROM ONE STALL
+//////////////////////////////////////////////////////
+module.exports.selectMenuByStallId = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        WHERE stall_id = $1
+        ORDER BY is_available DESC, item_name ASC;
+    `;
 
-  const VALUES = [stallId];
+    const VALUES = [data.stall_id];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };

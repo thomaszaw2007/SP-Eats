@@ -1,128 +1,158 @@
 const pool = require("./db");
 
-// Get all menu items
-module.exports.selectAllMenuItems = (callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    ORDER BY is_available DESC, is_popular DESC, item_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// GET ALL MENU ITEMS
+//////////////////////////////////////////////////////
+module.exports.selectAllMenuItems = (cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        ORDER BY is_available DESC, is_popular DESC, item_name ASC;
+    `;
 
-  pool.query(SQLSTATEMENT, callback);
+    pool.query(SQLSTATEMENT, cb);
 };
 
-// Search menu items by item name, stall name, or category
-module.exports.searchMenuItems = (searchText, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    WHERE item_name ILIKE $1
-    OR stall_name ILIKE $1
-    OR category ILIKE $1
-    ORDER BY is_available DESC, is_popular DESC, item_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// SEARCH MENU ITEMS
+//////////////////////////////////////////////////////
+module.exports.searchMenuItems = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        WHERE item_name ILIKE $1
+            OR stall_name ILIKE $1
+            OR category ILIKE $1
+        ORDER BY is_available DESC, is_popular DESC, item_name ASC;
+    `;
 
-  const VALUES = [`%${searchText}%`];
+    const VALUES = [`%${data.search}%`];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
-// Filter menu items by category
-module.exports.filterMenuItemsByCategory = (category, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    WHERE category ILIKE $1
-    ORDER BY is_available DESC, item_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// FILTER MENU ITEMS BY CATEGORY
+//////////////////////////////////////////////////////
+module.exports.filterMenuItemsByCategory = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        WHERE category ILIKE $1
+        ORDER BY is_available DESC, item_name ASC;
+    `;
 
-  const VALUES = [`%${category}%`];
+    const VALUES = [`%${data.category}%`];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
-// Filter menu items by stall
-module.exports.filterMenuItemsByStallId = (stallId, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    WHERE stall_id = $1
-    ORDER BY is_available DESC, item_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// FILTER MENU ITEMS BY STALL
+//////////////////////////////////////////////////////
+module.exports.filterMenuItemsByStallId = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        WHERE stall_id = $1
+        ORDER BY is_available DESC, item_name ASC;
+    `;
 
-  const VALUES = [stallId];
+    const VALUES = [data.stallId];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
-// Filter menu items by availability
-module.exports.filterMenuItemsByAvailability = (isAvailable, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    WHERE is_available = $1
-    ORDER BY item_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// FILTER MENU ITEMS BY AVAILABILITY
+//////////////////////////////////////////////////////
+module.exports.filterMenuItemsByAvailability = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        WHERE is_available = $1
+        ORDER BY item_name ASC;
+    `;
 
-  const VALUES = [isAvailable];
+    const VALUES = [data.available === "true"];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
-// Get popular menu items
-module.exports.selectPopularMenuItems = (callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    WHERE is_popular = TRUE
-    ORDER BY is_available DESC, item_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// GET POPULAR MENU ITEMS
+//////////////////////////////////////////////////////
+module.exports.selectPopularMenuItems = (cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        WHERE is_popular = TRUE
+        ORDER BY is_available DESC, item_name ASC;
+    `;
 
-  pool.query(SQLSTATEMENT, callback);
+    pool.query(SQLSTATEMENT, cb);
 };
 
-// Sort menu items by price low to high
-module.exports.sortMenuItemsByPriceLow = (callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    ORDER BY price ASC;
-  `;
+//////////////////////////////////////////////////////
+// SORT MENU ITEMS BY PRICE LOW TO HIGH
+//////////////////////////////////////////////////////
+module.exports.sortMenuItemsByPriceLow = (cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        ORDER BY price ASC;
+    `;
 
-  pool.query(SQLSTATEMENT, callback);
+    pool.query(SQLSTATEMENT, cb);
 };
 
-// Sort menu items by price high to low
-module.exports.sortMenuItemsByPriceHigh = (callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    ORDER BY price DESC;
-  `;
+//////////////////////////////////////////////////////
+// SORT MENU ITEMS BY PRICE HIGH TO LOW
+//////////////////////////////////////////////////////
+module.exports.sortMenuItemsByPriceHigh = (cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        ORDER BY price DESC;
+    `;
 
-  pool.query(SQLSTATEMENT, callback);
+    pool.query(SQLSTATEMENT, cb);
 };
 
-// Sort menu items by name A to Z
-module.exports.sortMenuItemsByName = (callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    ORDER BY item_name ASC;
-  `;
+//////////////////////////////////////////////////////
+// SORT MENU ITEMS BY NAME
+//////////////////////////////////////////////////////
+module.exports.sortMenuItemsByName = (cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        ORDER BY item_name ASC;
+    `;
 
-  pool.query(SQLSTATEMENT, callback);
+    pool.query(SQLSTATEMENT, cb);
 };
 
-// Get one menu item by item_id
-module.exports.selectMenuItemById = (itemId, callback) => {
-  const SQLSTATEMENT = `
-    SELECT *
-    FROM menu_items
-    WHERE item_id = $1;
-  `;
+//////////////////////////////////////////////////////
+// GET ONE MENU ITEM BY ID
+//////////////////////////////////////////////////////
+module.exports.selectMenuItemById = (data, cb) =>
+{
+    const SQLSTATEMENT = `
+        SELECT *
+        FROM menu_items
+        WHERE item_id = $1;
+    `;
 
-  const VALUES = [itemId];
+    const VALUES = [data.item_id];
 
-  pool.query(SQLSTATEMENT, VALUES, callback);
+    pool.query(SQLSTATEMENT, VALUES, cb);
 };
