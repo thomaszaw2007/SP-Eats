@@ -1076,3 +1076,124 @@ button {
     scroll-behavior: auto !important;
   }
 }
+
+/* =========================================================
+   Personalized Stall Detail Page
+   ========================================================= */
+
+.stall-detail-top-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.stall-detail-cuisine {
+  color: var(--sp-red);
+  font-weight: 800;
+  margin: 4px 0 0;
+}
+
+.stall-rating-box {
+  min-width: 110px;
+  background-color: #fff7d6;
+  color: #8a6500;
+  padding: 12px 14px;
+  border-radius: 16px;
+  text-align: center;
+  font-weight: 900;
+  box-shadow: 0 6px 16px rgba(138, 101, 0, 0.12);
+}
+
+.stall-rating-box .star-icon {
+  color: #f5b400;
+  font-size: 20px;
+  margin-right: 3px;
+}
+
+.stall-rating-box small {
+  display: block;
+  color: #8a6500;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+.stall-menu-section {
+  margin-top: 30px;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+
+.section-title-row h2 {
+  margin: 4px 0 0;
+  font-size: 30px;
+}
+
+.red-text {
+  color: var(--sp-red);
+}
+
+.stall-category-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.stall-category-btn {
+  background-color: white;
+  color: #444444;
+  padding: 11px 18px;
+  border-radius: 999px;
+  border: 1px solid #eeeeee;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.stall-category-btn:hover {
+  color: var(--sp-red);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(232, 25, 44, 0.10);
+}
+
+.stall-category-btn.active {
+  background-color: var(--sp-red);
+  color: white;
+  border-color: var(--sp-red);
+  box-shadow: 0 8px 20px rgba(232, 25, 44, 0.18);
+}
+
+.variation-text {
+  color: var(--sp-red);
+  font-size: 13px;
+  font-weight: 800;
+  margin: 4px 0 8px;
+}
+
+@media (max-width: 760px) {
+  .stall-detail-top-row {
+    flex-direction: column;
+  }
+
+  .stall-rating-box {
+    width: 100%;
+  }
+
+  .section-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

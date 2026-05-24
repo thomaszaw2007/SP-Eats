@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Stall Menu | SP QuickBite</title>
+
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -16,7 +18,6 @@
     <div class="nav-links">
       <a href="./index.html">Home</a>
       <a href="./stalls.html" class="active">Browse Stalls</a>
-      <a href="./menu.html">Full Menu</a>
     </div>
   </nav>
 
@@ -27,30 +28,23 @@
       <p>Loading stall details...</p>
     </section>
 
-    <section class="menu-control-section">
-      <div class="search-box menu-search-box">
-        <input 
-          type="text" 
-          id="menuSearchInput" 
-          placeholder="Search this stall menu..."
-        />
-        <button id="menuSearchButton">Search</button>
+    <section class="stall-menu-section">
+      <div class="section-title-row">
+        <div>
+          <p class="small-title red-text">Selected Stall Menu</p>
+          <h2>Choose from this stall</h2>
+        </div>
+
+        <p id="menuResultCount" class="result-count">Loading menu...</p>
       </div>
 
-      <div class="filter-section">
-        <button class="menu-filter-btn active" data-category="all">All</button>
-        <button class="menu-filter-btn" data-category="Sandwich">Sandwich</button>
-        <button class="menu-filter-btn" data-category="Chicken">Chicken</button>
-        <button class="menu-filter-btn" data-category="Burger">Burger</button>
-        <button class="menu-filter-btn" data-category="Sides">Sides</button>
-        <button class="menu-filter-btn" data-category="Drinks">Drinks</button>
+      <div id="categoryContainer" class="stall-category-row">
+        <!-- Stall-specific category buttons will appear here -->
       </div>
-    </section>
 
-    <p id="menuResultCount" class="result-count">Loading menu...</p>
-
-    <section id="menuContainer" class="card-grid">
-      <!-- Menu item cards will appear here -->
+      <section id="menuContainer" class="card-grid">
+        <!-- Menu item cards will appear here -->
+      </section>
     </section>
   </main>
 
