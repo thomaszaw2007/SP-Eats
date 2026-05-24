@@ -1,57 +1,91 @@
 const stallContainer = document.getElementById("stallContainer");
 const resultCount = document.getElementById("resultCount");
+
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
-const filterButtons = document.querySelectorAll(".filter-btn");
 
-// Load all stalls when the page opens
+const foodCourtFilter = document.getElementById("foodCourtFilter");
+const foodTypeFilter = document.getElementById("foodTypeFilter");
+const dietaryFilter = document.getElementById("dietaryFilter");
+const statusFilter = document.getElementById("statusFilter");
+const clearFilterButton = document.getElementById("clearFilterButton");
+
+// Load stalls when page opens
 window.addEventListener("DOMContentLoaded", () => {
-  getStalls("/api/stalls");
+  getStalls();
 });
 
-// Search button click
+// Search button
 searchButton.addEventListener("click", () => {
-  const searchText = searchInput.value.trim();
-
-  if (searchText === "") {
-    getStalls("/api/stalls");
-  } else {
-    getStalls("/api/stalls?search=" + encodeURIComponent(searchText));
-  }
-
-  setActiveButton(null);
+  getStalls();
 });
 
 // Press Enter to search
 searchInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
-    searchButton.click();
+    getStalls();
   }
 });
 
-// Filter buttons
-filterButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const type = button.dataset.type;
-    const value = button.dataset.value;
+// Dropdown filters
+foodCourtFilter.addEventListener("change", getStalls);
+foodTypeFilter.addEventListener("change", getStalls);
+dietaryFilter.addEventListener("change", getStalls);
+statusFilter.addEventListener("change", getStalls);
 
-    setActiveButton(button);
+// Clear filters
+clearFilterButton.addEventListener("click", () => {
+  searchInput.value = "";
+  foodCourtFilter.value = "";
+  foodTypeFilter.value = "";
+  dietaryFilter.value = "";
+  statusFilter.value = "";
 
-    if (type === "all") {
-      searchInput.value = "";
-      getStalls("/api/stalls");
-    } else if (type === "category") {
-      getStalls("/api/stalls?category=" + encodeURIComponent(value));
-    } else if (type === "foodCourt") {
-      getStalls("/api/stalls?foodCourt=" + encodeURIComponent(value));
-    } else if (type === "status") {
-      getStalls("/api/stalls?status=" + encodeURIComponent(value));
-    }
-  });
+  getStalls();
 });
 
+// Build API URL based on search and filters
+function buildStallUrl() {
+  let url = "/api/stalls?";
+  const params = [];
+
+  const searchText = searchInput.value.trim();
+  const foodCourt = foodCourtFilter.value;
+  const foodType = foodTypeFilter.value;
+  const dietary = dietaryFilter.value;
+  const status = statusFilter.value;
+
+  if (searchText !== "") {
+    params.push("search=" + encodeURIComponent(searchText));
+  }
+
+  if (foodCourt !== "") {
+    params.push("foodCourt=" + encodeURIComponent(foodCourt));
+  }
+
+  if (foodType !== "") {
+    params.push("foodType=" + encodeURIComponent(foodType));
+  }
+
+  if (dietary !== "") {
+    params.push("dietary=" + encodeURIComponent(dietary));
+  }
+
+  if (status !== "") {
+    params.push("status=" + encodeURIComponent(status));
+  }
+
+  if (params.length === 0) {
+    return "/api/stalls";
+  }
+
+  return url + params.join("&");
+}
+
 // Fetch stalls from backend
-function getStalls(url) {
+function getStalls() {
+  const url = buildStallUrl();
+
   fetch(url)
     .then((response) => response.json())
     .then((result) => {
@@ -59,6 +93,9 @@ function getStalls(url) {
     })
     .catch((error) => {
       console.error("Error loading stalls:", error);
+
+      resultCount.textContent = "Unable to load stalls.";
+
       stallContainer.innerHTML = `
         <div class="empty-message">
           Unable to load stalls. Please try again later.
@@ -76,7 +113,7 @@ function displayStalls(stalls) {
 
     stallContainer.innerHTML = `
       <div class="empty-message">
-        No stalls found.
+        No stalls found. Try changing your search or filters.
       </div>
     `;
     return;
@@ -95,34 +132,47 @@ function displayStalls(stalls) {
     }
 
     card.innerHTML = `
-      <img 
-        src="${stall.image_url}" 
-        alt="${stall.stall_name}" 
-        class="stall-image"
-      />
+      <div class="stall-image-wrap">
+        <img
+          src="${stall.image_url}"
+          alt="${stall.stall_name}"
+          class="stall-image"
+        />
+
+        <span class="food-court-badge">${stall.food_court}</span>
+      </div>
 
       <div class="stall-content">
-        <span class="status-badge ${isClosed ? "status-closed" : "status-open"}">
-          ${isClosed ? "Closed" : "Open"}
-        </span>
+        <div class="stall-top-row">
+          <span class="status-badge ${isClosed ? "status-closed" : "status-open"}">
+            ${isClosed ? "Closed" : "Open"}
+          </span>
+
+          <span class="rating-pill">★ ${stall.rating}</span>
+        </div>
 
         <h3>${stall.stall_name}</h3>
+
+        <p class="stall-cuisine">${stall.cuisine_type}</p>
 
         <p class="stall-description">
           ${stall.stall_description}
         </p>
 
-        <p class="stall-info">
-          ${stall.cuisine_type}
-        </p>
+        <div class="dietary-row">
+          ${stall.is_halal ? `<span class="dietary-badge">Halal</span>` : ""}
+          ${stall.is_vegetarian ? `<span class="dietary-badge">Vegetarian</span>` : ""}
+          ${stall.is_vegan ? `<span class="dietary-badge">Vegan</span>` : ""}
+        </div>
 
-        <p class="stall-info">
-          ${stall.location_detail} • ${stall.estimated_wait_time}
-        </p>
+        <p class="stall-info">Location: ${stall.location_detail}</p>
+        <p class="stall-info">Wait: ${stall.estimated_wait_time}</p>
 
-        <p class="stall-info">
-          Rating: ${stall.rating} (${stall.rating_count})
-        </p>
+        ${
+          isClosed
+            ? `<p class="opening-time">Opens: ${stall.opening_time}</p>`
+            : `<p class="opening-time">Open until: ${stall.closing_time}</p>`
+        }
 
         ${
           isClosed
@@ -139,15 +189,4 @@ function displayStalls(stalls) {
 // Go to selected stall menu page
 function goToMenu(stallId) {
   window.location.href = "./stall-detail.html?stall_id=" + stallId;
-}
-
-// Make active filter button red
-function setActiveButton(activeButton) {
-  filterButtons.forEach((button) => {
-    button.classList.remove("active");
-  });
-
-  if (activeButton) {
-    activeButton.classList.add("active");
-  }
 }

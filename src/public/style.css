@@ -617,3 +617,150 @@ body {
 .empty-message {
   border: 1px dashed #ddd;
 }
+
+/* =========================================================
+   Browse Stalls Dropdown Filters
+   ========================================================= */
+
+.dropdown-filter-section {
+  background-color: white;
+  padding: 20px;
+  margin: 26px 0 22px;
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;
+}
+
+.filter-group select {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #fafafa;
+  font-size: 14px;
+  outline: none;
+}
+
+.filter-group select:focus {
+  border-color: #e8192c;
+  background-color: white;
+}
+
+.clear-filter-btn {
+  border: none;
+  background-color: #222;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.clear-filter-btn:hover {
+  background-color: #e8192c;
+}
+
+/* =========================================================
+   Improved Stall Cards
+   ========================================================= */
+
+.stall-image-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.food-court-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background-color: rgba(255, 255, 255, 0.92);
+  color: #e8192c;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.stall-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rating-pill {
+  background-color: #fff3cd;
+  color: #8a6500;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.stall-cuisine {
+  color: #e8192c;
+  font-weight: bold;
+  margin: 6px 0;
+}
+
+.dietary-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 26px;
+  margin: 10px 0;
+}
+
+.dietary-badge {
+  background-color: #eef7ee;
+  color: #168047;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.opening-time {
+  color: #555;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.stall-card.closed {
+  filter: grayscale(85%);
+  opacity: 0.58;
+}
+
+.stall-card.closed .stall-image {
+  filter: grayscale(100%);
+}
+
+@media (max-width: 950px) {
+  .dropdown-filter-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .clear-filter-btn {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .dropdown-filter-section {
+    grid-template-columns: 1fr;
+  }
+}

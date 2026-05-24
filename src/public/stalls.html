@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Browse Stalls | SP QuickBite</title>
+
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -16,39 +18,84 @@
     <div class="nav-links">
       <a href="./index.html">Home</a>
       <a href="./stalls.html" class="active">Browse Stalls</a>
-      <a href="./menu.html">Full Menu</a>
     </div>
   </nav>
 
   <main class="page-container">
     <section class="page-header">
       <p class="small-title">Campus Dining</p>
-      <h1>Browse Stalls</h1>
-      <p>Find your favourite campus food stall and view their menu.</p>
+      <h1>Browse Food Stalls</h1>
+      <p>
+        Search across stalls and menu items, then choose a stall to view its menu.
+      </p>
 
       <div class="search-box">
-        <input 
-          type="text" 
-          id="searchInput" 
-          placeholder="Search stalls or food items..."
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search chicken, noodles, halal, drinks..."
         />
         <button id="searchButton">Search</button>
       </div>
     </section>
 
-    <section class="filter-section">
-      <button class="filter-btn active" data-type="all" data-value="all">All</button>
-      <button class="filter-btn" data-type="category" data-value="Fast Food">Fast Food</button>
-      <button class="filter-btn" data-type="category" data-value="Western">Western</button>
-      <button class="filter-btn" data-type="foodCourt" data-value="Food Court 5">Food Court 5</button>
-      <button class="filter-btn" data-type="foodCourt" data-value="T16">T16</button>
-      <button class="filter-btn" data-type="status" data-value="open">Open Now</button>
+    <section class="dropdown-filter-section">
+      <div class="filter-group">
+        <label for="foodCourtFilter">Food Court</label>
+        <select id="foodCourtFilter">
+          <option value="">All Food Courts</option>
+          <option value="Food Court 1">Food Court 1</option>
+          <option value="Food Court 2">Food Court 2</option>
+          <option value="Food Court 3">Food Court 3</option>
+          <option value="Food Court 4">Food Court 4</option>
+          <option value="Food Court 5">Food Court 5</option>
+          <option value="Food Court 6">Food Court 6</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="foodTypeFilter">Food Type</label>
+        <select id="foodTypeFilter">
+          <option value="">All Food Types</option>
+          <option value="Chicken">Chicken</option>
+          <option value="Rice">Rice</option>
+          <option value="Noodles">Noodles</option>
+          <option value="Soup">Soup</option>
+          <option value="Korean">Korean</option>
+          <option value="Japanese">Japanese</option>
+          <option value="Sandwich">Sandwich</option>
+          <option value="Vegetarian">Vegetarian</option>
+          <option value="Vegan">Vegan</option>
+          <option value="Drinks">Drinks</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="dietaryFilter">Dietary</label>
+        <select id="dietaryFilter">
+          <option value="">All Dietary Types</option>
+          <option value="halal">Halal</option>
+          <option value="vegetarian">Vegetarian</option>
+          <option value="vegan">Vegan</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="statusFilter">Status</label>
+        <select id="statusFilter">
+          <option value="">All Status</option>
+          <option value="open">Open Now</option>
+          <option value="closed">Closed</option>
+        </select>
+      </div>
+
+      <button id="clearFilterButton" class="clear-filter-btn">Clear Filters</button>
     </section>
 
     <p id="resultCount" class="result-count">Loading stalls...</p>
 
     <section id="stallContainer" class="card-grid">
-      <!-- Stall cards will appear here using JavaScript -->
+      <!-- Stall cards will appear here -->
     </section>
   </main>
 
