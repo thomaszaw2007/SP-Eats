@@ -1,7 +1,8 @@
 -- ─────────────────────────────────────────────────────────
 -- Seed Data for Food Stall and Menu Feature
 -- ─────────────────────────────────────────────────────────
-
+DELETE FROM menu_items;
+DELETE FROM food_stalls;
 
 INSERT INTO food_stalls (
   stall_id,
@@ -34,7 +35,7 @@ INSERT INTO food_stalls (
   '6-10 min',
   4.5,
   128,
-  'https://placehold.co/600x400?text=Korean+Kitchen',
+  '/images/stalls/Korean_Kitchen_logo.avif',
   FALSE,
   FALSE,
   FALSE
@@ -52,7 +53,7 @@ INSERT INTO food_stalls (
   '7-12 min',
   4.4,
   116,
-  'https://placehold.co/600x400?text=Japanese+Bento',
+  '/images/stalls/Japanese_Bento_logo.png',
   FALSE,
   FALSE,
   FALSE
@@ -70,7 +71,7 @@ INSERT INTO food_stalls (
   '5-8 min',
   4.6,
   214,
-  'https://placehold.co/600x400?text=Chicken+Rice+Corner',
+  '/images/stalls/Chicken_rice_Corner.png',
   TRUE,
   FALSE,
   FALSE
@@ -88,7 +89,7 @@ INSERT INTO food_stalls (
   '6-9 min',
   4.3,
   98,
-  'https://placehold.co/600x400?text=Noodle+House',
+  '/images/stalls/Noodle_House_logo.jfif',
   FALSE,
   FALSE,
   FALSE
@@ -106,7 +107,7 @@ INSERT INTO food_stalls (
   '8-12 min',
   4.2,
   76,
-  'https://placehold.co/600x400?text=Japanese+Express',
+  '/images/stalls/Japanese_Express_logo.avif',
   FALSE,
   FALSE,
   FALSE
@@ -124,7 +125,7 @@ INSERT INTO food_stalls (
   '5-8 min',
   4.5,
   143,
-  'https://placehold.co/600x400?text=Green+Plate',
+  '/images/stalls/Green_Plate_logo.jfif',
   FALSE,
   TRUE,
   TRUE
@@ -142,7 +143,7 @@ INSERT INTO food_stalls (
   '7-11 min',
   4.4,
   156,
-  'https://placehold.co/600x400?text=Japanese+Curry+House',
+  '/images/stalls/Japanese_Curry_House_logo.png',
   FALSE,
   TRUE,
   FALSE
@@ -160,7 +161,7 @@ INSERT INTO food_stalls (
   '8-12 min',
   4.6,
   189,
-  'https://placehold.co/600x400?text=Korean+Bowl',
+  '/images/stalls/Korean_Bowl_logo.avif',
   FALSE,
   FALSE,
   FALSE
@@ -178,7 +179,7 @@ INSERT INTO food_stalls (
   '5-8 min',
   4.7,
   231,
-  'https://placehold.co/600x400?text=Hainanese+Chicken+Rice',
+  '/images/stalls/Hainanese_Chicken_Rice_Stall_logo.jpg',
   TRUE,
   FALSE,
   FALSE
@@ -196,7 +197,7 @@ INSERT INTO food_stalls (
   '5-8 min',
   4.4,
   167,
-  'https://placehold.co/600x400?text=Express+Chicken+Rice',
+  '/images/stalls/Express_Chicken_Rice_logo.jfif',
   TRUE,
   FALSE,
   FALSE
@@ -214,7 +215,7 @@ INSERT INTO food_stalls (
   '6-10 min',
   4.3,
   132,
-  'https://placehold.co/600x400?text=Ban+Mian+House',
+  '/images/stalls/Ban_Mian_logo.jfif',
   FALSE,
   FALSE,
   FALSE
@@ -250,7 +251,7 @@ INSERT INTO food_stalls (
   '8-12 min',
   4.5,
   412,
-  'https://placehold.co/600x400?text=KFC',
+  '/images/stalls/kfc_logo.png',
   TRUE,
   FALSE,
   FALSE
@@ -359,75 +360,75 @@ INSERT INTO menu_items (
   is_available,
   is_popular
 ) VALUES
-('item_001', 'stall_001', 'Korean Kitchen', 'Bibimbap', 'Classic', 'Mixed rice bowl with vegetables, egg, and Korean sauce.', 4.30, 'Rice', 'https://placehold.co/600x400?text=Bibimbap', TRUE, TRUE),
-('item_002', 'stall_001', 'Korean Kitchen', 'Kimchi Soup', 'None', 'Warm kimchi soup served with rice.', 4.30, 'Soup', 'https://placehold.co/600x400?text=Kimchi+Soup', TRUE, FALSE),
-('item_003', 'stall_001', 'Korean Kitchen', 'Omelette Rice', 'Chicken Cutlet', 'Omelette rice served with crispy chicken cutlet.', 4.50, 'Rice', 'https://placehold.co/600x400?text=Omelette+Rice', TRUE, FALSE),
+('item_001', 'stall_001', 'Korean Kitchen', 'Bibimbap', 'Classic', 'Mixed rice bowl with vegetables, egg, and Korean sauce.', 4.30, 'Rice', '/images/Menu/Korean_Kitchen/Korean_Kitchen-Bibimbap.jpg', TRUE, TRUE),
+('item_002', 'stall_001', 'Korean Kitchen', 'Kimchi Soup', 'None', 'Warm kimchi soup served with rice.', 4.30, 'Soup', '/images/Menu/Korean_Kitchen/Korean_Kitchen-Kimchi_Soup.webp', TRUE, FALSE),
+('item_003', 'stall_001', 'Korean Kitchen', 'Omelette Rice', 'Chicken Cutlet', 'Omelette rice served with crispy chicken cutlet.', 4.50, 'Rice', '/images/Menu/Korean_Kitchen/Korean_Kitchen-Omelette_Rice.jpg', TRUE, FALSE),
 
-('item_004', 'stall_002', 'Japanese Bento', 'Curry Rice', 'Chicken Katsu', 'Japanese curry rice topped with chicken katsu.', 4.80, 'Rice', 'https://placehold.co/600x400?text=Chicken+Katsu+Curry', TRUE, TRUE),
-('item_005', 'stall_002', 'Japanese Bento', 'Curry Rice', 'Cheese Omelette', 'Japanese curry rice with soft cheese omelette.', 3.80, 'Rice', 'https://placehold.co/600x400?text=Cheese+Omelette+Curry', TRUE, FALSE),
-('item_006', 'stall_002', 'Japanese Bento', 'Chicken Katsu Don', 'None', 'Rice bowl topped with chicken katsu and sauce.', 4.30, 'Rice', 'https://placehold.co/600x400?text=Chicken+Katsu+Don', TRUE, FALSE),
-('item_007', 'stall_002', 'Japanese Bento', 'Tamago', 'Tori', 'Japanese egg dish served with chicken topping.', 4.80, 'Japanese', 'https://placehold.co/600x400?text=Tamago+Tori', TRUE, FALSE),
+('item_004', 'stall_002', 'Japanese Bento', 'Curry Rice', 'Chicken Katsu', 'Japanese curry rice topped with chicken katsu.', 4.80, 'Rice', '/images/Menu/Japanese_Bento/Japanese_Bento-ChickenKatsu_CurryRice.jpg', TRUE, TRUE),
+('item_005', 'stall_002', 'Japanese Bento', 'Curry Rice', 'Cheese Omelette', 'Japanese curry rice with soft cheese omelette.', 3.80, 'Rice', '/images/Menu/Japanese_Bento/Japanese_Bento-CheeseOmelette_CurryRice.jpg', TRUE, FALSE),
+('item_006', 'stall_002', 'Japanese Bento', 'Chicken Katsu Don', 'None', 'Rice bowl topped with chicken katsu and sauce.', 4.30, 'Rice', '/images/Menu/Japanese_Bento/Japanese_Bento-ChickenKatsu_Don.webp', TRUE, FALSE),
+('item_007', 'stall_002', 'Japanese Bento', 'Tamago', 'Tori', 'Japanese egg dish served with chicken topping.', 4.80, 'Japanese', '/images/Menu/Japanese_Bento/Japanese_Bento-Tamago_Tori.jpg', TRUE, FALSE),
 
-('item_008', 'stall_003', 'Chicken Rice Corner', 'Steamed Chicken Rice', 'None', 'Steamed chicken with fragrant rice, soup, and chilli.', 3.30, 'Chicken', 'https://placehold.co/600x400?text=Steamed+Chicken+Rice', TRUE, TRUE),
-('item_009', 'stall_003', 'Chicken Rice Corner', 'Roasted Chicken Rice', 'None', 'Roasted chicken served with fragrant rice and soup.', 3.30, 'Chicken', 'https://placehold.co/600x400?text=Roasted+Chicken+Rice', TRUE, FALSE),
-('item_010', 'stall_003', 'Chicken Rice Corner', 'Chicken Rice Set', 'None', 'Chicken rice set with extra vegetables and soup.', 4.20, 'Chicken', 'https://placehold.co/600x400?text=Chicken+Rice+Set', TRUE, FALSE),
+('item_008', 'stall_003', 'Chicken Rice Corner', 'Steamed Chicken Rice', 'None', 'Steamed chicken with fragrant rice, soup, and chilli.', 3.30, 'Chicken', '/images/Menu/Chicken_Rice_Corner/Chicken_Rice_Corner-Steamed_ChickenRice.png', TRUE, TRUE),
+('item_009', 'stall_003', 'Chicken Rice Corner', 'Roasted Chicken Rice', 'None', 'Roasted chicken served with fragrant rice and soup.', 3.30, 'Chicken', '/images/Menu/Chicken_Rice_Corner/Chicken_Rice_Corner-Roasted_ChickenRice.jpg', TRUE, FALSE),
+('item_010', 'stall_003', 'Chicken Rice Corner', 'Chicken Rice Set', 'None', 'Chicken rice set with extra vegetables and soup.', 4.20, 'Chicken', '/images/Menu/Chicken_Rice_Corner/Chicken_Rice_Corner-Chicken_RiceSet.png', TRUE, FALSE),
 
-('item_011', 'stall_004', 'Noodle House', 'Dumpling Noodles', 'Dry', 'Noodles served with dumplings and savoury sauce.', 3.50, 'Noodles', 'https://placehold.co/600x400?text=Dumpling+Noodles', TRUE, FALSE),
-('item_012', 'stall_004', 'Noodle House', 'Ban Mian', 'Soup', 'Handmade noodles served in warm soup.', 3.50, 'Noodles', 'https://placehold.co/600x400?text=Ban+Mian', TRUE, TRUE),
-('item_013', 'stall_004', 'Noodle House', 'Fish Soup', 'Rice', 'Light fish soup served with rice.', 4.50, 'Soup', 'https://placehold.co/600x400?text=Fish+Soup', TRUE, FALSE),
+('item_011', 'stall_004', 'Noodle House', 'Dumpling Noodles', 'Dry', 'Noodles served with dumplings and savoury sauce.', 3.50, 'Noodles', '/images/Menu/Noodle_House/Noodle_House-Dumpling_Noodles.jpg', TRUE, FALSE),
+('item_012', 'stall_004', 'Noodle House', 'Ban Mian', 'Soup', 'Handmade noodles served in warm soup.', 3.50, 'Noodles', '/images/Menu/Noodle_House/Noodle_House-Ban_Mian.jfif', TRUE, TRUE),
+('item_013', 'stall_004', 'Noodle House', 'Fish Soup', 'Rice', 'Light fish soup served with rice.', 4.50, 'Soup', '/images/Menu/Noodle_House/Noodle_House-Fish_Soup.jpg', TRUE, FALSE),
 
-('item_014', 'stall_005', 'Japanese Express', 'Teriyaki Chicken Rice', 'None', 'Chicken teriyaki served with rice and vegetables.', 4.30, 'Rice', 'https://placehold.co/600x400?text=Teriyaki+Chicken+Rice', FALSE, TRUE),
-('item_015', 'stall_005', 'Japanese Express', 'Salmon Don', 'None', 'Japanese salmon rice bowl with sauce.', 5.20, 'Rice', 'https://placehold.co/600x400?text=Salmon+Don', FALSE, FALSE),
-('item_016', 'stall_005', 'Japanese Express', 'Miso Soup', 'None', 'Simple warm miso soup.', 2.20, 'Soup', 'https://placehold.co/600x400?text=Miso+Soup', FALSE, FALSE),
+('item_014', 'stall_005', 'Japanese Express', 'Teriyaki Chicken Rice', 'None', 'Chicken teriyaki served with rice and vegetables.', 4.30, 'Rice', '/images/Menu/Japanese_Express/Japanese_Express-Teriyaki_ChickenRice.jpg', FALSE, TRUE),
+('item_015', 'stall_005', 'Japanese Express', 'Salmon Don', 'None', 'Japanese salmon rice bowl with sauce.', 5.20, 'Rice', '/images/Menu/Japanese_Express/Japanese_Express-Salmon_Don.png', FALSE, FALSE),
+('item_016', 'stall_005', 'Japanese Express', 'Miso Soup', 'None', 'Simple warm miso soup.', 2.20, 'Soup', '/images/Menu/Japanese_Express/Japanese_Express-Miso_Soup.jpg', FALSE, FALSE),
 
-('item_017', 'stall_006', 'Green Plate', 'Vegetarian Rice Set', 'Daily Vegetables', 'Vegetarian rice set with tofu and vegetables.', 4.30, 'Vegetarian', 'https://placehold.co/600x400?text=Vegetarian+Rice+Set', TRUE, TRUE),
-('item_018', 'stall_006', 'Green Plate', 'Tofu Noodle Bowl', 'Vegan', 'Noodle bowl with tofu, greens, and light sauce.', 4.50, 'Vegan', 'https://placehold.co/600x400?text=Tofu+Noodle+Bowl', TRUE, FALSE),
-('item_019', 'stall_006', 'Green Plate', 'Vegetable Soup', 'Vegan', 'Warm vegetable soup with tofu and greens.', 3.80, 'Vegan', 'https://placehold.co/600x400?text=Vegetable+Soup', TRUE, FALSE),
+('item_017', 'stall_006', 'Green Plate', 'Vegetarian Rice Set', 'Daily Vegetables', 'Vegetarian rice set with tofu and vegetables.', 4.30, 'Vegetarian', '/images/Menu/Green_Plate/Green_Plate-Vegetarian_RiceSet.webp', TRUE, TRUE),
+('item_018', 'stall_006', 'Green Plate', 'Tofu Noodle Bowl', 'Vegan', 'Noodle bowl with tofu, greens, and light sauce.', 4.50, 'Vegan', '/images/Menu/Green_Plate/Green_Plate-Tofu_NoodleBowl.jpg', TRUE, FALSE),
+('item_019', 'stall_006', 'Green Plate', 'Vegetable Soup', 'Vegan', 'Warm vegetable soup with tofu and greens.', 3.80, 'Vegan', '/images/Menu/Green_Plate/Green_Plate-Vegetable_Soup.png', TRUE, FALSE),
 
-('item_020', 'stall_007', 'Japanese Curry House', 'Curry Rice', 'Chicken Katsu', 'Japanese curry rice with crispy chicken katsu.', 4.30, 'Rice', 'https://placehold.co/600x400?text=Japanese+Curry+Chicken', TRUE, TRUE),
-('item_021', 'stall_007', 'Japanese Curry House', 'Curry Rice', 'Vegetable Croquette', 'Japanese curry rice with vegetable croquette.', 4.10, 'Vegetarian', 'https://placehold.co/600x400?text=Vegetable+Croquette+Curry', TRUE, FALSE),
-('item_022', 'stall_007', 'Japanese Curry House', 'Curry Rice', 'Chicken Nuggets', 'Japanese curry rice with chicken nuggets.', 4.30, 'Rice', 'https://placehold.co/600x400?text=Chicken+Nugget+Curry', TRUE, FALSE),
+('item_020', 'stall_007', 'Japanese Curry House', 'Curry Rice', 'Chicken Katsu', 'Japanese curry rice with crispy chicken katsu.', 4.30, 'Rice', '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-ChickenKatsu_CurryRice.webp', TRUE, TRUE),
+('item_021', 'stall_007', 'Japanese Curry House', 'Curry Rice', 'Vegetable Croquette', 'Japanese curry rice with vegetable croquette.', 4.10, 'Vegetarian', '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-Vegetable Croquette.webp', TRUE, FALSE),
+('item_022', 'stall_007', 'Japanese Curry House', 'Curry Rice', 'Chicken Nuggets', 'Japanese curry rice with chicken nuggets.', 4.30, 'Rice', '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-ChickenNuggets_CurryRice.webp', TRUE, FALSE),
 
-('item_023', 'stall_008', 'Korean Bowl', 'Bibimbap', 'Spicy Chicken', 'Bibimbap topped with spicy chicken and vegetables.', 4.80, 'Rice', 'https://placehold.co/600x400?text=Spicy+Chicken+Bibimbap', TRUE, TRUE),
-('item_024', 'stall_008', 'Korean Bowl', 'Chicken Cutlet Rice', 'None', 'Chicken cutlet served with rice and sauce.', 5.00, 'Chicken', 'https://placehold.co/600x400?text=Chicken+Cutlet+Rice', TRUE, FALSE),
-('item_025', 'stall_008', 'Korean Bowl', 'Kimchi Fried Rice', 'None', 'Fried rice with kimchi and egg.', 4.50, 'Rice', 'https://placehold.co/600x400?text=Kimchi+Fried+Rice', TRUE, FALSE),
+('item_023', 'stall_008', 'Korean Bowl', 'Bibimbap', 'Spicy Chicken', 'Bibimbap topped with spicy chicken and vegetables.', 4.80, 'Rice', '/images/Menu/Korean_Bowl/Korean_Bowl-SpicyChicken_Bibimbap.jpg', TRUE, TRUE),
+('item_024', 'stall_008', 'Korean Bowl', 'Chicken Cutlet Rice', 'None', 'Chicken cutlet served with rice and sauce.', 5.00, 'Chicken', '/images/Menu/Korean_Bowl/Korean_Bowl-Chicken_CutletRice.jpg', TRUE, FALSE),
+('item_025', 'stall_008', 'Korean Bowl', 'Kimchi Fried Rice', 'None', 'Fried rice with kimchi and egg.', 4.50, 'Rice', '/images/Menu/Korean_Bowl/Korean_Bowl-Kimchi_FriedRice.jpg', TRUE, FALSE),
 
-('item_026', 'stall_009', 'Hainanese Chicken Rice', 'Steamed Chicken Rice', 'None', 'Tender steamed chicken rice with soup.', 3.30, 'Chicken', 'https://placehold.co/600x400?text=Steamed+Chicken+Rice', TRUE, TRUE),
-('item_027', 'stall_009', 'Hainanese Chicken Rice', 'Roasted Chicken Rice', 'None', 'Roasted chicken rice with chilli and soup.', 3.30, 'Chicken', 'https://placehold.co/600x400?text=Roasted+Chicken+Rice', TRUE, FALSE),
-('item_028', 'stall_009', 'Hainanese Chicken Rice', 'Char Siew Chicken Rice', 'None', 'Chicken rice served with char siew style sauce.', 4.30, 'Chicken', 'https://placehold.co/600x400?text=Char+Siew+Chicken+Rice', TRUE, FALSE),
+('item_026', 'stall_009', 'Hainanese Chicken Rice', 'Steamed Chicken Rice', 'None', 'Tender steamed chicken rice with soup.', 3.30, 'Chicken', '/images/Menu/Hainanese_Chicken_Rice/Hainanese_Chicken_Rice-Steamed_ChickenRice.png', TRUE, TRUE),
+('item_027', 'stall_009', 'Hainanese Chicken Rice', 'Roasted Chicken Rice', 'None', 'Roasted chicken rice with chilli and soup.', 3.30, 'Chicken', '/images/Menu/Hainanese_Chicken_Rice/Hainanese_Chicken_Rice-Roasted_ChickenRice.jpg', TRUE, FALSE),
+('item_028', 'stall_009', 'Hainanese Chicken Rice', 'Char Siew Chicken Rice', 'None', 'Chicken rice served with char siew style sauce.', 4.30, 'Chicken', '/images/Menu/Hainanese_Chicken_Rice/Hainanese_Chicken_Rice-CharSiew_ChickenRice.avif', TRUE, FALSE),
 
-('item_029', 'stall_010', 'Express Chicken Rice', 'Steamed Chicken Rice', 'None', 'Simple steamed chicken rice meal.', 3.30, 'Chicken', 'https://placehold.co/600x400?text=Express+Steamed+Chicken', TRUE, TRUE),
-('item_030', 'stall_010', 'Express Chicken Rice', 'Roasted Chicken Rice', 'None', 'Roasted chicken rice served with soup.', 3.30, 'Chicken', 'https://placehold.co/600x400?text=Express+Roasted+Chicken', TRUE, FALSE),
-('item_031', 'stall_010', 'Express Chicken Rice', 'Chicken Cutlet Noodles', 'None', 'Noodles served with crispy chicken cutlet.', 4.50, 'Noodles', 'https://placehold.co/600x400?text=Chicken+Cutlet+Noodles', TRUE, FALSE),
+('item_029', 'stall_010', 'Express Chicken Rice', 'Steamed Chicken Rice', 'None', 'Simple steamed chicken rice meal.', 3.30, 'Chicken', '/images/Menu/Express_Chicken_Rice/Express_Chicken_Rice-Steamed_ChickenRice.png', TRUE, TRUE),
+('item_030', 'stall_010', 'Express Chicken Rice', 'Roasted Chicken Rice', 'None', 'Roasted chicken rice served with soup.', 3.30, 'Chicken', '/images/Menu/Express_Chicken_Rice/Express_Chicken_Rice-Roasted_ChickenRice.jpg', TRUE, FALSE),
+('item_031', 'stall_010', 'Express Chicken Rice', 'Chicken Cutlet Noodles', 'None', 'Noodles served with crispy chicken cutlet.', 4.50, 'Noodles', '/images/Menu/Express_Chicken_Rice/Express_Chicken_Rice-Chicken_Cutlet_Noodles.webp', TRUE, FALSE),
 
-('item_032', 'stall_011', 'Ban Mian House', 'Dumpling Noodles', 'Soup', 'Soup noodles served with dumplings.', 4.00, 'Noodles', 'https://placehold.co/600x400?text=Dumpling+Noodles', TRUE, FALSE),
-('item_033', 'stall_011', 'Ban Mian House', 'Ban Mian', 'Dry', 'Dry ban mian served with minced meat and sauce.', 4.00, 'Noodles', 'https://placehold.co/600x400?text=Dry+Ban+Mian', TRUE, TRUE),
-('item_034', 'stall_011', 'Ban Mian House', 'Seafood Noodle', 'Soup', 'Noodles served with seafood and soup.', 4.50, 'Noodles', 'https://placehold.co/600x400?text=Seafood+Noodle', TRUE, FALSE),
+('item_032', 'stall_011', 'Ban Mian House', 'Dumpling Noodles', 'Soup', 'Soup noodles served with dumplings.', 4.00, 'Noodles', '/images/Menu/Ban_Mian_House/Ban_Mian-Dumpling_Noodles.jpg', TRUE, FALSE),
+('item_033', 'stall_011', 'Ban Mian House', 'Ban Mian', 'Dry', 'Dry ban mian served with minced meat and sauce.', 4.00, 'Noodles', '/images/Menu/Ban_Mian_House/Ban_Mian_House-Ban_Mian.jfif', TRUE, TRUE),
+('item_034', 'stall_011', 'Ban Mian House', 'Seafood Noodle', 'Soup', 'Noodles served with seafood and soup.', 4.50, 'Noodles', '/images/Menu/Ban_Mian_House/Ban_Mian_House-Seafood_Noodle.avif', TRUE, FALSE),
 
-('item_035', 'stall_012', 'Korean Fried Chicken', 'Korean Chicken Bowl', 'Sweet & Spicy', 'Korean chicken bowl with sweet and spicy sauce.', 4.50, 'Chicken', 'https://placehold.co/600x400?text=Sweet+Spicy+Chicken+Bowl', FALSE, TRUE),
-('item_036', 'stall_012', 'Korean Fried Chicken', 'Korean Chicken Bowl', 'Mala', 'Korean chicken bowl with mala sauce.', 4.50, 'Chicken', 'https://placehold.co/600x400?text=Mala+Chicken+Bowl', FALSE, FALSE),
-('item_037', 'stall_012', 'Korean Fried Chicken', 'Korean Chicken Bowl', 'Honey Mustard', 'Korean chicken bowl with honey mustard sauce.', 4.50, 'Chicken', 'https://placehold.co/600x400?text=Honey+Mustard+Chicken', FALSE, FALSE),
+('item_035', 'stall_012', 'Korean Fried Chicken', 'Korean Chicken Bowl', 'Sweet & Spicy', 'Korean chicken bowl with sweet and spicy sauce.', 4.50, 'Chicken', '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken-SweetSpicy_ChickenBowl.jpg', FALSE, TRUE),
+('item_036', 'stall_012', 'Korean Fried Chicken', 'Korean Chicken Bowl', 'Mala', 'Korean chicken bowl with mala sauce.', 4.50, 'Chicken', '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken_Mala_ChickenBowl.jpg', FALSE, FALSE),
+('item_037', 'stall_012', 'Korean Fried Chicken', 'Korean Chicken Bowl', 'Honey Mustard', 'Korean chicken bowl with honey mustard sauce.', 4.50, 'Chicken', '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken-HoneyMustard_ChickenBowl.jpg', FALSE, FALSE),
 
-('item_038', 'stall_013', 'KFC', 'Fried Chicken', '2 Piece Meal', 'Two pieces of fried chicken served with a side.', 5.50, 'Chicken', 'https://placehold.co/600x400?text=Fried+Chicken', TRUE, TRUE),
-('item_039', 'stall_013', 'KFC', 'Mac N Cheese', 'Regular', 'Creamy mac and cheese side dish.', 5.50, 'Sides', 'https://placehold.co/600x400?text=Mac+N+Cheese', TRUE, FALSE),
-('item_040', 'stall_013', 'KFC', 'Chicken Wrap', 'Original', 'Chicken wrap with vegetables and sauce.', 6.00, 'Chicken', 'https://placehold.co/600x400?text=Chicken+Wrap', TRUE, FALSE),
+('item_038', 'stall_013', 'KFC', 'Fried Chicken', '2 Piece Meal', 'Two pieces of fried chicken served with a side.', 5.50, 'Chicken', '/images/Menu/KFC/KFC-2P_FriendChicken.png', TRUE, TRUE),
+('item_039', 'stall_013', 'KFC', 'Mac N Cheese', 'Regular', 'Creamy mac and cheese side dish.', 5.50, 'Sides', '/images/Menu/KFC/KFC-MacNCheese.webp', TRUE, FALSE),
+('item_040', 'stall_013', 'KFC', 'Chicken Wrap', 'Original', 'Chicken wrap with vegetables and sauce.', 6.00, 'Chicken', '/images/Menu/KFC/KFC-Chicken_Wrap.png', TRUE, FALSE),
 
-('item_041', 'stall_014', 'Subway', 'Chicken Delight Sub', '6-inch', 'Fresh sub with chicken, vegetables, and sauce.', 6.80, 'Sandwich', 'https://placehold.co/600x400?text=Chicken+Delight+Sub', TRUE, TRUE),
-('item_042', 'stall_014', 'Subway', 'Spicy Beef Taco', '6-inch', 'Subway-style sandwich with spicy beef filling.', 6.80, 'Sandwich', 'https://placehold.co/600x400?text=Spicy+Beef+Taco', TRUE, FALSE),
-('item_043', 'stall_014', 'Subway', 'Veggie Delight', '6-inch', 'Vegetarian sub with fresh vegetables and sauce.', 6.80, 'Vegetarian', 'https://placehold.co/600x400?text=Veggie+Delight', TRUE, TRUE),
+('item_041', 'stall_014', 'Subway', 'Chicken Delight Sub', '6-inch', 'Fresh sub with chicken, vegetables, and sauce.', 6.80, 'Sandwich', '/images/Menu/Subway/Subway-Chicken_Delight_Sub.jpg', TRUE, TRUE),
+('item_042', 'stall_014', 'Subway', 'Spicy Beef Taco', '6-inch', 'Subway-style sandwich with spicy beef filling.', 6.80, 'Sandwich', '/images/Menu/Subway/Subway-Spicy_BeefTaco.jpg', TRUE, FALSE),
+('item_043', 'stall_014', 'Subway', 'Veggie Delight', '6-inch', 'Vegetarian sub with fresh vegetables and sauce.', 6.80, 'Vegetarian', '/images/Menu/Subway/Subway-Veggie_Delight.jpg', TRUE, TRUE),
 
-('item_044', 'stall_015', 'Brunch Cafe', 'Chicken Mayo Sandwich', 'Toast', 'Toasted sandwich with chicken mayo filling.', 4.80, 'Sandwich', 'https://placehold.co/600x400?text=Chicken+Mayo+Sandwich', TRUE, FALSE),
-('item_045', 'stall_015', 'Brunch Cafe', 'Mushroom Pasta', 'Cream Sauce', 'Pasta with mushrooms and cream sauce.', 5.20, 'Western', 'https://placehold.co/600x400?text=Mushroom+Pasta', TRUE, TRUE),
-('item_046', 'stall_015', 'Brunch Cafe', 'Iced Latte', 'Regular', 'Chilled latte for a quick cafe drink.', 3.80, 'Drinks', 'https://placehold.co/600x400?text=Iced+Latte', TRUE, FALSE),
+('item_044', 'stall_015', 'Brunch Cafe', 'Chicken Mayo Sandwich', 'Toast', 'Toasted sandwich with chicken mayo filling.', 4.80, 'Sandwich', '/images/Menu/Brunch%20Cafe/Brunch_Cafe-Chicken_Mayo_Sandwich.jpg', TRUE, FALSE),
+('item_045', 'stall_015', 'Brunch Cafe', 'Mushroom Pasta', 'Cream Sauce', 'Pasta with mushrooms and cream sauce.', 5.20, 'Western', '/images/Menu/Brunch%20Cafe/Brunch_Cafe-Mushroom_Pasta.webp', TRUE, TRUE),
+('item_046', 'stall_015', 'Brunch Cafe', 'Iced Latte', 'Regular', 'Chilled latte for a quick cafe drink.', 3.80, 'Drinks', '/images/Menu/Brunch%20Cafe/Brunch_Cafe-Iced_Latte.jpg', TRUE, FALSE),
 
-('item_047', 'stall_016', 'Japanese Food', 'Chicken Udon Soup', 'None', 'Udon soup served with chicken slices.', 4.50, 'Noodles', 'https://placehold.co/600x400?text=Chicken+Udon+Soup', TRUE, TRUE),
-('item_048', 'stall_016', 'Japanese Food', 'Fried Black Pepper Udon', 'None', 'Fried udon with black pepper sauce.', 4.50, 'Noodles', 'https://placehold.co/600x400?text=Black+Pepper+Udon', TRUE, FALSE),
-('item_049', 'stall_016', 'Japanese Food', 'Chicken BBQ Rice', 'None', 'Japanese BBQ chicken served with rice.', 4.50, 'Rice', 'https://placehold.co/600x400?text=Chicken+BBQ+Rice', TRUE, FALSE),
+('item_047', 'stall_016', 'Japanese Food', 'Chicken Udon Soup', 'None', 'Udon soup served with chicken slices.', 4.50, 'Noodles', '/images/Menu/Japanese_Food/Japanese_Food-Chicken_Udon_Soup.jpg', TRUE, TRUE),
+('item_048', 'stall_016', 'Japanese Food', 'Fried Black Pepper Udon', 'None', 'Fried udon with black pepper sauce.', 4.50, 'Noodles', '/images/Menu/Japanese_Food/Japanese_Food-Fried_BlackPepper_Udon.JPG', TRUE, FALSE),
+('item_049', 'stall_016', 'Japanese Food', 'Chicken BBQ Rice', 'None', 'Japanese BBQ chicken served with rice.', 4.50, 'Rice', '/images/Menu/Japanese_Food/Japanese_Food-Chicken_BBQRice.webp', TRUE, FALSE),
 
-('item_050', 'stall_017', 'Chicken Rice Station', 'Steamed Chicken Rice', 'None', 'Halal-friendly steamed chicken rice with soup.', 3.30, 'Chicken', 'https://placehold.co/600x400?text=Halal+Steamed+Chicken+Rice', TRUE, TRUE),
-('item_051', 'stall_017', 'Chicken Rice Station', 'Roasted Chicken Rice', 'None', 'Halal-friendly roasted chicken rice with chilli.', 3.30, 'Chicken', 'https://placehold.co/600x400?text=Halal+Roasted+Chicken+Rice', TRUE, FALSE),
-('item_052', 'stall_017', 'Chicken Rice Station', 'Chicken Rice Set', 'None', 'Chicken rice set with vegetables and soup.', 4.20, 'Chicken', 'https://placehold.co/600x400?text=Chicken+Rice+Set', TRUE, FALSE),
+('item_050', 'stall_017', 'Chicken Rice Station', 'Steamed Chicken Rice', 'None', 'Halal-friendly steamed chicken rice with soup.', 3.30, 'Chicken', '/images/Menu/Chicken_Rice_Station/Chicken_Rice_Station-Steamed_ChickenRice.png', TRUE, TRUE),
+('item_051', 'stall_017', 'Chicken Rice Station', 'Roasted Chicken Rice', 'None', 'Halal-friendly roasted chicken rice with chilli.', 3.30, 'Chicken', '/images/Menu/Chicken_Rice_Station/Chicken_Rice_Station-Roasted_Chicken_Rice.jpg', TRUE, FALSE),
+('item_052', 'stall_017', 'Chicken Rice Station', 'Chicken Rice Set', 'None', 'Chicken rice set with vegetables and soup.', 4.20, 'Chicken', '/images/Menu/Chicken_Rice_Station/Chicken_Rice_Station-Chicken_Rice_Set.png', TRUE, FALSE),
 
-('item_053', 'stall_018', 'Soup Stall', 'Ban Mian', 'Soup', 'Warm ban mian soup with vegetables.', 3.50, 'Noodles', 'https://placehold.co/600x400?text=Ban+Mian+Soup', FALSE, FALSE),
-('item_054', 'stall_018', 'Soup Stall', 'Beef Noodles', 'Soup', 'Beef noodles in warm broth.', 4.50, 'Noodles', 'https://placehold.co/600x400?text=Beef+Noodles', FALSE, TRUE),
-('item_055', 'stall_018', 'Soup Stall', 'Fish Soup', 'Rice', 'Light fish soup served with rice.', 4.50, 'Soup', 'https://placehold.co/600x400?text=Fish+Soup', FALSE, FALSE);
+('item_053', 'stall_018', 'Soup Stall', 'Ban Mian', 'Soup', 'Warm ban mian soup with vegetables.', 3.50, 'Noodles', '/images/Menu/Soup%20Stall/Soup_Stall-Ban_Mian.jfif', FALSE, FALSE),
+('item_054', 'stall_018', 'Soup Stall', 'Beef Noodles', 'Soup', 'Beef noodles in warm broth.', 4.50, 'Noodles', '/images/Menu/Soup%20Stall/Soup_Stall-Beef_Noodles.avif', FALSE, TRUE),
+('item_055', 'stall_018', 'Soup Stall', 'Fish Soup', 'Rice', 'Light fish soup served with rice.', 4.50, 'Soup', '/images/Menu/Soup%20Stall/Soup_Stall-Fish_Soup.png', FALSE, FALSE);
