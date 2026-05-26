@@ -269,7 +269,7 @@ INSERT INTO food_stalls (
   '5-8 min',
   4.6,
   238,
-  'https://placehold.co/600x400?text=Subway',
+  '/images/stalls/Subway.jpg',
   TRUE,
   TRUE,
   FALSE
@@ -287,7 +287,7 @@ INSERT INTO food_stalls (
   '7-10 min',
   4.2,
   94,
-  'https://placehold.co/600x400?text=Brunch+Cafe',
+  '/images/stalls/Brunch_Cafe_logo.png',
   FALSE,
   TRUE,
   FALSE
@@ -305,7 +305,7 @@ INSERT INTO food_stalls (
   '7-10 min',
   4.3,
   119,
-  'https://placehold.co/600x400?text=Japanese+Food',
+  '/images/stalls/Japanese_Food_logo.jpg',
   FALSE,
   FALSE,
   FALSE
@@ -323,7 +323,7 @@ INSERT INTO food_stalls (
   '5-8 min',
   4.5,
   174,
-  'https://placehold.co/600x400?text=Chicken+Rice+Station',
+  '/images/stalls/Chicken_Rice_Station_Logo.png',
   TRUE,
   FALSE,
   FALSE
