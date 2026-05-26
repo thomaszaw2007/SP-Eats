@@ -30,8 +30,14 @@ function getStallDetails() {
   fetch("/api/stalls/" + stallId)
     .then((response) => response.json())
     .then((result) => {
-      selectedStall = result.data;
-      displayStallHeader(selectedStall);
+      
+        selectedStall = result.data;
+        displayStallHeader(selectedStall);
+
+        if (menuItemsData.length > 0) {
+          filterMenuByCategory();
+        }
+
     })
     .catch((error) => {
       console.error("Error loading stall details:", error);
@@ -201,6 +207,16 @@ function displayMenuItems(menuItems) {
     const stallClosed = selectedStall && selectedStall.opening_status === "closed";
     const disableAddButton = isUnavailable || stallClosed;
 
+    const showHalal = selectedStall && selectedStall.is_halal;
+
+    const showVegetarian =
+      (selectedStall && selectedStall.is_vegetarian) ||
+      item.category === "Vegetarian";
+
+    const showVegan =
+      (selectedStall && selectedStall.is_vegan) ||
+      item.category === "Vegan";
+
     const card = document.createElement("div");
     card.className = "menu-card";
 
@@ -209,29 +225,54 @@ function displayMenuItems(menuItems) {
     }
 
     card.innerHTML = `
-      <img 
-        src="${item.image_url}" 
-        alt="${item.item_name}" 
-        class="menu-image"
-      />
+      <div class="menu-image-wrap">
+        <img 
+          src="${item.image_url}" 
+          alt="${item.item_name}" 
+          class="menu-image"
+        />
+
+        ${
+          item.is_popular
+            ? `<span class="popular-corner-badge">Popular</span>`
+            : ""
+        }
+      </div>
 
       <div class="menu-content">
-        <div class="menu-top-row">
-          <span class="menu-category">${item.category}</span>
-          ${item.is_popular ? `<span class="popular-badge">Popular</span>` : ""}
+        <h3>${item.item_name}</h3>
+
+        <div class="menu-indicator-row">
+          <span class="menu-chip category-chip">${item.category}</span>
+
+          ${
+            showHalal
+              ? `<span class="menu-chip halal-chip">Halal</span>`
+              : ""
+          }
+
+          ${
+            showVegetarian
+              ? `<span class="menu-chip veg-chip">Vegetarian</span>`
+              : ""
+          }
+
+          ${
+            showVegan
+              ? `<span class="menu-chip veg-chip">Vegan</span>`
+              : ""
+          }
         </div>
 
-        <h3>${item.item_name}</h3>
+        <p class="menu-description">
+          ${item.item_description}
+        </p>
 
         ${
           item.variation && item.variation !== "None"
             ? `<p class="variation-text">Variation: ${item.variation}</p>`
             : ""
         }
-
-        <p class="menu-description">
-          ${item.item_description}
-        </p>
 
         ${
           isUnavailable
@@ -281,6 +322,5 @@ function prepareCartItem(itemId) {
     quantity: 1,
   };
 
-  console.log("Cart item prepared:", cartItem);
-  alert("Cart feature coming soon.");
+  addToCart(cartItem);
 }

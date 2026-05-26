@@ -1,49 +1,33 @@
 /* =========================================================
-   SP QuickBite Main Stylesheet
-   Purpose: Browse stalls + selected stall menu pages
-   Notes: Clean, sectioned, responsive, and non-redundant
+   SP QuickBite - Tightened Shared Stylesheet
+   Covers: navbar, browse stalls, stall detail, menu cards, cart
    ========================================================= */
 
-
-/* =========================================================
-   1. Global Theme and Reset
-   ========================================================= */
-
+/* ---------- 1. Theme + Reset ---------- */
 :root {
   --sp-red: #e8192c;
   --sp-red-dark: #c91425;
   --sp-red-deep: #a80f1f;
-
   --bg-main: #f6f6f7;
   --bg-card: #ffffff;
   --text-main: #222222;
   --text-muted: #666666;
-  --text-soft: #888888;
-
   --border-light: #e8e8e8;
   --shadow-soft: 0 4px 18px rgba(0, 0, 0, 0.08);
   --shadow-hover: 0 14px 32px rgba(0, 0, 0, 0.14);
-
-  --radius-small: 10px;
-  --radius-medium: 16px;
-  --radius-large: 24px;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
+  color: var(--text-main);
   background:
     radial-gradient(circle at top left, rgba(232, 25, 44, 0.08), transparent 34%),
     linear-gradient(180deg, #ffffff 0%, var(--bg-main) 45%);
-  color: var(--text-main);
   animation: fadeInPage 0.35s ease-in-out;
 }
 
@@ -62,52 +46,23 @@ button {
   border: none;
 }
 
-
-/* =========================================================
-   2. Animations
-   ========================================================= */
-
+/* ---------- 2. Animations ---------- */
 @keyframes fadeInPage {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes cardFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-
-/* =========================================================
-   3. Navigation Bar
-   ========================================================= */
-
+/* ---------- 3. Navbar ---------- */
 .navbar {
   height: 68px;
   background-color: rgba(255, 255, 255, 0.94);
@@ -127,13 +82,11 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: 800;
   font-size: 20px;
+  font-weight: 800;
 }
 
-.logo span:last-child {
-  letter-spacing: 0.4px;
-}
+.logo span:last-child { letter-spacing: 0.4px; }
 
 .sp-badge {
   background-color: var(--sp-red);
@@ -146,7 +99,8 @@ button {
 
 .nav-links {
   display: flex;
-  gap: 28px;
+  align-items: center;
+  gap: 24px;
 }
 
 .nav-links a {
@@ -180,22 +134,14 @@ button {
   width: 100%;
 }
 
-
-/* =========================================================
-   4. Main Page Layout
-   ========================================================= */
-
+/* ---------- 4. Main Layout ---------- */
 .page-container {
   max-width: 1180px;
   margin: 0 auto;
   padding: 48px 24px 70px;
 }
 
-
-/* =========================================================
-   5. Red Hero Search Section
-   ========================================================= */
-
+/* ---------- 5. Red Hero + Search ---------- */
 .page-header {
   background:
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.22), transparent 26%),
@@ -264,11 +210,6 @@ button {
   line-height: 1.5;
 }
 
-
-/* =========================================================
-   6. Search Box
-   ========================================================= */
-
 .search-box {
   margin: 34px auto 0;
   display: flex;
@@ -276,7 +217,6 @@ button {
   background-color: white;
   border-radius: 14px;
   overflow: hidden;
-  border: none;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
 }
 
@@ -289,9 +229,7 @@ button {
   color: var(--text-main);
 }
 
-.search-box input:focus {
-  background-color: #fffafa;
-}
+.search-box input:focus { background-color: #fffafa; }
 
 .search-box button {
   background-color: var(--sp-red);
@@ -303,30 +241,21 @@ button {
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.search-box button:hover {
-  background-color: var(--sp-red-dark);
-}
+.search-box button:hover { background-color: var(--sp-red-dark); }
+.search-box button:active { transform: scale(0.96); }
 
-.search-box button:active {
-  transform: scale(0.96);
-}
-
-
-/* =========================================================
-   7. Dropdown Filter Section
-   ========================================================= */
-
+/* ---------- 6. Dropdown Filters ---------- */
 .dropdown-filter-section {
   background: rgba(255, 255, 255, 0.92);
   padding: 24px;
   margin: 30px 0 26px;
   border-radius: 24px;
+  border: 1px solid rgba(232, 25, 44, 0.08);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   align-items: end;
-  border: 1px solid rgba(232, 25, 44, 0.08);
   backdrop-filter: blur(14px);
   animation: fadeUp 0.45s ease;
   transition: box-shadow 0.2s ease;
@@ -344,9 +273,7 @@ button {
   transition: transform 0.2s ease;
 }
 
-.filter-group:hover {
-  transform: translateY(-2px);
-}
+.filter-group:hover { transform: translateY(-2px); }
 
 .filter-group label {
   font-size: 13px;
@@ -373,8 +300,6 @@ button {
   outline: none;
   cursor: pointer;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   transition:
     border-color 0.25s ease,
     background-color 0.25s ease,
@@ -383,14 +308,14 @@ button {
 }
 
 .filter-group select:hover {
-  background-color: #ffffff;
+  background-color: white;
   border-color: var(--sp-red);
   box-shadow: 0 8px 18px rgba(232, 25, 44, 0.08);
 }
 
 .filter-group select:focus {
-  border-color: var(--sp-red);
   background-color: #fff1f3;
+  border-color: var(--sp-red);
   box-shadow: 0 0 0 4px rgba(232, 25, 44, 0.10);
   transform: translateY(-1px);
 }
@@ -451,52 +376,10 @@ button {
   box-shadow: 0 10px 24px rgba(232, 25, 44, 0.22);
 }
 
-.clear-filter-btn:hover::after {
-  width: 100%;
-}
+.clear-filter-btn:hover::after { width: 100%; }
+.clear-filter-btn:active { transform: scale(0.96); }
 
-.clear-filter-btn:active {
-  transform: scale(0.96);
-}
-
-
-/* =========================================================
-   8. Pill Filter Buttons
-   Used on selected stall menu page
-   ========================================================= */
-
-.filter-section {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.filter-btn,
-.menu-filter-btn {
-  background-color: #eeeeee;
-  color: #333333;
-  padding: 10px 16px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 800;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.filter-btn.active,
-.filter-btn:hover,
-.menu-filter-btn.active,
-.menu-filter-btn:hover {
-  background-color: var(--sp-red);
-  color: white;
-  transform: translateY(-2px);
-}
-
-
-/* =========================================================
-   9. Result Count and Empty State
-   ========================================================= */
-
+/* ---------- 7. Common UI ---------- */
 .result-count {
   color: var(--text-muted);
   font-weight: 800;
@@ -511,7 +394,7 @@ button {
 .empty-message {
   background-color: white;
   padding: 34px;
-  border-radius: var(--radius-medium);
+  border-radius: 16px;
   text-align: center;
   color: var(--text-muted);
   grid-column: 1 / -1;
@@ -519,28 +402,59 @@ button {
   box-shadow: var(--shadow-soft);
 }
 
-
-/* =========================================================
-   10. Shared Card Grid
-   ========================================================= */
-
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
+.status-badge,
+.dietary-badge,
+.info-pill,
+.menu-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
 
-/* =========================================================
-   11. Stall Cards
-   ========================================================= */
+.status-badge {
+  padding: 6px 11px;
+  margin-bottom: 10px;
+  letter-spacing: 0.2px;
+}
 
+.status-open {
+  background-color: #d8f5e4;
+  color: #168047;
+}
+
+.status-closed {
+  background-color: #eeeeee;
+  color: #555555;
+}
+
+.dietary-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 26px;
+  margin: 10px 0;
+}
+
+.dietary-badge {
+  background-color: #eef7ee;
+  color: #168047;
+  padding: 5px 9px;
+}
+
+/* ---------- 8. Stall Cards ---------- */
 .stall-card {
   background-color: var(--bg-card);
   border-radius: 18px;
   overflow: hidden;
   box-shadow: var(--shadow-soft);
-  position: relative;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   animation: cardFadeIn 0.35s ease;
 }
@@ -555,11 +469,10 @@ button {
   opacity: 0.58;
 }
 
-.stall-card.closed:hover {
-  transform: translateY(-2px);
-}
+.stall-card.closed:hover { transform: translateY(-2px); }
 
-.stall-image-wrap {
+.stall-image-wrap,
+.menu-image-wrap {
   position: relative;
   overflow: hidden;
 }
@@ -592,34 +505,13 @@ button {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
 }
 
-.stall-content {
-  padding: 18px;
-}
+.stall-content { padding: 18px; }
 
-.stall-top-row {
+.stall-top-row,
+.menu-bottom-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 6px 11px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
-  margin-bottom: 10px;
-  letter-spacing: 0.2px;
-}
-
-.status-open {
-  background-color: #d8f5e4;
-  color: #168047;
-}
-
-.status-closed {
-  background-color: #eeeeee;
-  color: #555555;
 }
 
 .rating-pill {
@@ -651,35 +543,14 @@ button {
   margin: 10px 0;
 }
 
-.dietary-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  min-height: 26px;
-  margin: 10px 0;
-}
-
-.dietary-badge {
-  background-color: #eef7ee;
-  color: #168047;
-  padding: 5px 9px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.stall-info {
+.stall-info,
+.opening-time {
   color: #555555;
   font-size: 14px;
   margin: 8px 0;
 }
 
-.opening-time {
-  color: #555555;
-  font-size: 14px;
-  font-weight: 800;
-  margin-top: 8px;
-}
+.opening-time { font-weight: 800; }
 
 .view-menu-btn {
   width: 100%;
@@ -698,26 +569,23 @@ button {
   transform: translateY(-2px);
 }
 
-.view-menu-btn:active {
-  transform: scale(0.97);
-}
+.view-menu-btn:active { transform: scale(0.97); }
 
-.view-menu-btn.disabled {
+.view-menu-btn.disabled,
+.add-btn.disabled {
   background-color: #cccccc;
   color: #666666;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-.view-menu-btn.disabled:hover {
+.view-menu-btn.disabled:hover,
+.add-btn.disabled:hover {
   transform: none;
   background-color: #cccccc;
 }
 
-
-/* =========================================================
-   12. Stall Detail Page
-   ========================================================= */
-
+/* ---------- 9. Stall Detail ---------- */
 .back-link {
   display: inline-block;
   margin-bottom: 20px;
@@ -753,9 +621,23 @@ button {
   padding: 26px;
 }
 
+.stall-detail-top-row,
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+
 .stall-detail-content h1 {
   margin: 0 0 8px;
   font-size: 38px;
+}
+
+.stall-detail-cuisine {
+  color: var(--sp-red);
+  font-weight: 800;
+  margin: 4px 0 0;
 }
 
 .stall-detail-description {
@@ -772,44 +654,107 @@ button {
 
 .info-pill {
   background-color: #f1f1f1;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 800;
   color: #444444;
+  padding: 8px 12px;
+  font-size: 14px;
   letter-spacing: 0.2px;
 }
 
+.stall-rating-box {
+  min-width: 110px;
+  background-color: #fff7d6;
+  color: #8a6500;
+  padding: 12px 14px;
+  border-radius: 16px;
+  text-align: center;
+  font-weight: 900;
+  box-shadow: 0 6px 16px rgba(138, 101, 0, 0.12);
+}
 
-/* =========================================================
-   13. Menu Controls
-   ========================================================= */
+.stall-rating-box .star-icon {
+  color: #f5b400;
+  font-size: 20px;
+  margin-right: 3px;
+}
 
-.menu-control-section {
+.stall-rating-box small {
+  display: block;
+  color: #8a6500;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+.stall-menu-section { margin-top: 30px; }
+
+.section-title-row {
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+
+.section-title-row h2 {
+  margin: 4px 0 0;
+  font-size: 30px;
+}
+
+.red-text { color: var(--sp-red); }
+
+.stall-category-row,
+.filter-section {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
   margin-bottom: 24px;
 }
 
-.menu-search-box {
-  margin-bottom: 20px;
+.stall-category-btn,
+.filter-btn,
+.menu-filter-btn {
+  background-color: white;
+  color: #444444;
+  padding: 11px 18px;
+  border-radius: 999px;
+  border: 1px solid #eeeeee;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
+.stall-category-btn:hover,
+.filter-btn:hover,
+.menu-filter-btn:hover {
+  color: var(--sp-red);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(232, 25, 44, 0.10);
+}
 
-/* =========================================================
-   14. Menu Item Cards
-   ========================================================= */
+.stall-category-btn.active,
+.filter-btn.active,
+.menu-filter-btn.active {
+  background-color: var(--sp-red);
+  color: white;
+  border-color: var(--sp-red);
+  box-shadow: 0 8px 20px rgba(232, 25, 44, 0.18);
+}
 
+/* ---------- 10. Menu Cards ---------- */
 .menu-card {
-  background-color: var(--bg-card);
-  border-radius: 18px;
+  background-color: white;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   animation: cardFadeIn 0.35s ease;
 }
 
 .menu-card:hover {
-  transform: translateY(-7px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-8px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.14);
 }
 
 .menu-card.unavailable {
@@ -822,116 +767,503 @@ button {
 
 .menu-image {
   width: 100%;
-  height: 165px;
+  height: 205px;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.45s ease;
 }
 
 .menu-card:hover .menu-image {
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+.popular-corner-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background-color: #ffe1e5;
+  color: var(--sp-red);
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  box-shadow: 0 8px 18px rgba(232, 25, 44, 0.18);
 }
 
 .menu-content {
-  padding: 18px;
+  padding: 22px;
 }
 
-.menu-top-row {
+.menu-content h3 {
+  margin: 0 0 11px;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--text-main);
+  letter-spacing: -0.3px;
+}
+
+.menu-indicator-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
 }
 
-.menu-category,
-.popular-badge,
-.halal-badge {
-  padding: 6px 10px;
-  border-radius: 999px;
+.menu-chip {
+  padding: 6px 11px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.2px;
 }
 
-.menu-category {
+.category-chip {
   background-color: #f1f1f1;
   color: #555555;
 }
 
-.popular-badge {
-  background-color: #ffe1e5;
-  color: var(--sp-red);
-}
-
+.halal-chip,
 .halal-badge {
   background-color: #d8f5e4;
   color: #168047;
 }
 
-.menu-content h3 {
-  margin: 8px 0;
-  font-size: 20px;
+.veg-chip {
+  background-color: #e7f7df;
+  color: #2f7d32;
 }
+
+/* Backward-compatible old menu classes */
+.menu-top-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+.menu-category { background-color: #f1f1f1; color: #555555; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+.popular-badge { background-color: #ffe1e5; color: var(--sp-red); padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
 
 .menu-description {
   color: var(--text-muted);
+  font-size: 15px;
+  min-height: 46px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.variation-text {
+  color: var(--sp-red);
   font-size: 14px;
-  min-height: 42px;
-  line-height: 1.45;
+  font-weight: 900;
+  margin: 12px 0 0;
 }
 
 .menu-bottom-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
+  margin-top: 22px;
 }
 
 .menu-price {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 900;
   color: var(--sp-red);
   background-color: #fff1f3;
-  padding: 6px 10px;
-  border-radius: 10px;
+  padding: 9px 13px;
+  border-radius: 14px;
 }
 
 .add-btn {
-  width: 42px;
-  height: 42px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   background-color: var(--sp-red);
   color: white;
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: 800;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 10px 22px rgba(232, 25, 44, 0.24);
+  transition:
+    background-color 0.2s ease,
+    transform 0.18s ease,
+    box-shadow 0.2s ease;
 }
 
 .add-btn:hover {
   background-color: var(--sp-red-dark);
-  transform: scale(1.08);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 14px 28px rgba(232, 25, 44, 0.3);
 }
 
 .add-btn:active {
-  transform: scale(0.9);
+  transform: scale(0.84);
 }
 
-.add-btn.disabled {
-  background-color: #cccccc;
-  color: #666666;
-  cursor: not-allowed;
+/* ---------- 11. Cart ---------- */
+.cart-nav-btn {
+  background-color: var(--sp-red);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  box-shadow: 0 8px 18px rgba(232, 25, 44, 0.22);
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.add-btn.disabled:hover {
-  transform: none;
-  background-color: #cccccc;
+.cart-nav-btn:hover {
+  background-color: var(--sp-red-dark);
+  transform: translateY(-2px);
 }
 
+.cart-count-badge {
+  background-color: white;
+  color: var(--sp-red);
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  transform: scale(0.7);
+  transition: transform 0.2s ease;
+}
 
-/* =========================================================
-   15. Optional Sort Section
-   ========================================================= */
+.cart-count-badge.show {
+  display: flex;
+  transform: scale(1);
+}
 
+.cart-price-text {
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
+  padding-left: 9px;
+  font-size: 13px;
+}
+
+.cart-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(5px);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.cart-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(400px, 92vw);
+  height: 100vh;
+  background-color: white;
+  z-index: 100;
+  transform: translateX(105%);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: -18px 0 40px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-sidebar.active { transform: translateX(0); }
+
+.cart-header {
+  background: linear-gradient(135deg, var(--sp-red), var(--sp-red-dark));
+  color: white;
+  padding: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.cart-header p {
+  margin: 4px 0 0;
+  color: #ffe1e5;
+  font-size: 14px;
+}
+
+.cart-close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.18);
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.cart-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.28);
+  transform: rotate(90deg);
+}
+
+.cart-items-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 74px 1fr 32px;
+  gap: 13px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eeeeee;
+  animation: cardFadeIn 0.25s ease;
+}
+
+.cart-item-image {
+  width: 74px;
+  height: 74px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.cart-item-details h4 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.cart-item-details p {
+  margin: 0 0 5px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.cart-item-details strong {
+  color: var(--sp-red);
+  font-size: 15px;
+}
+
+.cart-qty-controls {
+  margin-top: 9px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-qty-controls button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: white;
+  color: var(--sp-red);
+  border: 1px solid #ffd2d8;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.cart-qty-controls .qty-plus {
+  background-color: var(--sp-red);
+  color: white;
+  border-color: var(--sp-red);
+}
+
+.cart-qty-controls span {
+  font-weight: 900;
+  min-width: 18px;
+  text-align: center;
+}
+
+.remove-cart-btn {
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 17px;
+  opacity: 0.65;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.remove-cart-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.cart-empty-state {
+  flex: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 38px;
+  flex-direction: column;
+}
+
+.cart-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #fff1f3;
+  color: var(--sp-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  margin-bottom: 18px;
+}
+
+.cart-empty-state h3 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.cart-empty-state p {
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.browse-stalls-btn,
+.place-order-btn {
+  background-color: var(--sp-red);
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.browse-stalls-btn {
+  margin-top: 14px;
+  padding: 12px 18px;
+  border-radius: 14px;
+}
+
+.cart-footer {
+  padding: 20px;
+  border-top: 1px solid #eeeeee;
+  background-color: #fffafa;
+}
+
+.cart-summary-row,
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.cart-summary-row {
+  color: var(--text-muted);
+}
+
+.cart-total-row {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text-main);
+  padding-top: 12px;
+  border-top: 1px dashed #dddddd;
+}
+
+.place-order-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 16px;
+  font-size: 16px;
+  box-shadow: 0 10px 22px rgba(232, 25, 44, 0.22);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.place-order-btn:hover {
+  background-color: var(--sp-red-dark);
+  transform: translateY(-2px);
+}
+
+.clear-cart-link {
+  display: block;
+  margin: 13px auto 0;
+  background-color: transparent;
+  color: var(--text-muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ---------- 12. Popups ---------- */
+.order-success-popup,
+.added-cart-popup {
+  position: fixed;
+  z-index: 140;
+  background-color: white;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.order-success-popup {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.86);
+  padding: 30px 34px;
+  border-radius: 26px;
+  text-align: center;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+}
+
+.order-success-popup.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.success-check {
+  width: 62px;
+  height: 62px;
+  background-color: #d8f5e4;
+  color: #168047;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.order-success-popup h3 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.order-success-popup p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.added-cart-popup {
+  top: 88px;
+  right: 28px;
+  color: var(--text-main);
+  padding: 14px 18px;
+  border-radius: 18px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.16);
+  border-left: 5px solid var(--sp-red);
+  transform: translateY(-12px) scale(0.96);
+}
+
+.added-cart-popup.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.added-cart-popup strong {
+  display: block;
+  color: var(--sp-red);
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.added-cart-popup span {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ---------- 13. Optional Sort ---------- */
 .sort-section {
   display: flex;
   align-items: center;
@@ -953,11 +1285,7 @@ button {
   outline: none;
 }
 
-
-/* =========================================================
-   16. Responsive Design
-   ========================================================= */
-
+/* ---------- 14. Responsive ---------- */
 @media (max-width: 1050px) {
   .card-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -987,6 +1315,11 @@ button {
   .nav-links {
     gap: 18px;
     flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cart-nav-btn {
+    width: 100%;
     justify-content: center;
   }
 
@@ -1032,6 +1365,16 @@ button {
     grid-template-columns: 1fr;
   }
 
+  .stall-detail-top-row,
+  .section-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stall-rating-box {
+    width: 100%;
+  }
+
   .stall-detail-content h1 {
     font-size: 30px;
   }
@@ -1039,15 +1382,46 @@ button {
   .stall-detail-image {
     height: 220px;
   }
+
+  .menu-image {
+    height: 190px;
+  }
+
+  .menu-content {
+    padding: 18px;
+  }
+
+  .menu-content h3 {
+    font-size: 22px;
+  }
+
+  .menu-price {
+    font-size: 23px;
+  }
+
+  .add-btn {
+    width: 50px;
+    height: 50px;
+  }
+
+  .cart-sidebar {
+    width: 94vw;
+  }
+
+  .added-cart-popup {
+    top: 92px;
+    left: 18px;
+    right: 18px;
+  }
 }
 
 @media (max-width: 420px) {
-  .page-header h1 {
-    font-size: 28px;
-  }
-
   .page-header {
     padding: 36px 16px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
   }
 
   .stall-content,
@@ -1056,17 +1430,12 @@ button {
     padding: 16px;
   }
 
-  .stall-image,
-  .menu-image {
+  .stall-image {
     height: 155px;
   }
 }
 
-
-/* =========================================================
-   17. Reduced Motion Accessibility
-   ========================================================= */
-
+/* ---------- 15. Reduced Motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1074,126 +1443,5 @@ button {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
-  }
-}
-
-/* =========================================================
-   Personalized Stall Detail Page
-   ========================================================= */
-
-.stall-detail-top-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  align-items: flex-start;
-}
-
-.stall-detail-cuisine {
-  color: var(--sp-red);
-  font-weight: 800;
-  margin: 4px 0 0;
-}
-
-.stall-rating-box {
-  min-width: 110px;
-  background-color: #fff7d6;
-  color: #8a6500;
-  padding: 12px 14px;
-  border-radius: 16px;
-  text-align: center;
-  font-weight: 900;
-  box-shadow: 0 6px 16px rgba(138, 101, 0, 0.12);
-}
-
-.stall-rating-box .star-icon {
-  color: #f5b400;
-  font-size: 20px;
-  margin-right: 3px;
-}
-
-.stall-rating-box small {
-  display: block;
-  color: #8a6500;
-  font-size: 11px;
-  font-weight: 700;
-  margin-top: 3px;
-}
-
-.stall-menu-section {
-  margin-top: 30px;
-}
-
-.section-title-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  align-items: flex-end;
-  margin-bottom: 18px;
-}
-
-.section-title-row h2 {
-  margin: 4px 0 0;
-  font-size: 30px;
-}
-
-.red-text {
-  color: var(--sp-red);
-}
-
-.stall-category-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
-.stall-category-btn {
-  background-color: white;
-  color: #444444;
-  padding: 11px 18px;
-  border-radius: 999px;
-  border: 1px solid #eeeeee;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.stall-category-btn:hover {
-  color: var(--sp-red);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(232, 25, 44, 0.10);
-}
-
-.stall-category-btn.active {
-  background-color: var(--sp-red);
-  color: white;
-  border-color: var(--sp-red);
-  box-shadow: 0 8px 20px rgba(232, 25, 44, 0.18);
-}
-
-.variation-text {
-  color: var(--sp-red);
-  font-size: 13px;
-  font-weight: 800;
-  margin: 4px 0 8px;
-}
-
-@media (max-width: 760px) {
-  .stall-detail-top-row {
-    flex-direction: column;
-  }
-
-  .stall-rating-box {
-    width: 100%;
-  }
-
-  .section-title-row {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
