@@ -1,3 +1,7 @@
+// =========================================================
+// SP QuickBite - Selected Stall Menu Page
+// =========================================================
+
 const stallHeader = document.getElementById("stallHeader");
 const categoryContainer = document.getElementById("categoryContainer");
 const menuContainer = document.getElementById("menuContainer");
@@ -12,12 +16,7 @@ let selectedCategory = "All";
 
 window.addEventListener("DOMContentLoaded", () => {
   if (!stallId) {
-    stallHeader.innerHTML = `
-      <div class="stall-detail-content">
-        <h1>Stall not found</h1>
-        <p class="stall-detail-description">No stall was selected.</p>
-      </div>
-    `;
+    showNoStallSelected();
     return;
   }
 
@@ -25,19 +24,50 @@ window.addEventListener("DOMContentLoaded", () => {
   getStallMenu();
 });
 
-// Get selected stall details
+// =========================================================
+// NO STALL SELECTED
+// =========================================================
+
+function showNoStallSelected() {
+  stallHeader.innerHTML = `
+    <div class="stall-detail-content">
+      <h1>Stall not found</h1>
+      <p class="stall-detail-description">
+        No stall was selected. Please go back and choose a stall.
+      </p>
+    </div>
+  `;
+
+  menuResultCount.textContent = "No menu available";
+
+  menuContainer.innerHTML = `
+    <div class="empty-message">
+      Please select a stall from the Browse Stalls page.
+    </div>
+  `;
+}
+
+// =========================================================
+// GET STALL DETAILS
+// =========================================================
+
 function getStallDetails() {
   fetch("/api/stalls/" + stallId)
     .then((response) => response.json())
     .then((result) => {
-      
-        selectedStall = result.data;
-        displayStallHeader(selectedStall);
+      selectedStall = result.data;
 
-        if (menuItemsData.length > 0) {
-          filterMenuByCategory();
-        }
+      if (!selectedStall) {
+        showNoStallSelected();
+        return;
+      }
 
+      displayStallHeader(selectedStall);
+
+      if (menuItemsData.length > 0) {
+        displayPopularPicks(menuItemsData);
+        filterMenuByCategory();
+      }
     })
     .catch((error) => {
       console.error("Error loading stall details:", error);
@@ -45,19 +75,25 @@ function getStallDetails() {
       stallHeader.innerHTML = `
         <div class="stall-detail-content">
           <h1>Unable to load stall</h1>
-          <p class="stall-detail-description">Please try again later.</p>
+          <p class="stall-detail-description">
+            Please try again later.
+          </p>
         </div>
       `;
     });
 }
 
-// Get menu items for selected stall only
+// =========================================================
+// GET MENU ITEMS
+// =========================================================
+
 function getStallMenu() {
   fetch("/api/stalls/" + stallId + "/menu")
     .then((response) => response.json())
     .then((result) => {
-      menuItemsData = result.data;
+      menuItemsData = result.data || [];
 
+      displayPopularPicks(menuItemsData);
       displayCategoryButtons(menuItemsData);
       displayMenuItems(menuItemsData);
     })
@@ -74,7 +110,10 @@ function getStallMenu() {
     });
 }
 
-// Display personalized stall header
+// =========================================================
+// DISPLAY STALL HEADER
+// =========================================================
+
 function displayStallHeader(stall) {
   const isClosed = stall.opening_status === "closed";
 
@@ -83,6 +122,7 @@ function displayStallHeader(stall) {
       src="${stall.image_url}" 
       alt="${stall.stall_name}" 
       class="stall-detail-image"
+      onerror="this.src='/images/default-food.jpg'"
     />
 
     <div class="stall-detail-content">
@@ -130,7 +170,84 @@ function displayStallHeader(stall) {
   `;
 }
 
-// Create category buttons based only on this stall's menu
+// =========================================================
+// DISPLAY POPULAR PICKS
+// =========================================================
+
+function displayPopularPicks(menuItems) {
+  let popularSection = document.getElementById("popularPicksSection");
+
+  if (!popularSection) {
+    popularSection = document.createElement("section");
+    popularSection.id = "popularPicksSection";
+    popularSection.className = "popular-picks-section";
+
+    categoryContainer.parentNode.insertBefore(popularSection, categoryContainer);
+  }
+
+  const popularItems = [];
+
+  for (let i = 0; i < menuItems.length; i++) {
+    if (menuItems[i].is_popular === true) {
+      popularItems.push(menuItems[i]);
+    }
+  }
+
+  if (popularItems.length === 0) {
+    popularSection.style.display = "none";
+    return;
+  }
+
+  popularSection.style.display = "block";
+
+  let popularHTML = `
+    <div class="popular-picks-header">
+      <div>
+        <p class="small-title red-text">Popular Picks</p>
+        <h3>Recommended from this stall</h3>
+      </div>
+
+      <span>
+        ${popularItems.length} popular item${popularItems.length === 1 ? "" : "s"}
+      </span>
+    </div>
+
+    <div class="popular-picks-row">
+  `;
+
+  for (let i = 0; i < popularItems.length; i++) {
+    const item = popularItems[i];
+
+    popularHTML += `
+      <div class="popular-pick-card">
+        <img 
+          src="${item.image_url}" 
+          alt="${item.item_name}" 
+          class="popular-pick-image"
+          onerror="this.src='/images/default-food.jpg'"
+        />
+
+        <div class="popular-pick-content">
+          <span class="popular-mini-badge">Popular</span>
+          <h4>${item.item_name}</h4>
+          <p>${item.category}</p>
+          <strong>$${Number(item.price).toFixed(2)}</strong>
+        </div>
+      </div>
+    `;
+  }
+
+  popularHTML += `
+    </div>
+  `;
+
+  popularSection.innerHTML = popularHTML;
+}
+
+// =========================================================
+// DISPLAY CATEGORY BUTTONS
+// =========================================================
+
 function displayCategoryButtons(menuItems) {
   categoryContainer.innerHTML = "";
 
@@ -165,7 +282,10 @@ function displayCategoryButtons(menuItems) {
   }
 }
 
-// Filter menu by selected category
+// =========================================================
+// FILTER MENU BY CATEGORY
+// =========================================================
+
 function filterMenuByCategory() {
   if (selectedCategory === "All") {
     displayMenuItems(menuItemsData);
@@ -183,7 +303,10 @@ function filterMenuByCategory() {
   displayMenuItems(filteredItems);
 }
 
-// Display menu items
+// =========================================================
+// DISPLAY MENU ITEMS
+// =========================================================
+
 function displayMenuItems(menuItems) {
   menuContainer.innerHTML = "";
 
@@ -230,6 +353,7 @@ function displayMenuItems(menuItems) {
           src="${item.image_url}" 
           alt="${item.item_name}" 
           class="menu-image"
+          onerror="this.src='/images/default-food.jpg'"
         />
 
         ${
@@ -296,7 +420,10 @@ function displayMenuItems(menuItems) {
   }
 }
 
-// Prepare cart item for future cart teammate
+// =========================================================
+// PREPARE CART ITEM
+// =========================================================
+
 function prepareCartItem(itemId) {
   let selectedItem = null;
 
@@ -322,5 +449,10 @@ function prepareCartItem(itemId) {
     quantity: 1,
   };
 
-  addToCart(cartItem);
+  if (typeof addToCart === "function") {
+    addToCart(cartItem);
+  } else {
+    console.log("Cart item prepared:", cartItem);
+    alert("Cart feature coming soon.");
+  }
 }
