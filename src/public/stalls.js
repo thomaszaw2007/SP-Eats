@@ -89,7 +89,7 @@ function getStalls() {
   fetch(url)
     .then((response) => response.json())
     .then((result) => {
-      displayStalls(result.data);
+      displayStalls(result.data || []);
     })
     .catch((error) => {
       console.error("Error loading stalls:", error);
@@ -137,6 +137,7 @@ function displayStalls(stalls) {
           src="${stall.image_url}"
           alt="${stall.stall_name}"
           class="stall-image"
+          onerror="this.src='/images/default-food.jpg'"
         />
 
         <span class="food-court-badge">${stall.food_court}</span>
@@ -174,11 +175,12 @@ function displayStalls(stalls) {
             : `<p class="opening-time">Open until: ${stall.closing_time}</p>`
         }
 
-        ${
-          isClosed
-            ? `<button class="view-menu-btn disabled" disabled>Currently Closed</button>`
-            : `<button class="view-menu-btn" onclick="goToMenu('${stall.stall_id}')">View Menu</button>`
-        }
+        <button 
+          class="view-menu-btn ${isClosed ? "closed-view-btn" : ""}" 
+          onclick="goToMenu('${stall.stall_id}')"
+        >
+          ${isClosed ? "View Menu - Closed" : "View Menu"}
+        </button>
       </div>
     `;
 

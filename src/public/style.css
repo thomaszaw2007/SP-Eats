@@ -1557,3 +1557,75 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   Closed Stall Status Banner
+   Feature: Clear message when selected stall is closed
+   ========================================================= */
+
+.closed-stall-banner {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: linear-gradient(135deg, #fff4f4, #fffafa);
+  border: 1px solid #ffd2d8;
+  border-left: 6px solid var(--sp-red);
+  border-radius: 18px;
+  padding: 16px 18px;
+  margin: 18px 0;
+  box-shadow: 0 8px 20px rgba(232, 25, 44, 0.08);
+  animation: fadeUp 0.35s ease;
+}
+
+.closed-stall-icon {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  background-color: var(--sp-red);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.closed-stall-banner h3 {
+  margin: 0 0 5px;
+  color: var(--sp-red);
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.closed-stall-banner p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.closed-stall-banner strong {
+  color: var(--text-main);
+}
+
+@media (max-width: 760px) {
+  .closed-stall-banner {
+    padding: 14px;
+  }
+}
+
+/* =========================================================
+   Closed Stall View Menu Button
+   Feature: Let users view closed stall menus
+   ========================================================= */
+
+.closed-view-btn {
+  background-color: #555555;
+  color: white;
+}
+
+.closed-view-btn:hover {
+  background-color: #333333;
+  transform: translateY(-2px);
+}
