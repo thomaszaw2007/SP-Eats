@@ -150,6 +150,24 @@ function displayStallHeader(stall) {
         ${stall.stall_description}
       </p>
 
+      ${
+        isClosed
+          ? `
+            <div class="closed-stall-banner">
+              <div class="closed-stall-icon">!</div>
+
+              <div>
+                <h3>This stall is currently closed</h3>
+                <p>
+                  You can still view the menu, but ordering is unavailable.
+                  This stall opens at <strong>${stall.opening_time}</strong>.
+                </p>
+              </div>
+            </div>
+          `
+          : ""
+      }
+
       <div class="stall-detail-info">
         <span class="info-pill">${stall.food_court}</span>
         <span class="info-pill">${stall.location_detail}</span>
