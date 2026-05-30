@@ -63,6 +63,7 @@ function getStallDetails() {
       }
 
       displayStallHeader(selectedStall);
+      saveRecentlyViewedStall(selectedStall);
 
       if (menuItemsData.length > 0) {
         displayPopularPicks(menuItemsData);
@@ -473,4 +474,44 @@ function prepareCartItem(itemId) {
     console.log("Cart item prepared:", cartItem);
     alert("Cart feature coming soon.");
   }
+}
+
+// =========================================================
+// SAVE RECENTLY VIEWED STALL
+// Feature: Stores recently viewed stalls in localStorage
+// =========================================================
+
+function saveRecentlyViewedStall(stall) {
+  const STORAGE_KEY = "recentlyViewedStalls";
+
+  let recentlyViewed = [];
+
+  const savedData = localStorage.getItem(STORAGE_KEY);
+
+  if (savedData) {
+    recentlyViewed = JSON.parse(savedData);
+  }
+
+  // Remove the stall if it already exists, so it can move to the front
+  recentlyViewed = recentlyViewed.filter((recentStall) => {
+    return recentStall.stall_id !== stall.stall_id;
+  });
+
+  const viewedStall = {
+    stall_id: stall.stall_id,
+    stall_name: stall.stall_name,
+    cuisine_type: stall.cuisine_type,
+    food_court: stall.food_court,
+    image_url: stall.image_url,
+    opening_status: stall.opening_status,
+    rating: stall.rating,
+  };
+
+  // Add newest stall to the front
+  recentlyViewed.unshift(viewedStall);
+
+  // Keep only latest 4 viewed stalls
+  recentlyViewed = recentlyViewed.slice(0, 4);
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(recentlyViewed));
 }

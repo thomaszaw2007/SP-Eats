@@ -10,30 +10,34 @@ const dietaryFilter = document.getElementById("dietaryFilter");
 const statusFilter = document.getElementById("statusFilter");
 const clearFilterButton = document.getElementById("clearFilterButton");
 
-// Load stalls when page opens
+// =========================================================
+// LOAD PAGE
+// =========================================================
+
 window.addEventListener("DOMContentLoaded", () => {
+  displayRecentlyViewedStalls();
   getStalls();
 });
 
-// Search button
+// =========================================================
+// SEARCH AND FILTER EVENTS
+// =========================================================
+
 searchButton.addEventListener("click", () => {
   getStalls();
 });
 
-// Press Enter to search
 searchInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     getStalls();
   }
 });
 
-// Dropdown filters
 foodCourtFilter.addEventListener("change", getStalls);
 foodTypeFilter.addEventListener("change", getStalls);
 dietaryFilter.addEventListener("change", getStalls);
 statusFilter.addEventListener("change", getStalls);
 
-// Clear filters
 clearFilterButton.addEventListener("click", () => {
   searchInput.value = "";
   foodCourtFilter.value = "";
@@ -44,7 +48,10 @@ clearFilterButton.addEventListener("click", () => {
   getStalls();
 });
 
-// Build API URL based on search and filters
+// =========================================================
+// BUILD API URL
+// =========================================================
+
 function buildStallUrl() {
   let url = "/api/stalls?";
   const params = [];
@@ -82,7 +89,10 @@ function buildStallUrl() {
   return url + params.join("&");
 }
 
-// Fetch stalls from backend
+// =========================================================
+// FETCH STALLS
+// =========================================================
+
 function getStalls() {
   const url = buildStallUrl();
 
@@ -104,7 +114,10 @@ function getStalls() {
     });
 }
 
-// Display stall cards
+// =========================================================
+// DISPLAY STALL CARDS
+// =========================================================
+
 function displayStalls(stalls) {
   stallContainer.innerHTML = "";
 
@@ -188,7 +201,108 @@ function displayStalls(stalls) {
   });
 }
 
-// Go to selected stall menu page
+// =========================================================
+// RECENTLY VIEWED STALLS
+// Feature: Shows stalls that the user recently opened
+// =========================================================
+
+function displayRecentlyViewedStalls() {
+  const STORAGE_KEY = "recentlyViewedStalls";
+  const savedData = localStorage.getItem(STORAGE_KEY);
+
+  if (!savedData) {
+    return;
+  }
+
+  let recentlyViewed = [];
+
+  try {
+    recentlyViewed = JSON.parse(savedData);
+  } catch (error) {
+    localStorage.removeItem(STORAGE_KEY);
+    return;
+  }
+
+  if (recentlyViewed.length === 0) {
+    return;
+  }
+
+  let recentSection = document.getElementById("recentlyViewedSection");
+
+  if (!recentSection) {
+    recentSection = document.createElement("section");
+    recentSection.id = "recentlyViewedSection";
+    recentSection.className = "recently-viewed-section";
+
+    resultCount.parentNode.insertBefore(recentSection, resultCount);
+  }
+
+  let recentHTML = `
+    <div class="recently-viewed-header">
+      <div>
+        <p class="small-title red-text">Recently Viewed</p>
+        <h2>Continue browsing</h2>
+      </div>
+
+      <button class="clear-recent-btn" onclick="clearRecentlyViewedStalls()">
+        Clear
+      </button>
+    </div>
+
+    <div class="recently-viewed-row">
+  `;
+
+  for (let i = 0; i < recentlyViewed.length; i++) {
+    const stall = recentlyViewed[i];
+    const isClosed = stall.opening_status === "closed";
+
+    recentHTML += `
+      <div class="recent-stall-card" onclick="goToMenu('${stall.stall_id}')">
+        <img
+          src="${stall.image_url}"
+          alt="${stall.stall_name}"
+          class="recent-stall-image"
+          onerror="this.src='/images/default-food.jpg'"
+        />
+
+        <div class="recent-stall-content">
+          <div class="recent-stall-top">
+            <span class="status-badge ${isClosed ? "status-closed" : "status-open"}">
+              ${isClosed ? "Closed" : "Open"}
+            </span>
+
+            <span class="rating-pill">★ ${stall.rating}</span>
+          </div>
+
+          <h3>${stall.stall_name}</h3>
+          <p>${stall.cuisine_type}</p>
+          <span class="recent-food-court">${stall.food_court}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  recentHTML += `
+    </div>
+  `;
+
+  recentSection.innerHTML = recentHTML;
+}
+
+function clearRecentlyViewedStalls() {
+  localStorage.removeItem("recentlyViewedStalls");
+
+  const recentSection = document.getElementById("recentlyViewedSection");
+
+  if (recentSection) {
+    recentSection.remove();
+  }
+}
+
+// =========================================================
+// GO TO SELECTED STALL MENU PAGE
+// =========================================================
+
 function goToMenu(stallId) {
   window.location.href = "./stall-detail.html?stall_id=" + stallId;
 }
