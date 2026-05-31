@@ -1,14 +1,35 @@
 const pool = require("./db");
 
+const MENU_ITEM_SELECT = `
+    SELECT
+        'item_' || LPAD(M."food_id"::TEXT, 3, '0') AS item_id,
+        'stall_' || LPAD(M."stall_id"::TEXT, 3, '0') AS stall_id,
+        S."name" AS stall_name,
+        M."name" AS item_name,
+        M."variation" AS variation,
+        M."description" AS item_description,
+        M."price" AS price,
+        M."category" AS category,
+        M."image_url" AS image_url,
+        M."is_available" AS is_available,
+        M."is_popular" AS is_popular,
+        M."created_at" AS created_at
+    FROM "Menu" M
+    JOIN "Stalls" S
+        ON M."stall_id" = S."stall_id"
+`;
+
 //////////////////////////////////////////////////////
 // GET ALL MENU ITEMS
 //////////////////////////////////////////////////////
 module.exports.selectAllMenuItems = (cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        ORDER BY is_available DESC, is_popular DESC, item_name ASC;
+        ${MENU_ITEM_SELECT}
+        ORDER BY
+            M."is_available" DESC,
+            M."is_popular" DESC,
+            M."name" ASC;
     `;
 
     pool.query(SQLSTATEMENT, cb);
@@ -20,12 +41,16 @@ module.exports.selectAllMenuItems = (cb) =>
 module.exports.searchMenuItems = (data, cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        WHERE item_name ILIKE $1
-            OR stall_name ILIKE $1
-            OR category ILIKE $1
-        ORDER BY is_available DESC, is_popular DESC, item_name ASC;
+        ${MENU_ITEM_SELECT}
+        WHERE M."name" ILIKE $1
+            OR S."name" ILIKE $1
+            OR M."category" ILIKE $1
+            OR M."variation" ILIKE $1
+            OR M."description" ILIKE $1
+        ORDER BY
+            M."is_available" DESC,
+            M."is_popular" DESC,
+            M."name" ASC;
     `;
 
     const VALUES = [`%${data.search}%`];
@@ -39,10 +64,11 @@ module.exports.searchMenuItems = (data, cb) =>
 module.exports.filterMenuItemsByCategory = (data, cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        WHERE category ILIKE $1
-        ORDER BY is_available DESC, item_name ASC;
+        ${MENU_ITEM_SELECT}
+        WHERE M."category" ILIKE $1
+        ORDER BY
+            M."is_available" DESC,
+            M."name" ASC;
     `;
 
     const VALUES = [`%${data.category}%`];
@@ -56,10 +82,11 @@ module.exports.filterMenuItemsByCategory = (data, cb) =>
 module.exports.filterMenuItemsByStallId = (data, cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        WHERE stall_id = $1
-        ORDER BY is_available DESC, item_name ASC;
+        ${MENU_ITEM_SELECT}
+        WHERE M."stall_id" = CAST(NULLIF(REGEXP_REPLACE($1::TEXT, '[^0-9]', '', 'g'), '') AS INT)
+        ORDER BY
+            M."is_available" DESC,
+            M."name" ASC;
     `;
 
     const VALUES = [data.stallId];
@@ -73,10 +100,10 @@ module.exports.filterMenuItemsByStallId = (data, cb) =>
 module.exports.filterMenuItemsByAvailability = (data, cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        WHERE is_available = $1
-        ORDER BY item_name ASC;
+        ${MENU_ITEM_SELECT}
+        WHERE M."is_available" = $1
+        ORDER BY
+            M."name" ASC;
     `;
 
     const VALUES = [data.available === "true"];
@@ -90,10 +117,11 @@ module.exports.filterMenuItemsByAvailability = (data, cb) =>
 module.exports.selectPopularMenuItems = (cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        WHERE is_popular = TRUE
-        ORDER BY is_available DESC, item_name ASC;
+        ${MENU_ITEM_SELECT}
+        WHERE M."is_popular" = TRUE
+        ORDER BY
+            M."is_available" DESC,
+            M."name" ASC;
     `;
 
     pool.query(SQLSTATEMENT, cb);
@@ -105,9 +133,9 @@ module.exports.selectPopularMenuItems = (cb) =>
 module.exports.sortMenuItemsByPriceLow = (cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        ORDER BY price ASC;
+        ${MENU_ITEM_SELECT}
+        ORDER BY
+            M."price" ASC;
     `;
 
     pool.query(SQLSTATEMENT, cb);
@@ -119,9 +147,9 @@ module.exports.sortMenuItemsByPriceLow = (cb) =>
 module.exports.sortMenuItemsByPriceHigh = (cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        ORDER BY price DESC;
+        ${MENU_ITEM_SELECT}
+        ORDER BY
+            M."price" DESC;
     `;
 
     pool.query(SQLSTATEMENT, cb);
@@ -133,9 +161,9 @@ module.exports.sortMenuItemsByPriceHigh = (cb) =>
 module.exports.sortMenuItemsByName = (cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        ORDER BY item_name ASC;
+        ${MENU_ITEM_SELECT}
+        ORDER BY
+            M."name" ASC;
     `;
 
     pool.query(SQLSTATEMENT, cb);
@@ -147,9 +175,8 @@ module.exports.sortMenuItemsByName = (cb) =>
 module.exports.selectMenuItemById = (data, cb) =>
 {
     const SQLSTATEMENT = `
-        SELECT *
-        FROM menu_items
-        WHERE item_id = $1;
+        ${MENU_ITEM_SELECT}
+        WHERE M."food_id" = CAST(NULLIF(REGEXP_REPLACE($1::TEXT, '[^0-9]', '', 'g'), '') AS INT);
     `;
 
     const VALUES = [data.item_id];
