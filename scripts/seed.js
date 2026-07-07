@@ -60,14 +60,13 @@ INSERT INTO "User" ("username", "email", "password", "balance") VALUES
 -- Food Courts
 -- ─────────────────────────────────────────────────────────
 
-INSERT INTO "FoodCourt" ("name", "location") VALUES
-('Food Court 1', 'Level 2, T3B'),
-('Food Court 2', 'Level 1, T1A'),
-('Food Court 3', 'Poly Centre'),
-('Food Court 4', 'Level 1, T18A'),
-('Food Court 5', 'Level 2, T3B'),
-('Food Court 6', 'Beside Swimming Pool. Near W14');
-
+INSERT INTO "FoodCourt" ("name", "location", "description") VALUES
+('Food Court 1', 'Level 2, T3B', 'Busy campus food court with Korean, Japanese, and chicken rice options.'),
+('Food Court 2', 'Level 1, T1A', 'Student-friendly food court with noodles, vegetarian meals, and quick Japanese dishes.'),
+('Food Court 3', 'Poly Centre', 'Central food court with rice bowls, curry rice, and chicken rice stalls.'),
+('Food Court 4', 'Level 1, T18A', 'Convenient food court for quick chicken rice, noodles, and Korean chicken meals.'),
+('Food Court 5', 'Level 2, T3B', 'Larger food court with fast food, sandwiches, cafe meals, and western options.'),
+('Food Court 6', 'Beside Swimming Pool. Near W14', 'Food court near the sports area with noodles, soups, Japanese meals, and chicken rice.');
 
 -- ─────────────────────────────────────────────────────────
 -- Stalls
@@ -198,6 +197,65 @@ INSERT INTO "Menu" (
 ('Ban Mian', 'Soup', 'Warm ban mian soup with vegetables.', 3.50, 18, 6, 'Noodles', '/images/Menu/Soup%20Stall/Soup_Stall-Ban_Mian.jfif', FALSE, FALSE),
 ('Beef Noodles', 'Soup', 'Beef noodles in warm broth.', 4.50, 18, 6, 'Noodles', '/images/Menu/Soup%20Stall/Soup_Stall-Beef_Noodles.avif', FALSE, TRUE),
 ('Fish Soup', 'Rice', 'Light fish soup served with rice.', 4.50, 18, 6, 'Soup', '/images/Menu/Soup%20Stall/Soup_Stall-Fish_Soup.png', FALSE, FALSE);
+
+UPDATE "Menu" SET "description" = CASE "food_id"
+  WHEN 1 THEN 'Rice bowl with vegetables, egg, gochujang sauce, and sesame.'
+  WHEN 2 THEN 'Kimchi soup with tofu, vegetables, and steamed rice.'
+  WHEN 3 THEN 'Omelette rice with crispy chicken cutlet and savoury sauce.'
+  WHEN 4 THEN 'Japanese curry rice with crispy chicken katsu.'
+  WHEN 5 THEN 'Japanese curry rice with soft cheese omelette.'
+  WHEN 6 THEN 'Rice bowl with chicken katsu, egg, and sauce.'
+  WHEN 7 THEN 'Japanese egg dish with chicken topping and rice.'
+  WHEN 8 THEN 'Steamed chicken with fragrant rice, soup, and chilli.'
+  WHEN 9 THEN 'Roasted chicken with fragrant rice, soup, and chilli.'
+  WHEN 10 THEN 'Chicken rice set with vegetables, soup, and chilli.'
+  WHEN 11 THEN 'Noodles with dumplings and savoury dry sauce.'
+  WHEN 12 THEN 'Handmade noodles in warm soup with vegetables.'
+  WHEN 13 THEN 'Light fish soup served with rice and vegetables.'
+  WHEN 14 THEN 'Teriyaki chicken with rice and vegetables.'
+  WHEN 15 THEN 'Salmon rice bowl with Japanese sauce.'
+  WHEN 16 THEN 'Warm miso soup with tofu and seaweed.'
+  WHEN 17 THEN 'Vegetarian rice set with tofu, vegetables, and sauce.'
+  WHEN 18 THEN 'Noodle bowl with tofu, greens, and light sauce.'
+  WHEN 19 THEN 'Vegetable soup with tofu, greens, and clear broth.'
+  WHEN 20 THEN 'Japanese curry rice with crispy chicken katsu.'
+  WHEN 21 THEN 'Japanese curry rice with vegetable croquette.'
+  WHEN 22 THEN 'Japanese curry rice with chicken nuggets.'
+  WHEN 23 THEN 'Bibimbap with spicy chicken, vegetables, egg, and sauce.'
+  WHEN 24 THEN 'Chicken cutlet served with rice and savoury sauce.'
+  WHEN 25 THEN 'Kimchi fried rice with egg and vegetables.'
+  WHEN 26 THEN 'Tender steamed chicken rice with soup and chilli.'
+  WHEN 27 THEN 'Roasted chicken rice with soup and chilli.'
+  WHEN 28 THEN 'Chicken rice with char siew-style sauce.'
+  WHEN 29 THEN 'Simple steamed chicken rice with soup and chilli.'
+  WHEN 30 THEN 'Roasted chicken rice served with soup.'
+  WHEN 31 THEN 'Noodles with crispy chicken cutlet and sauce.'
+  WHEN 32 THEN 'Soup noodles with dumplings and vegetables.'
+  WHEN 33 THEN 'Dry ban mian with minced meat and sauce.'
+  WHEN 34 THEN 'Seafood noodles with prawns, fish slices, and soup.'
+  WHEN 35 THEN 'Korean chicken rice bowl with sweet spicy sauce.'
+  WHEN 36 THEN 'Korean chicken rice bowl with mala sauce.'
+  WHEN 37 THEN 'Korean chicken rice bowl with honey mustard sauce.'
+  WHEN 38 THEN 'Two pieces of fried chicken with a side.'
+  WHEN 39 THEN 'Creamy macaroni and cheese side dish.'
+  WHEN 40 THEN 'Chicken wrap with vegetables and sauce.'
+  WHEN 41 THEN 'Chicken sub with vegetables, bread, and sauce.'
+  WHEN 42 THEN 'Spicy beef sandwich with vegetables and sauce.'
+  WHEN 43 THEN 'Vegetarian sub with fresh vegetables and sauce.'
+  WHEN 44 THEN 'Toasted sandwich with chicken mayo filling.'
+  WHEN 45 THEN 'Creamy mushroom pasta with western-style sauce.'
+  WHEN 46 THEN 'Chilled latte made with milk and coffee.'
+  WHEN 47 THEN 'Udon soup with chicken slices and vegetables.'
+  WHEN 48 THEN 'Fried udon with black pepper sauce.'
+  WHEN 49 THEN 'BBQ chicken served with rice and sauce.'
+  WHEN 50 THEN 'Halal-friendly steamed chicken rice with soup.'
+  WHEN 51 THEN 'Halal-friendly roasted chicken rice with chilli.'
+  WHEN 52 THEN 'Chicken rice set with vegetables and soup.'
+  WHEN 53 THEN 'Ban mian soup with vegetables and warm broth.'
+  WHEN 54 THEN 'Beef noodles served in warm soup.'
+  WHEN 55 THEN 'Light fish soup served with rice.'
+  ELSE "description"
+END;
 `;
 
 async function seed() {

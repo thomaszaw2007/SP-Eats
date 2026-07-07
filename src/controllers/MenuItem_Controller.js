@@ -177,8 +177,16 @@ module.exports.readMenuItems = (req, res, next) => {
 //////////////////////////////////////////////////////
 module.exports.readMenuItemById = (req, res, next) => {
   const data = {
-    item_id: req.params.item_id,
+    item_id: req.params.item_id || req.params.food_id,
   };
+
+  if (!data.item_id) {
+    res.status(400).json({
+      success: false,
+      message: 'Invalid menu item ID',
+    });
+    return;
+  }
 
   menuItemModel.selectMenuItemById(data, (error, result) => {
     if (error) {

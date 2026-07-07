@@ -3,8 +3,23 @@ const pool = require('./db');
 const MENU_ITEM_SELECT = `
     SELECT
         'item_' || LPAD(M."food_id"::TEXT, 3, '0') AS item_id,
+        M."food_id" AS food_id,
+
         'stall_' || LPAD(M."stall_id"::TEXT, 3, '0') AS stall_id,
+        M."stall_id" AS raw_stall_id,
+
         S."name" AS stall_name,
+        S."description" AS stall_description,
+        S."cuisine_type" AS cuisine_type,
+        S."opening_status" AS opening_status,
+        S."estimated_wait_time" AS estimated_wait_time,
+        S."rating" AS stall_rating,
+
+        FC."foodcourt_id" AS foodcourt_id,
+        FC."name" AS food_court,
+        FC."location" AS food_court_location,
+        FC."description" AS food_court_description,
+
         M."name" AS item_name,
         M."variation" AS variation,
         M."description" AS item_description,
@@ -17,6 +32,8 @@ const MENU_ITEM_SELECT = `
     FROM "Menu" M
     JOIN "Stalls" S
         ON M."stall_id" = S."stall_id"
+    JOIN "FoodCourt" FC
+        ON M."foodcourt_id" = FC."foodcourt_id"
 `;
 
 //////////////////////////////////////////////////////
@@ -166,7 +183,8 @@ module.exports.sortMenuItemsByName = (cb) => {
 module.exports.selectMenuItemById = (data, cb) => {
   const SQLSTATEMENT = `
         ${MENU_ITEM_SELECT}
-        WHERE M."food_id" = CAST(NULLIF(REGEXP_REPLACE($1::TEXT, '[^0-9]', '', 'g'), '') AS INT);
+        WHERE M."food_id" = CAST(NULLIF(REGEXP_REPLACE($1::TEXT, '[^0-9]', '', 'g'), '') AS INT)
+        LIMIT 1;
     `;
 
   const VALUES = [data.item_id];

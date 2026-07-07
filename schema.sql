@@ -109,6 +109,7 @@ CREATE TABLE "FoodCourt" (
     "foodcourt_id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "location" TEXT NOT NULL,
+    "description" TEXT DEFAULT 'Campus food court with student-friendly meal options.',
     CONSTRAINT "FoodCourt_pkey" PRIMARY KEY ("foodcourt_id")
 );
 
