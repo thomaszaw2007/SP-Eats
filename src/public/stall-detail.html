@@ -1,57 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Stall Menu | SP QuickBite</title>
+    <title>Stall Menu | SP QuickBite</title>
 
-  <link rel="stylesheet" href="./style.css" />
-</head>
-<body>
-  <nav class="navbar">
-    <div class="logo">
-      <span class="sp-badge">SP</span>
-      <span>QuickBite</span>
-    </div>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">
+        <span class="sp-badge">SP</span>
+        <span>QuickBite</span>
+      </div>
 
-    <div class="nav-links">
-      <a href="./index.html">Home</a>
-      <a href="./stalls.html" class="active">Browse Stalls</a>
-    </div>
-  </nav>
+      <div class="nav-links">
+        <a href="./index.html">Home</a>
+        <a href="./stalls.html" class="active">Browse Stalls</a>
+      </div>
+    </nav>
 
-  <main class="page-container">
-    <a href="./stalls.html" class="back-link">← Back to Stalls</a>
+    <main class="page-container">
+      <a href="./stalls.html" class="back-link">← Back to Stalls</a>
 
-    <!-- Stall information loads here -->
-    <section id="stallHeader" class="stall-detail-header">
-      <p>Loading stall details...</p>
-    </section>
+      <!-- Stall information loads here -->
+      <section id="stallHeader" class="stall-detail-header">
+        <p>Loading stall details...</p>
+      </section>
 
-    <!-- Menu section -->
-    <section class="stall-menu-section">
-      <div class="section-title-row">
-        <div>
-          <p class="small-title red-text">Selected Stall Menu</p>
-          <h2>Choose from this stall</h2>
+      <!-- Menu section -->
+      <section class="stall-menu-section">
+        <div class="section-title-row">
+          <div>
+            <p class="small-title red-text">Selected Stall Menu</p>
+            <h2>Choose from this stall</h2>
+          </div>
+
+          <p id="menuResultCount" class="result-count">Loading menu...</p>
         </div>
 
-        <p id="menuResultCount" class="result-count">Loading menu...</p>
-      </div>
+        <!-- Popular picks will be inserted above this row by JavaScript -->
 
-      <!-- Popular picks will be inserted above this row by JavaScript -->
+        <div id="categoryContainer" class="stall-category-row">
+          <!-- Category buttons load here -->
+        </div>
 
-      <div id="categoryContainer" class="stall-category-row">
-        <!-- Category buttons load here -->
-      </div>
-
-      <section id="menuContainer" class="card-grid">
-        <!-- Menu item cards load here -->
+        <section id="menuContainer" class="card-grid">
+          <!-- Menu item cards load here -->
+        </section>
       </section>
-    </section>
-  </main>
+    </main>
 
-  <script src="./stall-detail.js"></script>
-</body>
+    <script src="./stall-detail.js"></script>
+  </body>
 </html>

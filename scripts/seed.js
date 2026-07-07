@@ -1,4 +1,4 @@
-const { Pool } = require("pg");
+const { Pool } = require('pg');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -10,10 +10,7 @@ const pool = new Pool({
     process.env.POSTGRES_DB ||
     process.env.PGDATABASE,
   user: process.env.DB_USER || process.env.POSTGRES_USER || process.env.PGUSER,
-  password:
-    process.env.DB_PASSWORD ||
-    process.env.POSTGRES_PASSWORD ||
-    process.env.PGPASSWORD,
+  password: process.env.DB_PASSWORD || process.env.POSTGRES_PASSWORD || process.env.PGPASSWORD,
 });
 
 const seedSql = `
@@ -204,13 +201,13 @@ INSERT INTO "Menu" (
 `;
 
 async function seed() {
-  console.log("Running seed...");
+  console.log('Running seed...');
 
   try {
     await pool.query(seedSql);
-    console.log("Seed data inserted successfully.");
+    console.log('Seed data inserted successfully.');
   } catch (error) {
-    console.error("Seed failed:", error);
+    console.error('Seed failed:', error);
     process.exitCode = 1;
   } finally {
     await pool.end();

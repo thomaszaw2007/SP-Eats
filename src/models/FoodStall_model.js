@@ -1,11 +1,10 @@
-const pool = require("./db");
+const pool = require('./db');
 
 //////////////////////////////////////////////////////
 // GET STALLS WITH SEARCH AND FILTERS
 //////////////////////////////////////////////////////
-module.exports.selectStalls = (data, cb) =>
-{
-    let SQLSTATEMENT = `
+module.exports.selectStalls = (data, cb) => {
+  let SQLSTATEMENT = `
         SELECT
             'stall_' || LPAD(S."stall_id"::TEXT, 3, '0') AS stall_id,
             S."name" AS stall_name,
@@ -32,13 +31,12 @@ module.exports.selectStalls = (data, cb) =>
         WHERE 1 = 1
     `;
 
-    const VALUES = [];
+  const VALUES = [];
 
-    if (data.search)
-    {
-        VALUES.push(`%${data.search}%`);
+  if (data.search) {
+    VALUES.push(`%${data.search}%`);
 
-        SQLSTATEMENT += `
+    SQLSTATEMENT += `
             AND (
                 S."name" ILIKE $${VALUES.length}
                 OR S."description" ILIKE $${VALUES.length}
@@ -50,52 +48,46 @@ module.exports.selectStalls = (data, cb) =>
                 OR M."category" ILIKE $${VALUES.length}
             )
         `;
-    }
+  }
 
-    if (data.foodCourt)
-    {
-        VALUES.push(data.foodCourt);
+  if (data.foodCourt) {
+    VALUES.push(data.foodCourt);
 
-        SQLSTATEMENT += `
+    SQLSTATEMENT += `
             AND FC."name" = $${VALUES.length}
         `;
-    }
+  }
 
-    if (data.status)
-    {
-        VALUES.push(data.status);
+  if (data.status) {
+    VALUES.push(data.status);
 
-        SQLSTATEMENT += `
+    SQLSTATEMENT += `
             AND S."opening_status" = $${VALUES.length}
         `;
-    }
+  }
 
-    if (data.dietary === "halal")
-    {
-        SQLSTATEMENT += `
+  if (data.dietary === 'halal') {
+    SQLSTATEMENT += `
             AND S."halal" = TRUE
         `;
-    }
+  }
 
-    if (data.dietary === "vegetarian")
-    {
-        SQLSTATEMENT += `
+  if (data.dietary === 'vegetarian') {
+    SQLSTATEMENT += `
             AND S."vegetarian" = TRUE
         `;
-    }
+  }
 
-    if (data.dietary === "vegan")
-    {
-        SQLSTATEMENT += `
+  if (data.dietary === 'vegan') {
+    SQLSTATEMENT += `
             AND S."vegan" = TRUE
         `;
-    }
+  }
 
-    if (data.foodType)
-    {
-        VALUES.push(`%${data.foodType}%`);
+  if (data.foodType) {
+    VALUES.push(`%${data.foodType}%`);
 
-        SQLSTATEMENT += `
+    SQLSTATEMENT += `
             AND (
                 S."cuisine_type" ILIKE $${VALUES.length}
                 OR M."name" ILIKE $${VALUES.length}
@@ -103,9 +95,9 @@ module.exports.selectStalls = (data, cb) =>
                 OR M."category" ILIKE $${VALUES.length}
             )
         `;
-    }
+  }
 
-    SQLSTATEMENT += `
+  SQLSTATEMENT += `
         GROUP BY
             S."stall_id",
             S."name",
@@ -131,15 +123,14 @@ module.exports.selectStalls = (data, cb) =>
             S."name" ASC;
     `;
 
-    pool.query(SQLSTATEMENT, VALUES, cb);
+  pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
 //////////////////////////////////////////////////////
 // GET ONE STALL BY ID
 //////////////////////////////////////////////////////
-module.exports.selectStallById = (data, cb) =>
-{
-    const SQLSTATEMENT = `
+module.exports.selectStallById = (data, cb) => {
+  const SQLSTATEMENT = `
         SELECT
             'stall_' || LPAD(S."stall_id"::TEXT, 3, '0') AS stall_id,
             S."name" AS stall_name,
@@ -164,17 +155,16 @@ module.exports.selectStallById = (data, cb) =>
         WHERE S."stall_id" = CAST(NULLIF(REGEXP_REPLACE($1::TEXT, '[^0-9]', '', 'g'), '') AS INT);
     `;
 
-    const VALUES = [data.stall_id];
+  const VALUES = [data.stall_id];
 
-    pool.query(SQLSTATEMENT, VALUES, cb);
+  pool.query(SQLSTATEMENT, VALUES, cb);
 };
 
 //////////////////////////////////////////////////////
 // GET MENU ITEMS FROM ONE STALL
 //////////////////////////////////////////////////////
-module.exports.selectMenuByStallId = (data, cb) =>
-{
-    const SQLSTATEMENT = `
+module.exports.selectMenuByStallId = (data, cb) => {
+  const SQLSTATEMENT = `
         SELECT
             'item_' || LPAD(M."food_id"::TEXT, 3, '0') AS item_id,
             'stall_' || LPAD(M."stall_id"::TEXT, 3, '0') AS stall_id,
@@ -199,7 +189,7 @@ module.exports.selectMenuByStallId = (data, cb) =>
             M."name" ASC;
     `;
 
-    const VALUES = [data.stall_id];
+  const VALUES = [data.stall_id];
 
-    pool.query(SQLSTATEMENT, VALUES, cb);
+  pool.query(SQLSTATEMENT, VALUES, cb);
 };

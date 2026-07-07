@@ -1,109 +1,105 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Browse Stalls | SP QuickBite</title>
+    <title>Browse Stalls | SP QuickBite</title>
 
-  <link rel="stylesheet" href="./style.css" />
-</head>
-<body>
-  <nav class="navbar">
-    <div class="logo">
-      <span class="sp-badge">SP</span>
-      <span>QuickBite</span>
-    </div>
-
-    <div class="nav-links">
-      <a href="./index.html">Home</a>
-      <a href="./stalls.html" class="active">Browse Stalls</a>
-    </div>
-  </nav>
-
-  <main class="page-container">
-    <section class="page-header">
-      <p class="small-title">Campus Dining</p>
-      <h1>Browse Food Stalls</h1>
-      <p>
-        Search across stalls and menu items, then choose a stall to view its menu.
-      </p>
-
-      <div class="search-box">
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Search chicken, noodles, halal, drinks..."
-        />
-        <button id="searchButton">Search</button>
-      </div>
-    </section>
-
-    <!-- Search filters -->
-    <section class="dropdown-filter-section">
-      <div class="filter-group">
-        <label for="foodCourtFilter">Food Court</label>
-        <select id="foodCourtFilter">
-          <option value="">All Food Courts</option>
-          <option value="Food Court 1">Food Court 1</option>
-          <option value="Food Court 2">Food Court 2</option>
-          <option value="Food Court 3">Food Court 3</option>
-          <option value="Food Court 4">Food Court 4</option>
-          <option value="Food Court 5">Food Court 5</option>
-          <option value="Food Court 6">Food Court 6</option>
-        </select>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">
+        <span class="sp-badge">SP</span>
+        <span>QuickBite</span>
       </div>
 
-      <div class="filter-group">
-        <label for="foodTypeFilter">Food Type</label>
-        <select id="foodTypeFilter">
-          <option value="">All Food Types</option>
-          <option value="Chicken">Chicken</option>
-          <option value="Rice">Rice</option>
-          <option value="Noodles">Noodles</option>
-          <option value="Soup">Soup</option>
-          <option value="Korean">Korean</option>
-          <option value="Japanese">Japanese</option>
-          <option value="Sandwich">Sandwich</option>
-          <option value="Vegetarian">Vegetarian</option>
-          <option value="Vegan">Vegan</option>
-          <option value="Drinks">Drinks</option>
-        </select>
+      <div class="nav-links">
+        <a href="./index.html">Home</a>
+        <a href="./stalls.html" class="active">Browse Stalls</a>
       </div>
+    </nav>
 
-      <div class="filter-group">
-        <label for="dietaryFilter">Dietary</label>
-        <select id="dietaryFilter">
-          <option value="">All Dietary Types</option>
-          <option value="halal">Halal</option>
-          <option value="vegetarian">Vegetarian</option>
-          <option value="vegan">Vegan</option>
-        </select>
-      </div>
+    <main class="page-container">
+      <section class="page-header">
+        <p class="small-title">Campus Dining</p>
+        <h1>Browse Food Stalls</h1>
+        <p>Search across stalls and menu items, then choose a stall to view its menu.</p>
 
-      <div class="filter-group">
-        <label for="statusFilter">Status</label>
-        <select id="statusFilter">
-          <option value="">All Status</option>
-          <option value="open">Open Now</option>
-          <option value="closed">Closed</option>
-        </select>
-      </div>
+        <div class="search-box">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search chicken, noodles, halal, drinks..."
+          />
+          <button id="searchButton">Search</button>
+        </div>
+      </section>
 
-      <button id="clearFilterButton" class="clear-filter-btn">
-        Clear Filters
-      </button>
-    </section>
+      <!-- Search filters -->
+      <section class="dropdown-filter-section">
+        <div class="filter-group">
+          <label for="foodCourtFilter">Food Court</label>
+          <select id="foodCourtFilter">
+            <option value="">All Food Courts</option>
+            <option value="Food Court 1">Food Court 1</option>
+            <option value="Food Court 2">Food Court 2</option>
+            <option value="Food Court 3">Food Court 3</option>
+            <option value="Food Court 4">Food Court 4</option>
+            <option value="Food Court 5">Food Court 5</option>
+            <option value="Food Court 6">Food Court 6</option>
+          </select>
+        </div>
 
-    <!-- Recently viewed section will be inserted above this by JavaScript -->
+        <div class="filter-group">
+          <label for="foodTypeFilter">Food Type</label>
+          <select id="foodTypeFilter">
+            <option value="">All Food Types</option>
+            <option value="Chicken">Chicken</option>
+            <option value="Rice">Rice</option>
+            <option value="Noodles">Noodles</option>
+            <option value="Soup">Soup</option>
+            <option value="Korean">Korean</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Sandwich">Sandwich</option>
+            <option value="Vegetarian">Vegetarian</option>
+            <option value="Vegan">Vegan</option>
+            <option value="Drinks">Drinks</option>
+          </select>
+        </div>
 
-    <p id="resultCount" class="result-count">Loading stalls...</p>
+        <div class="filter-group">
+          <label for="dietaryFilter">Dietary</label>
+          <select id="dietaryFilter">
+            <option value="">All Dietary Types</option>
+            <option value="halal">Halal</option>
+            <option value="vegetarian">Vegetarian</option>
+            <option value="vegan">Vegan</option>
+          </select>
+        </div>
 
-    <section id="stallContainer" class="card-grid">
-      <!-- Stall cards load here -->
-    </section>
-  </main>
+        <div class="filter-group">
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="open">Open Now</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
 
-  <script src="./stalls.js"></script>
-</body>
+        <button id="clearFilterButton" class="clear-filter-btn">Clear Filters</button>
+      </section>
+
+      <!-- Recently viewed section will be inserted above this by JavaScript -->
+
+      <p id="resultCount" class="result-count">Loading stalls...</p>
+
+      <section id="stallContainer" class="card-grid">
+        <!-- Stall cards load here -->
+      </section>
+    </main>
+
+    <script src="./stalls.js"></script>
+  </body>
 </html>
