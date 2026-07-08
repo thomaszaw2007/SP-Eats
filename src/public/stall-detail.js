@@ -8,6 +8,9 @@ const stallHeader = document.getElementById('stallHeader');
 const categoryContainer = document.getElementById('categoryContainer');
 const menuContainer = document.getElementById('menuContainer');
 const menuResultCount = document.getElementById('menuResultCount');
+const menuItemModal = document.getElementById('menuItemModal');
+const menuItemModalContent = document.getElementById('menuItemModalContent');
+const closeMenuModalBtn = document.getElementById('closeMenuModalBtn');
 
 // ---------- PAGE STATE ----------
 const urlParams = new URLSearchParams(window.location.search);
@@ -19,6 +22,24 @@ let selectedCategory = 'All';
 
 // ---------- PAGE LOAD ----------
 window.addEventListener('DOMContentLoaded', () => {
+  if (closeMenuModalBtn) {
+    closeMenuModalBtn.addEventListener('click', closeMenuItemModal);
+  }
+
+  if (menuItemModal) {
+    menuItemModal.addEventListener('click', (event) => {
+      if (event.target === menuItemModal) {
+        closeMenuItemModal();
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeMenuItemModal();
+    }
+  });
+
   if (!stallId) {
     showNoStallSelected();
     return;
@@ -372,15 +393,28 @@ function createMenuCard(item) {
 
       <div class="menu-bottom-row">
         <span class="menu-price">$${formatPrice(item.price)}</span>
-
-        ${
-          disableAddButton
-            ? `<button class="add-btn disabled" disabled>+</button>`
-            : `<button class="add-btn" onclick="prepareCartItem('${item.item_id}')">+</button>`
-        }
+      
+      ${
+        disableAddButton
+          ? `<button class="add-btn disabled" disabled>+</button>`
+          : `<button class="add-btn" type="button">+</button>`
+      }
       </div>
     </div>
   `;
+
+    card.addEventListener('click', () => {
+    openMenuItemDetails(item.item_id);
+  });
+
+  const addButton = card.querySelector('.add-btn:not(.disabled)');
+
+  if (addButton) {
+    addButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      prepareCartItem(item.item_id);
+    });
+  }
 
   return card;
 }
@@ -401,6 +435,129 @@ function createMenuChips(item) {
   }
 
   return chips;
+}
+
+// =========================================================
+// MENU ITEM DETAILS MODAL
+// =========================================================
+
+function openMenuItemDetails(itemId) {
+  if (!menuItemModal || !menuItemModalContent) {
+    return;
+  }
+
+  menuItemModal.classList.remove('hidden');
+
+  menuItemModalContent.innerHTML = `
+    <div class="modal-loading">
+      Loading menu item details...
+    </div>
+  `;
+
+  fetch('/api/menu-items/' + itemId)
+    .then((response) => response.json())
+    .then((result) => {
+      if (!result.success || !result.data) {
+        showMenuItemModalError();
+        return;
+      }
+
+      displayMenuItemDetails(result.data);
+      saveRecentlyViewedMenuItem(result.data);
+    })
+    .catch((error) => {
+      console.error('Error loading menu item details:', error);
+      showMenuItemModalError();
+    });
+}
+
+function displayMenuItemDetails(item) {
+  const isUnavailable = item.is_available === false;
+  const stallClosed = item.opening_status === 'closed';
+  const disableAddButton = isUnavailable || stallClosed;
+
+  menuItemModalContent.innerHTML = `
+    <div class="menu-modal-layout">
+      <div class="menu-modal-image-wrap">
+        <img
+          src="${item.image_url}"
+          alt="${item.item_name}"
+          class="menu-modal-image"
+          onerror="this.src='/images/default-food.jpg'"
+        />
+
+        ${item.is_popular ? `<span class="popular-corner-badge">Popular</span>` : ''}
+      </div>
+
+      <div class="menu-modal-info">
+        <p class="small-title red-text">Menu Item Details</p>
+
+        <h2>${item.item_name}</h2>
+
+        ${
+          item.variation && item.variation !== 'None'
+            ? `<p class="variation-text">Variation: ${item.variation}</p>`
+            : ''
+        }
+
+        <div class="menu-modal-badges">
+          <span class="menu-chip category-chip">${item.category}</span>
+          <span class="menu-chip">${item.food_court}</span>
+          <span class="menu-chip">${item.cuisine_type}</span>
+          ${
+            isUnavailable
+              ? `<span class="status-badge status-closed">Unavailable</span>`
+              : `<span class="status-badge status-open">Available</span>`
+          }
+        </div>
+
+        <p class="menu-modal-description">
+          ${item.item_description}
+        </p>
+
+        <div class="menu-modal-section">
+          <h4>Stall Information</h4>
+          <p><strong>${item.stall_name}</strong></p>
+          <p>${item.stall_description}</p>
+          <p>Wait time: ${item.estimated_wait_time}</p>
+          <p>Stall rating: ★ ${item.stall_rating}</p>
+        </div>
+
+        <div class="menu-modal-section">
+          <h4>Food Court Information</h4>
+          <p><strong>${item.food_court}</strong> - ${item.food_court_location}</p>
+          <p>${item.food_court_description}</p>
+        </div>
+
+        <div class="menu-modal-bottom">
+          <span class="menu-modal-price">$${formatPrice(item.price)}</span>
+
+          ${
+            disableAddButton
+              ? `<button class="details-add-btn disabled" disabled>Unavailable</button>`
+              : `<button class="details-add-btn" onclick="prepareCartItem('${item.item_id}')">Add to Cart</button>`
+          }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function closeMenuItemModal() {
+  if (!menuItemModal) {
+    return;
+  }
+
+  menuItemModal.classList.add('hidden');
+}
+
+function showMenuItemModalError() {
+  menuItemModalContent.innerHTML = `
+    <div class="modal-error">
+      <h3>Unable to load menu item</h3>
+      <p>Please try again later.</p>
+    </div>
+  `;
 }
 
 // =========================================================
@@ -433,6 +590,45 @@ function prepareCartItem(itemId) {
 // =========================================================
 // RECENTLY VIEWED
 // =========================================================
+
+function saveRecentlyViewedMenuItem(item) {
+  let recentlyViewedItems = getRecentlyViewedMenuItems();
+
+  recentlyViewedItems = recentlyViewedItems.filter((recentItem) => {
+    return recentItem.item_id !== item.item_id;
+  });
+
+  recentlyViewedItems.unshift({
+    item_id: item.item_id,
+    item_name: item.item_name,
+    item_description: item.item_description,
+    price: item.price,
+    category: item.category,
+    image_url: item.image_url,
+    stall_name: item.stall_name,
+    food_court: item.food_court,
+    is_available: item.is_available,
+  });
+
+  recentlyViewedItems = recentlyViewedItems.slice(0, 5);
+
+  localStorage.setItem('recentlyViewedMenuItems', JSON.stringify(recentlyViewedItems));
+}
+
+function getRecentlyViewedMenuItems() {
+  const savedData = localStorage.getItem('recentlyViewedMenuItems');
+
+  if (!savedData) {
+    return [];
+  }
+
+  try {
+    return JSON.parse(savedData);
+  } catch {
+    localStorage.removeItem('recentlyViewedMenuItems');
+    return [];
+  }
+}
 
 function saveRecentlyViewedStall(stall) {
   let recentlyViewed = getRecentlyViewedStalls();
