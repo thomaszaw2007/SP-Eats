@@ -26,9 +26,23 @@ const MENU_ITEM_SELECT = `
         M."price" AS price,
         M."category" AS category,
         M."image_url" AS image_url,
+
         M."is_available" AS is_available,
         M."is_popular" AS is_popular,
+
+        M."calories" AS calories,
+        M."nutrition_level" AS nutrition_level,
+        M."carb_level" AS carb_level,
+        M."protein_level" AS protein_level,
+        M."fat_level" AS fat_level,
+        M."sugar_level" AS sugar_level,
+        M."spice_level" AS spice_level,
+        M."allergen_info" AS allergen_info,
+        M."portion_size" AS portion_size,
+
         M."created_at" AS created_at
+
+
     FROM "Menu" M
     JOIN "Stalls" S
         ON M."stall_id" = S."stall_id"

@@ -490,7 +490,7 @@ function displayMenuItemDetails(item) {
       </div>
 
       <div class="menu-modal-info">
-        <p class="small-title red-text">Menu Item Details</p>
+        <p class="small-title red-text">Dish Details</p>
 
         <h2>${item.item_name}</h2>
 
@@ -502,8 +502,6 @@ function displayMenuItemDetails(item) {
 
         <div class="menu-modal-badges">
           <span class="menu-chip category-chip">${item.category}</span>
-          <span class="menu-chip">${item.food_court}</span>
-          <span class="menu-chip">${item.cuisine_type}</span>
           ${
             isUnavailable
               ? `<span class="status-badge status-closed">Unavailable</span>`
@@ -515,18 +513,48 @@ function displayMenuItemDetails(item) {
           ${item.item_description}
         </p>
 
-        <div class="menu-modal-section">
-          <h4>Stall Information</h4>
-          <p><strong>${item.stall_name}</strong></p>
-          <p>${item.stall_description}</p>
-          <p>Wait time: ${item.estimated_wait_time}</p>
-          <p>Stall rating: ★ ${item.stall_rating}</p>
+        <div class="macro-tag-row">
+          <span class="macro-tag carb">${item.carb_level}</span>
+          <span class="macro-tag protein">${item.protein_level}</span>
+          <span class="macro-tag fat">${item.fat_level}</span>
         </div>
 
-        <div class="menu-modal-section">
-          <h4>Food Court Information</h4>
-          <p><strong>${item.food_court}</strong> - ${item.food_court_location}</p>
-          <p>${item.food_court_description}</p>
+        <div class="dish-meta-grid">
+          <div class="dish-meta-card">
+            <span>Calories</span>
+            <strong>${item.calories} kcal</strong>
+          </div>
+
+          <div class="dish-meta-card">
+            <span>Nutrition</span>
+            <strong>${item.nutrition_level}</strong>
+          </div>
+
+          <div class="dish-meta-card">
+            <span>Sugar</span>
+            <strong>${item.sugar_level}</strong>
+          </div>
+
+          <div class="dish-meta-card">
+            <span>Spice</span>
+            <strong>${item.spice_level}</strong>
+          </div>
+
+          <div class="dish-meta-card">
+            <span>Portion</span>
+            <strong>${item.portion_size}</strong>
+          </div>
+
+          <div class="dish-meta-card wide">
+            <span>Allergen Info</span>
+            <strong>${item.allergen_info}</strong>
+          </div>
+        </div>
+
+        <div class="available-at-row">
+          <span class="available-label">Available at</span>
+          <span class="available-badge">${item.stall_name}</span>
+          <span class="available-badge">${item.food_court}</span>
         </div>
 
         <div class="menu-modal-bottom">
@@ -542,7 +570,6 @@ function displayMenuItemDetails(item) {
     </div>
   `;
 }
-
 function closeMenuItemModal() {
   if (!menuItemModal) {
     return;

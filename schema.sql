@@ -152,6 +152,17 @@ CREATE TABLE "Menu" (
     "image_url" TEXT DEFAULT '/images/default-food.jpg',
     "is_available" BOOLEAN DEFAULT TRUE,
     "is_popular" BOOLEAN DEFAULT FALSE,
+
+   "calories" INT DEFAULT 500,
+    "nutrition_level" TEXT DEFAULT 'Moderate',
+    "carb_level" TEXT DEFAULT 'Medium carb',
+    "protein_level" TEXT DEFAULT 'Medium protein',
+    "fat_level" TEXT DEFAULT 'Medium fat',
+    "sugar_level" TEXT DEFAULT 'Not applicable',
+    "spice_level" TEXT DEFAULT 'Not spicy',
+    "allergen_info" TEXT DEFAULT 'Check with stall before ordering.',
+    "portion_size" TEXT DEFAULT 'Regular',
+
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Menu_pkey" PRIMARY KEY ("food_id"),
