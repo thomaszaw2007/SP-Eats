@@ -1,6 +1,6 @@
 // =========================================================
 // SP QuickBite - Selected Stall Menu Page
-// Uses API response names like stall_name, item_name, etc.
+// Handles: compact stall hero, menu search/sort/category, dish modal, cart prep
 // =========================================================
 
 // ---------- HTML ELEMENTS ----------
@@ -8,20 +8,60 @@ const stallHeader = document.getElementById('stallHeader');
 const categoryContainer = document.getElementById('categoryContainer');
 const menuContainer = document.getElementById('menuContainer');
 const menuResultCount = document.getElementById('menuResultCount');
+
 const menuItemModal = document.getElementById('menuItemModal');
 const menuItemModalContent = document.getElementById('menuItemModalContent');
 const closeMenuModalBtn = document.getElementById('closeMenuModalBtn');
 
+const stallMenuSearch = document.getElementById('stallMenuSearch');
+const clearStallMenuSearchBtn = document.getElementById('clearStallMenuSearchBtn');
+const stallMenuSort = document.getElementById('stallMenuSort');
+
 // ---------- PAGE STATE ----------
 const urlParams = new URLSearchParams(window.location.search);
 const stallId = urlParams.get('stall_id');
+const apiStallId = getApiStallId(stallId);
+
+function getApiStallId(id) {
+  if (!id) {
+    return null;
+  }
+
+  if (id.startsWith('stall_')) {
+    return String(Number(id.replace('stall_', '')));
+  }
+
+  return id;
+}
 
 let selectedStall = null;
 let menuItemsData = [];
 let selectedCategory = 'All';
+let selectedSearchQuery = '';
+let selectedSortOption = 'default';
 
-// ---------- PAGE LOAD ----------
+// =========================================================
+// PAGE LOAD
+// =========================================================
+
 window.addEventListener('DOMContentLoaded', () => {
+  setupModalEvents();
+  setupSearchAndSortEvents();
+
+if (!apiStallId) {
+    showNoStallSelected();
+    return;
+  }
+
+  getStallDetails();
+  getStallMenu();
+});
+
+// =========================================================
+// SETUP EVENTS
+// =========================================================
+
+function setupModalEvents() {
   if (closeMenuModalBtn) {
     closeMenuModalBtn.addEventListener('click', closeMenuItemModal);
   }
@@ -39,22 +79,38 @@ window.addEventListener('DOMContentLoaded', () => {
       closeMenuItemModal();
     }
   });
+}
 
-  if (!stallId) {
-    showNoStallSelected();
-    return;
+function setupSearchAndSortEvents() {
+  if (stallMenuSearch) {
+    stallMenuSearch.addEventListener('input', () => {
+      selectedSearchQuery = stallMenuSearch.value.trim().toLowerCase();
+      filterAndDisplayMenu();
+    });
   }
 
-  getStallDetails();
-  getStallMenu();
-});
+  if (clearStallMenuSearchBtn) {
+    clearStallMenuSearchBtn.addEventListener('click', () => {
+      stallMenuSearch.value = '';
+      selectedSearchQuery = '';
+      filterAndDisplayMenu();
+    });
+  }
+
+  if (stallMenuSort) {
+    stallMenuSort.addEventListener('change', () => {
+      selectedSortOption = stallMenuSort.value;
+      filterAndDisplayMenu();
+    });
+  }
+}
 
 // =========================================================
 // API
 // =========================================================
 
 function getStallDetails() {
-  fetch('/api/stalls/' + stallId)
+    fetch('/api/stalls/' + apiStallId)
     .then((response) => response.json())
     .then((result) => {
       selectedStall = result.data;
@@ -66,7 +122,6 @@ function getStallDetails() {
 
       displayStallHeader(selectedStall);
       saveRecentlyViewedStall(selectedStall);
-      refreshMenuDisplay();
     })
     .catch((error) => {
       console.error('Error loading stall details:', error);
@@ -75,14 +130,13 @@ function getStallDetails() {
 }
 
 function getStallMenu() {
-  fetch('/api/stalls/' + stallId + '/menu')
+  fetch('/api/stalls/' + apiStallId + '/menu')
     .then((response) => response.json())
     .then((result) => {
       menuItemsData = result.data || [];
 
-      displayPopularPicks(menuItemsData);
       displayCategoryButtons(menuItemsData);
-      filterMenuByCategory();
+      filterAndDisplayMenu();
     })
     .catch((error) => {
       console.error('Error loading stall menu:', error);
@@ -95,94 +149,72 @@ function getStallMenu() {
 // =========================================================
 
 function displayStallHeader(stall) {
+  const stallName = stall.stall_name || stall.name || 'Selected Stall';
+  const cuisine = stall.cuisine_type || stall.cuisine || 'Campus Food';
+  const rating = stall.rating || stall.stall_rating || '4.5';
+  const ratingCount = stall.rating_count || stall.review_count || 89;
   const isClosed = stall.opening_status === 'closed';
 
   stallHeader.innerHTML = `
-    <img 
-      src="${stall.image_url}" 
-      alt="${stall.stall_name}" 
-      class="stall-detail-image"
-      onerror="this.src='/images/default-food.jpg'"
-    />
+    <div class="teen-stall-hero">
+      <div class="teen-stall-glow"></div>
+      <div class="teen-stall-bg-text">QUICKBITE</div>
 
-    <div class="stall-detail-content">
-      <div class="stall-detail-top-row">
-        <div>
-          <span class="status-badge ${isClosed ? 'status-closed' : 'status-open'}">
-            ${isClosed ? 'Closed' : 'Open'}
-          </span>
+      <div class="teen-stall-left">
+        <a href="./stalls.html" class="teen-back-link">← Back to Stalls</a>
 
-          <h1>${stall.stall_name}</h1>
-          <p class="stall-detail-cuisine">${stall.cuisine_type}</p>
-        </div>
+        <h1>${stallName}</h1>
 
-        <div class="stall-rating-box">
-          <span class="star-icon">★</span>
-          <span>${stall.rating}</span>
-          <small>${stall.rating_count} ratings</small>
+        <div class="teen-cuisine-line">
+          <span>${cuisine}</span>
         </div>
       </div>
 
-      <p class="stall-detail-description">${stall.stall_description}</p>
+      <div class="teen-stall-right">
+        <div class="teen-rating-pill">
+          <span class="teen-stars">★★★★★</span>
+          <strong>${rating}</strong>
+          <span>(${ratingCount})</span>
+        </div>
 
-      ${isClosed ? createClosedBanner(stall) : ''}
-
-      <div class="stall-detail-info">
-        <span class="info-pill">${stall.food_court}</span>
-        <span class="info-pill">${stall.location_detail}</span>
-        <span class="info-pill">Wait: ${stall.estimated_wait_time}</span>
-        ${
-          isClosed
-            ? `<span class="info-pill">Opens: ${stall.opening_time}</span>`
-            : `<span class="info-pill">Open until: ${stall.closing_time}</span>`
-        }
-      </div>
-
-      <div class="dietary-row">
-        ${stall.is_halal ? `<span class="dietary-badge">Halal</span>` : ''}
-        ${stall.is_vegetarian ? `<span class="dietary-badge">Vegetarian</span>` : ''}
-        ${stall.is_vegan ? `<span class="dietary-badge">Vegan</span>` : ''}
-      </div>
-    </div>
-  `;
-}
-
-function createClosedBanner(stall) {
-  return `
-    <div class="closed-stall-banner">
-      <div class="closed-stall-icon">!</div>
-
-      <div>
-        <h3>This stall is currently closed</h3>
-        <p>
-          You can still view the menu, but ordering is unavailable.
-          This stall opens at <strong>${stall.opening_time}</strong>.
-        </p>
+        <span class="${isClosed ? 'teen-open-pill closed' : 'teen-open-pill open'}">
+          ${isClosed ? 'Closed' : 'Open'}
+        </span>
       </div>
     </div>
   `;
 }
 
 function showNoStallSelected() {
-  stallHeader.innerHTML = `
-    <div class="stall-detail-content">
-      <h1>Stall not found</h1>
-      <p class="stall-detail-description">
-        No stall was selected. Please go back and choose a stall.
-      </p>
-    </div>
-  `;
+  if (stallHeader) {
+    stallHeader.innerHTML = `
+      <div class="stall-detail-content">
+        <h1>Stall not found</h1>
+        <p class="stall-detail-description">
+          No stall was selected. Please go back and choose a stall.
+        </p>
+      </div>
+    `;
+  }
 
-  menuResultCount.textContent = 'No menu available';
+  if (menuResultCount) {
+    menuResultCount.textContent = 'No menu available';
+  }
 
-  menuContainer.innerHTML = `
-    <div class="empty-message">
-      Please select a stall from the Browse Stalls page.
-    </div>
-  `;
+  if (menuContainer) {
+    menuContainer.innerHTML = `
+      <div class="empty-message">
+        Please select a stall from the Browse Stalls page.
+      </div>
+    `;
+  }
 }
 
 function showStallError() {
+  if (!stallHeader) {
+    return;
+  }
+
   stallHeader.innerHTML = `
     <div class="stall-detail-content">
       <h1>Unable to load stall</h1>
@@ -192,137 +224,137 @@ function showStallError() {
 }
 
 function showMenuError() {
-  menuResultCount.textContent = 'Unable to load menu.';
-
-  menuContainer.innerHTML = `
-    <div class="empty-message">
-      Unable to load menu items. Please try again later.
-    </div>
-  `;
-}
-
-// =========================================================
-// POPULAR PICKS
-// =========================================================
-
-function displayPopularPicks(menuItems) {
-  let popularSection = document.getElementById('popularPicksSection');
-
-  if (!popularSection) {
-    popularSection = document.createElement('section');
-    popularSection.id = 'popularPicksSection';
-    popularSection.className = 'popular-picks-section';
-    categoryContainer.parentNode.insertBefore(popularSection, categoryContainer);
+  if (menuResultCount) {
+    menuResultCount.textContent = 'Unable to load menu.';
   }
 
-  const popularItems = menuItems.filter((item) => item.is_popular === true);
-
-  if (popularItems.length === 0) {
-    popularSection.style.display = 'none';
-    return;
-  }
-
-  popularSection.style.display = 'block';
-
-  let html = `
-    <div class="popular-picks-header">
-      <div>
-        <p class="small-title red-text">Popular Picks</p>
-        <h3>Recommended from this stall</h3>
+  if (menuContainer) {
+    menuContainer.innerHTML = `
+      <div class="empty-message">
+        Unable to load menu items. Please try again later.
       </div>
-
-      <span>${popularItems.length} popular item${popularItems.length === 1 ? '' : 's'}</span>
-    </div>
-
-    <div class="popular-picks-row">
-  `;
-
-  for (let i = 0; i < popularItems.length; i++) {
-    html += createPopularItemHTML(popularItems[i]);
+    `;
   }
-
-  html += `</div>`;
-  popularSection.innerHTML = html;
-}
-
-function createPopularItemHTML(item) {
-  return `
-    <div class="popular-pick-card">
-      <img 
-        src="${item.image_url}" 
-        alt="${item.item_name}" 
-        class="popular-pick-image"
-        onerror="this.src='/images/default-food.jpg'"
-      />
-
-      <div class="popular-pick-content">
-        <span class="popular-mini-badge">Popular</span>
-        <h4>${item.item_name}</h4>
-        <p>${item.category}</p>
-        <strong>$${formatPrice(item.price)}</strong>
-      </div>
-    </div>
-  `;
 }
 
 // =========================================================
-// CATEGORY FILTER
+// CATEGORY + SEARCH + SORT
 // =========================================================
 
 function displayCategoryButtons(menuItems) {
+  if (!categoryContainer) {
+    return;
+  }
+
   categoryContainer.innerHTML = '';
 
   const categories = getMenuCategories(menuItems);
 
-  for (let i = 0; i < categories.length; i++) {
+  categories.forEach((category) => {
     const button = document.createElement('button');
     button.className = 'stall-category-btn';
-    button.textContent = categories[i];
+    button.textContent = category;
 
-    if (categories[i] === selectedCategory) {
+    if (category === selectedCategory) {
       button.classList.add('active');
     }
 
     button.addEventListener('click', () => {
-      selectedCategory = categories[i];
+      selectedCategory = category;
       displayCategoryButtons(menuItemsData);
-      filterMenuByCategory();
+      filterAndDisplayMenu();
     });
 
     categoryContainer.appendChild(button);
-  }
+  });
 }
 
 function getMenuCategories(menuItems) {
   const categories = ['All'];
 
-  for (let i = 0; i < menuItems.length; i++) {
-    if (!categories.includes(menuItems[i].category)) {
-      categories.push(menuItems[i].category);
+  menuItems.forEach((item) => {
+    if (item.category && !categories.includes(item.category)) {
+      categories.push(item.category);
     }
-  }
+  });
 
   return categories;
 }
 
-function filterMenuByCategory() {
-  if (selectedCategory === 'All') {
-    displayMenuItems(menuItemsData);
-    return;
+function filterAndDisplayMenu() {
+  let filteredMenu = [...menuItemsData];
+
+  if (selectedCategory !== 'All') {
+    filteredMenu = filteredMenu.filter((item) => {
+      return item.category === selectedCategory;
+    });
   }
 
-  const filteredItems = menuItemsData.filter((item) => {
-    return item.category === selectedCategory;
-  });
+  if (selectedSearchQuery) {
+    const searchWords = selectedSearchQuery
+      .split(' ')
+      .map((word) => word.trim())
+      .filter((word) => word.length > 0);
 
-  displayMenuItems(filteredItems);
+    filteredMenu = filteredMenu.filter((item) => {
+      const searchableText = [
+        item.item_name,
+        item.category,
+        item.item_description,
+        item.variation,
+        item.carb_level,
+        item.protein_level,
+        item.fat_level,
+        item.sugar_level,
+        item.spice_level,
+        item.portion_size,
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      return searchWords.every((word) => searchableText.includes(word));
+    });
+  }
+
+  filteredMenu = sortMenuItems(filteredMenu);
+
+  displayMenuItems(filteredMenu);
 }
 
-function refreshMenuDisplay() {
-  if (menuItemsData.length > 0) {
-    displayPopularPicks(menuItemsData);
-    filterMenuByCategory();
+function sortMenuItems(menuItems) {
+  const sortedItems = [...menuItems];
+
+  if (selectedSortOption === 'name-asc') {
+    sortedItems.sort((firstItem, secondItem) => {
+      return firstItem.item_name.localeCompare(secondItem.item_name);
+    });
   }
+
+  if (selectedSortOption === 'price-asc') {
+    sortedItems.sort((firstItem, secondItem) => {
+      return Number(firstItem.price) - Number(secondItem.price);
+    });
+  }
+
+  if (selectedSortOption === 'price-desc') {
+    sortedItems.sort((firstItem, secondItem) => {
+      return Number(secondItem.price) - Number(firstItem.price);
+    });
+  }
+
+  if (selectedSortOption === 'popular-first') {
+    sortedItems.sort((firstItem, secondItem) => {
+      return Number(secondItem.is_popular) - Number(firstItem.is_popular);
+    });
+  }
+
+  if (selectedSortOption === 'available-first') {
+    sortedItems.sort((firstItem, secondItem) => {
+      return Number(secondItem.is_available) - Number(firstItem.is_available);
+    });
+  }
+
+  return sortedItems;
 }
 
 // =========================================================
@@ -330,91 +362,109 @@ function refreshMenuDisplay() {
 // =========================================================
 
 function displayMenuItems(menuItems) {
-  menuContainer.innerHTML = '';
-
-  if (menuItems.length === 0) {
-    menuResultCount.textContent = 'Showing 0 items';
-
-    menuContainer.innerHTML = `
-      <div class="empty-message">
-        No menu items found for this category.
-      </div>
-    `;
+  if (!menuContainer) {
     return;
   }
 
-  menuResultCount.textContent = 'Showing ' + menuItems.length + ' items';
+  menuContainer.innerHTML = '';
 
-  for (let i = 0; i < menuItems.length; i++) {
-    menuContainer.appendChild(createMenuCard(menuItems[i]));
+  if (!menuItems || menuItems.length === 0) {
+    menuContainer.innerHTML = `
+      <div class="empty-message">
+        <h3>No menu items found</h3>
+        <p>Try another search keyword, category, or sort option.</p>
+      </div>
+    `;
+
+    if (menuResultCount) {
+      menuResultCount.textContent = '0 items found';
+    }
+
+    return;
   }
+
+  if (menuResultCount) {
+    menuResultCount.textContent = `${menuItems.length} item${menuItems.length === 1 ? '' : 's'} found`;
+  }
+
+  menuItems.forEach((item) => {
+    const menuCard = createMenuCard(item);
+    menuContainer.appendChild(menuCard);
+  });
 }
 
 function createMenuCard(item) {
-  const isUnavailable = item.is_available === false;
-  const stallClosed = selectedStall && selectedStall.opening_status === 'closed';
-  const disableAddButton = isUnavailable || stallClosed;
-
-  const card = document.createElement('div');
+  const card = document.createElement('article');
   card.className = 'menu-card';
 
-  if (isUnavailable) {
+  if (!item.is_available) {
     card.classList.add('unavailable');
   }
 
+  const itemRating = item.item_rating || 4.0;
+  const reviewCount = item.item_review_count || 0;
+  const itemCategory = item.category || 'Food';
+  const selectedItemId = item.item_id || item.food_id;
+
   card.innerHTML = `
     <div class="menu-image-wrap">
-      <img 
-        src="${item.image_url}" 
-        alt="${item.item_name}" 
-        class="menu-image"
-        onerror="this.src='/images/default-food.jpg'"
-      />
+      ${
+        item.image_url
+          ? `<img 
+              src="${item.image_url}" 
+              alt="${item.item_name}" 
+              class="menu-image"
+            />`
+          : `<div class="menu-image menu-image-placeholder">
+              <span>No image yet</span>
+            </div>`
+      }
 
-      ${item.is_popular ? `<span class="popular-corner-badge">Popular</span>` : ''}
+      ${item.is_popular ? `<span class="popular-corner-badge">🔥 Popular</span>` : ''}
+
+      <button class="menu-fav-btn" type="button" aria-label="Favourite food">
+        ♡
+      </button>
     </div>
 
-    <div class="menu-content">
-      <h3>${item.item_name}</h3>
-
-      <div class="menu-indicator-row">
-        ${createMenuChips(item)}
+    <div class="menu-card-body">
+      <div class="menu-card-title-row">
+        <h3>${item.item_name}</h3>
+        <span class="menu-category-pill">${itemCategory}</span>
       </div>
 
-      <p class="menu-description">${item.item_description}</p>
+      <div class="menu-card-rating-row">
+        <span class="menu-stars">★★★★★</span>
+        <strong>${formatRating(itemRating)}</strong>
+        <span>(${reviewCount})</span>
+      </div>
 
-      ${
-        item.variation && item.variation !== 'None'
-          ? `<p class="variation-text">Variation: ${item.variation}</p>`
-          : ''
-      }
+      <div class="menu-card-bottom-row">
+        <p class="menu-price">$${formatPrice(item.price)}</p>
 
-      ${isUnavailable ? `<span class="status-badge status-closed">Unavailable</span>` : ''}
-
-      <div class="menu-bottom-row">
-        <span class="menu-price">$${formatPrice(item.price)}</span>
-      
-      ${
-        disableAddButton
-          ? `<button class="add-btn disabled" disabled>+</button>`
-          : `<button class="add-btn" type="button">+</button>`
-      }
+        <button class="menu-add-btn" type="button" aria-label="Add food">
+          +
+        </button>
       </div>
     </div>
   `;
 
-    card.addEventListener('click', () => {
-    openMenuItemDetails(item.item_id);
+  card.addEventListener('click', () => {
+    openMenuItemDetails(selectedItemId);
   });
 
-  const addButton = card.querySelector('.add-btn:not(.disabled)');
+  const favouriteButton = card.querySelector('.menu-fav-btn');
+  favouriteButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    favouriteButton.classList.toggle('active');
+    favouriteButton.textContent = favouriteButton.classList.contains('active') ? '♥' : '♡';
+  });
 
-  if (addButton) {
-    addButton.addEventListener('click', (event) => {
-      event.stopPropagation();
-      prepareCartItem(item.item_id);
-    });
-  }
+  const addButton = card.querySelector('.menu-add-btn');
+  addButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    prepareCartItem(selectedItemId);
+  });
 
   return card;
 }
@@ -438,7 +488,7 @@ function createMenuChips(item) {
 }
 
 // =========================================================
-// MENU ITEM DETAILS MODAL
+// DISH DETAILS MODAL
 // =========================================================
 
 function openMenuItemDetails(itemId) {
@@ -472,104 +522,139 @@ function openMenuItemDetails(itemId) {
 }
 
 function displayMenuItemDetails(item) {
-  const isUnavailable = item.is_available === false;
-  const stallClosed = item.opening_status === 'closed';
-  const disableAddButton = isUnavailable || stallClosed;
+const isUnavailable = item.is_available === false;
+const stallClosed = item.opening_status === 'closed';
+const disableAddButton = isUnavailable || stallClosed;
+const selectedModalItemId = item.item_id || item.food_id;
 
   menuItemModalContent.innerHTML = `
-    <div class="menu-modal-layout">
-      <div class="menu-modal-image-wrap">
-        <img
-          src="${item.image_url}"
-          alt="${item.item_name}"
-          class="menu-modal-image"
-          onerror="this.src='/images/default-food.jpg'"
-        />
+    <div class="qb-dish-modal">
+      <div class="qb-dish-image-panel">
+      ${
+        item.image_url
+          ? `<img
+              src="${item.image_url}"
+              alt="${item.item_name}"
+              class="qb-dish-image"
+            />`
+          : `<div class="qb-dish-image qb-dish-image-placeholder">
+              <span>No image yet</span>
+            </div>`
+      }
 
-        ${item.is_popular ? `<span class="popular-corner-badge">Popular</span>` : ''}
+        ${item.is_popular ? `<span class="qb-popular-badge">🔥 Popular</span>` : ''}
       </div>
 
-      <div class="menu-modal-info">
-        <p class="small-title red-text">Dish Details</p>
+      <div class="qb-dish-details-panel">
+        <button class="qb-modal-x" type="button" onclick="closeMenuItemModal()">×</button>
 
-        <h2>${item.item_name}</h2>
+        <div class="qb-dish-title-row">
+          <div>
+            <h2>${item.item_name}</h2>
+
+            <div class="qb-status-line">
+              ${
+                isUnavailable
+                  ? `<span class="qb-status-badge closed">Unavailable</span>`
+                  : `<span class="qb-status-badge open">Available</span>`
+              }
+
+              <span>${item.category}</span>
+            </div>
+          </div>
+        </div>
 
         ${
           item.variation && item.variation !== 'None'
-            ? `<p class="variation-text">Variation: ${item.variation}</p>`
+            ? `<p class="qb-variation">Variation: ${item.variation}</p>`
             : ''
         }
 
-        <div class="menu-modal-badges">
-          <span class="menu-chip category-chip">${item.category}</span>
-          ${
-            isUnavailable
-              ? `<span class="status-badge status-closed">Unavailable</span>`
-              : `<span class="status-badge status-open">Available</span>`
-          }
-        </div>
-
-        <p class="menu-modal-description">
+        <p class="qb-dish-description">
           ${item.item_description}
         </p>
 
-        <div class="macro-tag-row">
-          <span class="macro-tag carb">${item.carb_level}</span>
-          <span class="macro-tag protein">${item.protein_level}</span>
-          <span class="macro-tag fat">${item.fat_level}</span>
+        <div class="qb-rating-row">
+          <span class="qb-stars">★★★★★</span>
+          <strong>${formatRating(item.item_rating || item.stall_rating || 4.0)}</strong>
+          <span>(${item.item_review_count || item.rating_count || 0})</span>
         </div>
 
-        <div class="dish-meta-grid">
-          <div class="dish-meta-card">
-            <span>Calories</span>
+        <div class="qb-macro-row">
+          <span class="qb-macro ${getLevelClass(item.carb_level)}">${item.carb_level}</span>
+          <span class="qb-macro ${getLevelClass(item.protein_level)}">${item.protein_level}</span>
+          <span class="qb-macro ${getLevelClass(item.fat_level)}">${item.fat_level}</span>
+          <span class="qb-macro ${getLevelClass(item.sugar_level)}">${item.sugar_level} Sugar</span>
+        </div>
+
+        <div class="qb-meta-grid">
+          <div class="qb-meta-card">
+            <p>Calories</p>
             <strong>${item.calories} kcal</strong>
           </div>
 
-          <div class="dish-meta-card">
-            <span>Nutrition</span>
-            <strong>${item.nutrition_level}</strong>
+          <div class="qb-meta-card">
+            <p>Carb Level</p>
+            <strong>${item.carb_level}</strong>
           </div>
 
-          <div class="dish-meta-card">
-            <span>Sugar</span>
+          <div class="qb-meta-card">
+            <p>Protein</p>
+            <strong>${item.protein_level}</strong>
+          </div>
+
+          <div class="qb-meta-card">
+            <p>Sugar</p>
             <strong>${item.sugar_level}</strong>
           </div>
 
-          <div class="dish-meta-card">
-            <span>Spice</span>
+          <div class="qb-meta-card">
+            <p>Spice</p>
             <strong>${item.spice_level}</strong>
           </div>
 
-          <div class="dish-meta-card">
-            <span>Portion</span>
+          <div class="qb-meta-card">
+            <p>Portion</p>
             <strong>${item.portion_size}</strong>
           </div>
+        </div>
 
-          <div class="dish-meta-card wide">
-            <span>Allergen Info</span>
-            <strong>${item.allergen_info}</strong>
+        <div class="qb-allergen-block">
+          <p>Allergens</p>
+
+          <div class="qb-allergen-tags">
+            <span>${item.allergen_info}</span>
           </div>
         </div>
 
-        <div class="available-at-row">
-          <span class="available-label">Available at</span>
-          <span class="available-badge">${item.stall_name}</span>
-          <span class="available-badge">${item.food_court}</span>
+        <div class="qb-available-block">
+          <p>Available at</p>
+
+          <div>
+            <span>${item.stall_name}</span>
+            <span>${item.food_court}</span>
+          </div>
         </div>
 
-        <div class="menu-modal-bottom">
-          <span class="menu-modal-price">$${formatPrice(item.price)}</span>
+        <div class="qb-modal-footer">
+          <div class="qb-modal-price-box">
+            <span>Price</span>
+            <strong>$${formatPrice(item.price)}</strong>
+          </div>
 
           ${
             disableAddButton
-              ? `<button class="details-add-btn disabled" disabled>Unavailable</button>`
-              : `<button class="details-add-btn" onclick="prepareCartItem('${item.item_id}')">Add to Cart</button>`
+              ? `<button class="qb-add-cart disabled" disabled>Unavailable</button>`
+              : `<button class="qb-add-cart" onclick="prepareCartItem('${selectedModalItemId}')">
+                  Add to Cart
+                </button>`
           }
         </div>
       </div>
     </div>
   `;
 }
+
 function closeMenuItemModal() {
   if (!menuItemModal) {
     return;
@@ -587,12 +672,32 @@ function showMenuItemModalError() {
   `;
 }
 
+function getLevelClass(value) {
+  if (!value) {
+    return 'level-medium';
+  }
+
+  const lowerValue = value.toLowerCase();
+
+  if (lowerValue.includes('high')) {
+    return 'level-high';
+  }
+
+  if (lowerValue.includes('low')) {
+    return 'level-low';
+  }
+
+  return 'level-medium';
+}
+
 // =========================================================
 // CART PREPARATION
 // =========================================================
 
 function prepareCartItem(itemId) {
-  const selectedItem = menuItemsData.find((item) => item.item_id === itemId);
+  const selectedItem = menuItemsData.find((item) => {
+    return String(item.item_id || item.food_id) === String(itemId);
+  });
 
   if (!selectedItem) {
     alert('Item not found.');
@@ -600,7 +705,7 @@ function prepareCartItem(itemId) {
   }
 
   const cartItem = {
-    item_id: selectedItem.item_id,
+    item_id: selectedItem.item_id || selectedItem.food_id,
     stall_id: selectedItem.stall_id,
     stall_name: selectedItem.stall_name,
     item_name: selectedItem.item_name,
@@ -611,9 +716,8 @@ function prepareCartItem(itemId) {
   };
 
   console.log('Cart item prepared:', cartItem);
-  alert('Cart feature coming soon.');
+  alert(`${selectedItem.item_name} added to cart.`);
 }
-
 // =========================================================
 // RECENTLY VIEWED
 // =========================================================
@@ -694,8 +798,18 @@ function getRecentlyViewedStalls() {
   }
 }
 
+// =========================================================
+// HELPERS
+// =========================================================
+
 function formatPrice(price) {
   return Number(price).toFixed(2);
 }
 
+function formatRating(rating) {
+  return Number(rating || 0).toFixed(1);
+}
+
+// Allow inline onclick handlers to work
 window.prepareCartItem = prepareCartItem;
+window.closeMenuItemModal = closeMenuItemModal;

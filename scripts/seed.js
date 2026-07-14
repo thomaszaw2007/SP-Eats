@@ -68,6 +68,7 @@ INSERT INTO "FoodCourt" ("name", "location", "description") VALUES
 ('Food Court 5', 'Level 2, T3B', 'Larger food court with fast food, sandwiches, cafe meals, and western options.'),
 ('Food Court 6', 'Beside Swimming Pool. Near W14', 'Food court near the sports area with noodles, soups, Japanese meals, and chicken rice.');
 
+
 -- ─────────────────────────────────────────────────────────
 -- Stalls
 -- ─────────────────────────────────────────────────────────
@@ -111,6 +112,10 @@ INSERT INTO "Stalls" (
 
 -- ─────────────────────────────────────────────────────────
 -- Menu Items
+-- 18 stalls × 4 items each = 72 menu items
+-- Existing local images are kept.
+-- New items without images use NULL.
+-- Do not use /images/default-food.jpg.
 -- ─────────────────────────────────────────────────────────
 
 INSERT INTO "Menu" (
@@ -125,80 +130,598 @@ INSERT INTO "Menu" (
     "is_available",
     "is_popular"
 ) VALUES
-('Bibimbap', 'Classic', 'Mixed rice bowl with vegetables, egg, and Korean sauce.', 4.30, 1, 1, 'Rice', '/images/Menu/Korean_Kitchen/Korean_Kitchen-Bibimbap.jpg', TRUE, TRUE),
-('Kimchi Soup', 'None', 'Warm kimchi soup served with rice.', 4.30, 1, 1, 'Soup', '/images/Menu/Korean_Kitchen/Korean_Kitchen-Kimchi_Soup.webp', TRUE, FALSE),
-('Omelette Rice', 'Chicken Cutlet', 'Omelette rice served with crispy chicken cutlet.', 4.50, 1, 1, 'Rice', '/images/Menu/Korean_Kitchen/Korean_Kitchen-Omelette_Rice.jpg', TRUE, FALSE),
+-- Stall 1: Korean Kitchen
+('Classic Bibimbap Bowl', 'Classic', 'Korean mixed rice bowl with vegetables, egg, sesame oil, and gochujang sauce.', 4.30, 1, 1, 'Rice', '/images/Menu/Korean_Kitchen/Korean_Kitchen-Bibimbap.jpg', TRUE, TRUE),
+('Kimchi Tofu Soup', 'None', 'Hot kimchi soup served with tofu, vegetables, and a small portion of rice.', 4.30, 1, 1, 'Soup', '/images/Menu/Korean_Kitchen/Korean_Kitchen-Kimchi_Soup.webp', TRUE, FALSE),
+('Chicken Cutlet Omelette Rice', 'Chicken Cutlet', 'Omelette rice served with crispy chicken cutlet and savoury sauce.', 4.50, 1, 1, 'Rice', '/images/Menu/Korean_Kitchen/Korean_Kitchen-Omelette_Rice.jpg', TRUE, FALSE),
+('Soy Garlic Chicken Rice', 'Boneless Chicken', 'Soy garlic chicken pieces served with rice and vegetables.', 5.60, 1, 1, 'Chicken', NULL, FALSE, FALSE),
 
-('Curry Rice', 'Chicken Katsu', 'Japanese curry rice topped with chicken katsu.', 4.80, 2, 1, 'Rice', '/images/Menu/Japanese_Bento/Japanese_Bento-ChickenKatsu_CurryRice.jpg', TRUE, TRUE),
-('Curry Rice', 'Cheese Omelette', 'Japanese curry rice with soft cheese omelette.', 3.80, 2, 1, 'Rice', '/images/Menu/Japanese_Bento/Japanese_Bento-CheeseOmelette_CurryRice.jpg', TRUE, FALSE),
-('Chicken Katsu Don', 'None', 'Rice bowl topped with chicken katsu and sauce.', 4.30, 2, 1, 'Rice', '/images/Menu/Japanese_Bento/Japanese_Bento-ChickenKatsu_Don.webp', TRUE, FALSE),
-('Tamago', 'Tori', 'Japanese egg dish served with chicken topping.', 4.80, 2, 1, 'Japanese', '/images/Menu/Japanese_Bento/Japanese_Bento-Tamago_Tori.jpg', TRUE, FALSE),
+-- Stall 2: Japanese Bento
+('Chicken Katsu Curry Bento', 'Chicken Katsu', 'Japanese curry rice topped with crispy chicken katsu.', 4.80, 2, 1, 'Rice', '/images/Menu/Japanese_Bento/Japanese_Bento-ChickenKatsu_CurryRice.jpg', TRUE, TRUE),
+('Cheese Omelette Curry Rice', 'Cheese Omelette', 'Japanese curry rice served with a soft cheese omelette.', 3.80, 2, 1, 'Rice', '/images/Menu/Japanese_Bento/Japanese_Bento-CheeseOmelette_CurryRice.jpg', TRUE, FALSE),
+('Chicken Katsu Don', 'None', 'Rice bowl topped with chicken katsu and savoury Japanese sauce.', 4.30, 2, 1, 'Rice', '/images/Menu/Japanese_Bento/Japanese_Bento-ChickenKatsu_Don.webp', TRUE, FALSE),
+('Ebi Tempura Udon', 'Prawn Tempura', 'Udon noodles served with prawn tempura and warm broth.', 5.40, 2, 1, 'Noodles', NULL, TRUE, FALSE),
 
-('Steamed Chicken Rice', 'None', 'Steamed chicken with fragrant rice, soup, and chilli.', 3.30, 3, 1, 'Chicken', '/images/Menu/Chicken_Rice_Corner/Chicken_Rice_Corner-Steamed_ChickenRice.png', TRUE, TRUE),
-('Roasted Chicken Rice', 'None', 'Roasted chicken served with fragrant rice and soup.', 3.30, 3, 1, 'Chicken', '/images/Menu/Chicken_Rice_Corner/Chicken_Rice_Corner-Roasted_ChickenRice.jpg', TRUE, FALSE),
+-- Stall 3: Chicken Rice Corner
+('Steamed Chicken Rice', 'None', 'Steamed chicken with fragrant rice, soup, cucumber, and chilli.', 3.30, 3, 1, 'Chicken', '/images/Menu/Chicken_Rice_Corner/Chicken_Rice_Corner-Steamed_ChickenRice.png', TRUE, TRUE),
+('Roasted Chicken Rice', 'None', 'Roasted chicken served with fragrant rice, soup, and dark sauce.', 3.30, 3, 1, 'Chicken', '/images/Menu/Chicken_Rice_Corner/Chicken_Rice_Corner-Roasted_ChickenRice.jpg', TRUE, FALSE),
 ('Chicken Rice Set', 'None', 'Chicken rice set with extra vegetables and soup.', 4.20, 3, 1, 'Chicken', '/images/Menu/Chicken_Rice_Corner/Chicken_Rice_Corner-Chicken_RiceSet.png', TRUE, FALSE),
+('Chicken Porridge', 'Warm Bowl', 'Soft rice porridge served with shredded chicken and spring onions.', 3.20, 3, 1, 'Chicken', NULL, TRUE, FALSE),
 
-('Dumpling Noodles', 'Dry', 'Noodles served with dumplings and savoury sauce.', 3.50, 4, 2, 'Noodles', '/images/Menu/Noodle_House/Noodle_House-Dumpling_Noodles.jpg', TRUE, FALSE),
-('Ban Mian', 'Soup', 'Handmade noodles served in warm soup.', 3.50, 4, 2, 'Noodles', '/images/Menu/Noodle_House/Noodle_House-Ban_Mian.jfif', TRUE, TRUE),
-('Fish Soup', 'Rice', 'Light fish soup served with rice.', 4.50, 4, 2, 'Soup', '/images/Menu/Noodle_House/Noodle_House-Fish_Soup.jpg', TRUE, FALSE),
+-- Stall 4: Noodle House
+('Dry Dumpling Noodles', 'Dry', 'Dry noodles served with dumplings and savoury sauce.', 3.50, 4, 2, 'Noodles', '/images/Menu/Noodle_House/Noodle_House-Dumpling_Noodles.jpg', TRUE, FALSE),
+('Ban Mian Soup', 'Soup', 'Handmade noodles served in warm soup with vegetables and egg.', 3.50, 4, 2, 'Noodles', '/images/Menu/Noodle_House/Noodle_House-Ban_Mian.jfif', TRUE, TRUE),
+('Fish Soup with Rice', 'Rice', 'Light fish soup served with rice and vegetables.', 4.50, 4, 2, 'Soup', '/images/Menu/Noodle_House/Noodle_House-Fish_Soup.jpg', TRUE, FALSE),
+('Spicy Laksa Noodles', 'Coconut Broth', 'Noodles served in spicy coconut laksa broth.', 4.80, 4, 2, 'Noodles', NULL, TRUE, TRUE),
 
+-- Stall 5: Japanese Express
 ('Teriyaki Chicken Rice', 'None', 'Chicken teriyaki served with rice and vegetables.', 4.30, 5, 2, 'Rice', '/images/Menu/Japanese_Express/Japanese_Express-Teriyaki_ChickenRice.jpg', FALSE, TRUE),
-('Salmon Don', 'None', 'Japanese salmon rice bowl with sauce.', 5.20, 5, 2, 'Rice', '/images/Menu/Japanese_Express/Japanese_Express-Salmon_Don.png', FALSE, FALSE),
-('Miso Soup', 'None', 'Simple warm miso soup.', 2.20, 5, 2, 'Soup', '/images/Menu/Japanese_Express/Japanese_Express-Miso_Soup.jpg', FALSE, FALSE),
+('Salmon Don', 'None', 'Japanese salmon rice bowl served with sauce and vegetables.', 5.20, 5, 2, 'Rice', '/images/Menu/Japanese_Express/Japanese_Express-Salmon_Don.png', FALSE, FALSE),
+('Miso Soup', 'None', 'Simple warm miso soup with tofu and seaweed.', 2.20, 5, 2, 'Soup', '/images/Menu/Japanese_Express/Japanese_Express-Miso_Soup.jpg', FALSE, FALSE),
+('Beef Gyudon Bowl', 'Sliced Beef', 'Japanese beef rice bowl with onions and sweet savoury sauce.', 5.50, 5, 2, 'Rice', NULL, FALSE, TRUE),
 
-('Vegetarian Rice Set', 'Daily Vegetables', 'Vegetarian rice set with tofu and vegetables.', 4.30, 6, 2, 'Vegetarian', '/images/Menu/Green_Plate/Green_Plate-Vegetarian_RiceSet.webp', TRUE, TRUE),
+-- Stall 6: Green Plate
+('Vegetarian Rice Set', 'Daily Vegetables', 'Vegetarian rice set with tofu, vegetables, and light sauce.', 4.30, 6, 2, 'Vegetarian', '/images/Menu/Green_Plate/Green_Plate-Vegetarian_RiceSet.webp', TRUE, TRUE),
 ('Tofu Noodle Bowl', 'Vegan', 'Noodle bowl with tofu, greens, and light sauce.', 4.50, 6, 2, 'Vegan', '/images/Menu/Green_Plate/Green_Plate-Tofu_NoodleBowl.jpg', TRUE, FALSE),
 ('Vegetable Soup', 'Vegan', 'Warm vegetable soup with tofu and greens.', 3.80, 6, 2, 'Vegan', '/images/Menu/Green_Plate/Green_Plate-Vegetable_Soup.png', TRUE, FALSE),
+('Buddha Bowl', 'Vegan Bowl', 'Vegan bowl with rice, tofu, vegetables, and dressing.', 5.20, 6, 2, 'Vegan', NULL, TRUE, TRUE),
 
-('Curry Rice', 'Chicken Katsu', 'Japanese curry rice with crispy chicken katsu.', 4.30, 7, 3, 'Rice', '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-ChickenKatsu_CurryRice.webp', TRUE, TRUE),
-('Curry Rice', 'Vegetable Croquette', 'Japanese curry rice with vegetable croquette.', 4.10, 7, 3, 'Vegetarian', '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-Vegetable Croquette.webp', TRUE, FALSE),
-('Curry Rice', 'Chicken Nuggets', 'Japanese curry rice with chicken nuggets.', 4.30, 7, 3, 'Rice', '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-ChickenNuggets_CurryRice.webp', TRUE, FALSE),
+-- Stall 7: Japanese Curry House
+('Chicken Katsu Curry Bowl', 'Chicken Katsu', 'Japanese curry rice with crispy chicken katsu.', 4.30, 7, 3, 'Rice', '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-ChickenKatsu_CurryRice.webp', TRUE, TRUE),
+('Vegetable Croquette Curry', 'Vegetable Croquette', 'Japanese curry rice with a crispy vegetable croquette.', 4.10, 7, 3, 'Vegetarian', '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-Vegetable Croquette.webp', TRUE, FALSE),
+('Chicken Nuggets Curry Rice', 'Chicken Nuggets', 'Japanese curry rice with chicken nuggets.', 4.30, 7, 3, 'Rice', '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-ChickenNuggets_CurryRice.webp', TRUE, FALSE),
+('Curry Udon', 'Mild Curry Broth', 'Udon noodles served in mild Japanese curry broth.', 4.80, 7, 3, 'Noodles', NULL, TRUE, FALSE),
 
-('Bibimbap', 'Spicy Chicken', 'Bibimbap topped with spicy chicken and vegetables.', 4.80, 8, 3, 'Rice', '/images/Menu/Korean_Bowl/Korean_Bowl-SpicyChicken_Bibimbap.jpg', TRUE, TRUE),
-('Chicken Cutlet Rice', 'None', 'Chicken cutlet served with rice and sauce.', 5.00, 8, 3, 'Chicken', '/images/Menu/Korean_Bowl/Korean_Bowl-Chicken_CutletRice.jpg', TRUE, FALSE),
-('Kimchi Fried Rice', 'None', 'Fried rice with kimchi and egg.', 4.50, 8, 3, 'Rice', '/images/Menu/Korean_Bowl/Korean_Bowl-Kimchi_FriedRice.jpg', TRUE, FALSE),
+-- Stall 8: Korean Bowl
+('Spicy Chicken Bibimbap', 'Spicy Chicken', 'Bibimbap topped with spicy chicken, vegetables, and egg.', 4.80, 8, 3, 'Rice', '/images/Menu/Korean_Bowl/Korean_Bowl-SpicyChicken_Bibimbap.jpg', TRUE, TRUE),
+('Chicken Cutlet Rice', 'None', 'Chicken cutlet served with rice and Korean-style sauce.', 5.00, 8, 3, 'Chicken', '/images/Menu/Korean_Bowl/Korean_Bowl-Chicken_CutletRice.jpg', TRUE, FALSE),
+('Kimchi Fried Rice', 'None', 'Fried rice cooked with kimchi, egg, and Korean seasoning.', 4.50, 8, 3, 'Rice', '/images/Menu/Korean_Bowl/Korean_Bowl-Kimchi_FriedRice.jpg', TRUE, FALSE),
+('Japchae Glass Noodles', 'Stir Fried', 'Korean glass noodles stir-fried with vegetables.', 4.70, 8, 3, 'Noodles', NULL, TRUE, FALSE),
 
+-- Stall 9: Hainanese Chicken Rice
 ('Steamed Chicken Rice', 'None', 'Tender steamed chicken rice with soup.', 3.30, 9, 3, 'Chicken', '/images/Menu/Hainanese_Chicken_Rice/Hainanese_Chicken_Rice-Steamed_ChickenRice.png', TRUE, TRUE),
 ('Roasted Chicken Rice', 'None', 'Roasted chicken rice with chilli and soup.', 3.30, 9, 3, 'Chicken', '/images/Menu/Hainanese_Chicken_Rice/Hainanese_Chicken_Rice-Roasted_ChickenRice.jpg', TRUE, FALSE),
 ('Char Siew Chicken Rice', 'None', 'Chicken rice served with char siew style sauce.', 4.30, 9, 3, 'Chicken', '/images/Menu/Hainanese_Chicken_Rice/Hainanese_Chicken_Rice-CharSiew_ChickenRice.avif', TRUE, FALSE),
+('Roasted Drumstick Rice', 'Drumstick', 'Roasted chicken drumstick served with fragrant rice.', 4.80, 9, 3, 'Chicken', NULL, TRUE, TRUE),
 
-('Steamed Chicken Rice', 'None', 'Simple steamed chicken rice meal.', 3.30, 10, 4, 'Chicken', '/images/Menu/Express_Chicken_Rice/Express_Chicken_Rice-Steamed_ChickenRice.png', TRUE, TRUE),
-('Roasted Chicken Rice', 'None', 'Roasted chicken rice served with soup.', 3.30, 10, 4, 'Chicken', '/images/Menu/Express_Chicken_Rice/Express_Chicken_Rice-Roasted_ChickenRice.jpg', TRUE, FALSE),
+-- Stall 10: Express Chicken Rice
+('Steamed Chicken Rice Bowl', 'None', 'Simple steamed chicken rice meal with soup and chilli.', 3.30, 10, 4, 'Chicken', '/images/Menu/Express_Chicken_Rice/Express_Chicken_Rice-Steamed_ChickenRice.png', TRUE, TRUE),
+('Roasted Chicken Rice Bowl', 'None', 'Roasted chicken rice served with soup and chilli.', 3.30, 10, 4, 'Chicken', '/images/Menu/Express_Chicken_Rice/Express_Chicken_Rice-Roasted_ChickenRice.jpg', TRUE, FALSE),
 ('Chicken Cutlet Noodles', 'None', 'Noodles served with crispy chicken cutlet.', 4.50, 10, 4, 'Noodles', '/images/Menu/Express_Chicken_Rice/Express_Chicken_Rice-Chicken_Cutlet_Noodles.webp', TRUE, FALSE),
+('Lemon Chicken Rice', 'Crispy Chicken', 'Crispy lemon chicken served with rice.', 4.40, 10, 4, 'Chicken', NULL, TRUE, TRUE),
 
-('Dumpling Noodles', 'Soup', 'Soup noodles served with dumplings.', 4.00, 11, 4, 'Noodles', '/images/Menu/Ban_Mian_House/Ban_Mian-Dumpling_Noodles.jpg', TRUE, FALSE),
-('Ban Mian', 'Dry', 'Dry ban mian served with minced meat and sauce.', 4.00, 11, 4, 'Noodles', '/images/Menu/Ban_Mian_House/Ban_Mian_House-Ban_Mian.jfif', TRUE, TRUE),
-('Seafood Noodle', 'Soup', 'Noodles served with seafood and soup.', 4.50, 11, 4, 'Noodles', '/images/Menu/Ban_Mian_House/Ban_Mian_House-Seafood_Noodle.avif', TRUE, FALSE),
+-- Stall 11: Ban Mian House
+('Dumpling Noodles Soup', 'Soup', 'Soup noodles served with dumplings.', 4.00, 11, 4, 'Noodles', '/images/Menu/Ban_Mian_House/Ban_Mian-Dumpling_Noodles.jpg', TRUE, FALSE),
+('Dry Ban Mian', 'Dry', 'Dry ban mian served with minced meat and sauce.', 4.00, 11, 4, 'Noodles', '/images/Menu/Ban_Mian_House/Ban_Mian_House-Ban_Mian.jfif', TRUE, TRUE),
+('Seafood Noodle Soup', 'Soup', 'Noodles served with seafood and soup.', 4.50, 11, 4, 'Noodles', '/images/Menu/Ban_Mian_House/Ban_Mian_House-Seafood_Noodle.avif', TRUE, FALSE),
+('Tom Yum Ban Mian', 'Spicy Soup', 'Ban mian noodles served in spicy tom yum soup.', 4.80, 11, 4, 'Noodles', NULL, TRUE, TRUE),
 
-('Korean Chicken Bowl', 'Sweet & Spicy', 'Korean chicken bowl with sweet and spicy sauce.', 4.50, 12, 4, 'Chicken', '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken-SweetSpicy_ChickenBowl.jpg', FALSE, TRUE),
-('Korean Chicken Bowl', 'Mala', 'Korean chicken bowl with mala sauce.', 4.50, 12, 4, 'Chicken', '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken_Mala_ChickenBowl.jpg', FALSE, FALSE),
-('Korean Chicken Bowl', 'Honey Mustard', 'Korean chicken bowl with honey mustard sauce.', 4.50, 12, 4, 'Chicken', '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken-HoneyMustard_ChickenBowl.jpg', FALSE, FALSE),
+-- Stall 12: Korean Fried Chicken
+('Sweet Spicy Chicken Bowl', 'Sweet & Spicy', 'Korean chicken bowl with sweet and spicy sauce.', 4.50, 12, 4, 'Chicken', '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken-SweetSpicy_ChickenBowl.jpg', FALSE, TRUE),
+('Mala Chicken Bowl', 'Mala', 'Korean chicken bowl with mala sauce.', 4.50, 12, 4, 'Chicken', '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken_Mala_ChickenBowl.jpg', FALSE, FALSE),
+('Honey Mustard Chicken Bowl', 'Honey Mustard', 'Korean chicken bowl with honey mustard sauce.', 4.50, 12, 4, 'Chicken', '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken-HoneyMustard_ChickenBowl.jpg', FALSE, FALSE),
+('Yangnyeom Chicken Bites', 'Spicy Sauce', 'Korean chicken bites coated with spicy yangnyeom sauce.', 5.80, 12, 4, 'Chicken', NULL, FALSE, TRUE),
 
-('Fried Chicken', '2 Piece Meal', 'Two pieces of fried chicken served with a side.', 5.50, 13, 5, 'Chicken', '/images/Menu/KFC/KFC-2P_FriendChicken.png', TRUE, TRUE),
+-- Stall 13: KFC
+('Two Piece Fried Chicken Meal', '2 Piece Meal', 'Two pieces of fried chicken served with a side.', 5.50, 13, 5, 'Chicken', '/images/Menu/KFC/KFC-2P_FriendChicken.png', TRUE, TRUE),
 ('Mac N Cheese', 'Regular', 'Creamy mac and cheese side dish.', 5.50, 13, 5, 'Sides', '/images/Menu/KFC/KFC-MacNCheese.webp', TRUE, FALSE),
 ('Chicken Wrap', 'Original', 'Chicken wrap with vegetables and sauce.', 6.00, 13, 5, 'Chicken', '/images/Menu/KFC/KFC-Chicken_Wrap.png', TRUE, FALSE),
+('Zinger Burger', 'Spicy Chicken', 'Spicy chicken burger with lettuce and sauce.', 6.40, 13, 5, 'Burger', NULL, TRUE, TRUE),
 
+-- Stall 14: Subway
 ('Chicken Delight Sub', '6-inch', 'Fresh sub with chicken, vegetables, and sauce.', 6.80, 14, 5, 'Sandwich', '/images/Menu/Subway/Subway-Chicken_Delight_Sub.jpg', TRUE, TRUE),
-('Spicy Beef Taco', '6-inch', 'Subway-style sandwich with spicy beef filling.', 6.80, 14, 5, 'Sandwich', '/images/Menu/Subway/Subway-Spicy_BeefTaco.jpg', TRUE, FALSE),
-('Veggie Delight', '6-inch', 'Vegetarian sub with fresh vegetables and sauce.', 6.80, 14, 5, 'Vegetarian', '/images/Menu/Subway/Subway-Veggie_Delight.jpg', TRUE, TRUE),
+('Spicy Beef Taco Sub', '6-inch', 'Subway-style sandwich with spicy beef filling.', 6.80, 14, 5, 'Sandwich', '/images/Menu/Subway/Subway-Spicy_BeefTaco.jpg', TRUE, FALSE),
+('Veggie Delight Sub', '6-inch', 'Vegetarian sub with fresh vegetables and sauce.', 6.80, 14, 5, 'Vegetarian', '/images/Menu/Subway/Subway-Veggie_Delight.jpg', TRUE, TRUE),
+('Tuna Mayo Sub', '6-inch', 'Sub sandwich with tuna mayo and vegetables.', 6.20, 14, 5, 'Sandwich', NULL, TRUE, FALSE),
 
+-- Stall 15: Brunch Cafe
 ('Chicken Mayo Sandwich', 'Toast', 'Toasted sandwich with chicken mayo filling.', 4.80, 15, 5, 'Sandwich', '/images/Menu/Brunch%20Cafe/Brunch_Cafe-Chicken_Mayo_Sandwich.jpg', TRUE, FALSE),
-('Mushroom Pasta', 'Cream Sauce', 'Pasta with mushrooms and cream sauce.', 5.20, 15, 5, 'Western', '/images/Menu/Brunch%20Cafe/Brunch_Cafe-Mushroom_Pasta.webp', TRUE, TRUE),
+('Mushroom Cream Pasta', 'Cream Sauce', 'Pasta with mushrooms and cream sauce.', 5.20, 15, 5, 'Western', '/images/Menu/Brunch%20Cafe/Brunch_Cafe-Mushroom_Pasta.webp', TRUE, TRUE),
 ('Iced Latte', 'Regular', 'Chilled latte for a quick cafe drink.', 3.80, 15, 5, 'Drinks', '/images/Menu/Brunch%20Cafe/Brunch_Cafe-Iced_Latte.jpg', TRUE, FALSE),
+('Scrambled Egg Toast', 'Breakfast', 'Toast served with scrambled egg.', 4.20, 15, 5, 'Western', NULL, TRUE, TRUE),
 
+-- Stall 16: Japanese Food
 ('Chicken Udon Soup', 'None', 'Udon soup served with chicken slices.', 4.50, 16, 6, 'Noodles', '/images/Menu/Japanese_Food/Japanese_Food-Chicken_Udon_Soup.jpg', TRUE, TRUE),
 ('Fried Black Pepper Udon', 'None', 'Fried udon with black pepper sauce.', 4.50, 16, 6, 'Noodles', '/images/Menu/Japanese_Food/Japanese_Food-Fried_BlackPepper_Udon.JPG', TRUE, FALSE),
 ('Chicken BBQ Rice', 'None', 'Japanese BBQ chicken served with rice.', 4.50, 16, 6, 'Rice', '/images/Menu/Japanese_Food/Japanese_Food-Chicken_BBQRice.webp', TRUE, FALSE),
+('Beef Yakiniku Rice', 'Grilled Beef', 'Japanese grilled beef served with rice.', 5.60, 16, 6, 'Rice', NULL, TRUE, TRUE),
 
-('Steamed Chicken Rice', 'None', 'Halal-friendly steamed chicken rice with soup.', 3.30, 17, 6, 'Chicken', '/images/Menu/Chicken_Rice_Station/Chicken_Rice_Station-Steamed_ChickenRice.png', TRUE, TRUE),
-('Roasted Chicken Rice', 'None', 'Halal-friendly roasted chicken rice with chilli.', 3.30, 17, 6, 'Chicken', '/images/Menu/Chicken_Rice_Station/Chicken_Rice_Station-Roasted_Chicken_Rice.jpg', TRUE, FALSE),
+-- Stall 17: Chicken Rice Station
+('Halal Steamed Chicken Rice', 'None', 'Halal-friendly steamed chicken rice with soup.', 3.30, 17, 6, 'Chicken', '/images/Menu/Chicken_Rice_Station/Chicken_Rice_Station-Steamed_ChickenRice.png', TRUE, TRUE),
+('Halal Roasted Chicken Rice', 'None', 'Halal-friendly roasted chicken rice with chilli.', 3.30, 17, 6, 'Chicken', '/images/Menu/Chicken_Rice_Station/Chicken_Rice_Station-Roasted_Chicken_Rice.jpg', TRUE, FALSE),
 ('Chicken Rice Set', 'None', 'Chicken rice set with vegetables and soup.', 4.20, 17, 6, 'Chicken', '/images/Menu/Chicken_Rice_Station/Chicken_Rice_Station-Chicken_Rice_Set.png', TRUE, FALSE),
+('Roasted Drumstick Rice', 'Halal Drumstick', 'Halal-friendly roasted drumstick rice.', 4.80, 17, 6, 'Chicken', NULL, TRUE, TRUE),
 
-('Ban Mian', 'Soup', 'Warm ban mian soup with vegetables.', 3.50, 18, 6, 'Noodles', '/images/Menu/Soup%20Stall/Soup_Stall-Ban_Mian.jfif', FALSE, FALSE),
-('Beef Noodles', 'Soup', 'Beef noodles in warm broth.', 4.50, 18, 6, 'Noodles', '/images/Menu/Soup%20Stall/Soup_Stall-Beef_Noodles.avif', FALSE, TRUE),
-('Fish Soup', 'Rice', 'Light fish soup served with rice.', 4.50, 18, 6, 'Soup', '/images/Menu/Soup%20Stall/Soup_Stall-Fish_Soup.png', FALSE, FALSE);
+-- Stall 18: Soup Stall
+('Ban Mian Soup', 'Soup', 'Warm ban mian soup with vegetables.', 3.50, 18, 6, 'Noodles', '/images/Menu/Soup%20Stall/Soup_Stall-Ban_Mian.jfif', FALSE, FALSE),
+('Beef Noodle Soup', 'Soup', 'Beef noodles in warm broth.', 4.50, 18, 6, 'Noodles', '/images/Menu/Soup%20Stall/Soup_Stall-Beef_Noodles.avif', FALSE, TRUE),
+('Fish Soup with Rice', 'Rice', 'Light fish soup served with rice.', 4.50, 18, 6, 'Soup', '/images/Menu/Soup%20Stall/Soup_Stall-Fish_Soup.png', FALSE, FALSE),
+('Herbal Chicken Soup', 'Warm Bowl', 'Herbal chicken soup served hot.', 5.20, 18, 6, 'Soup', NULL, FALSE, TRUE);
 
--- Improve menu item descriptions and add estimated dish metadata
+
+-- ─────────────────────────────────────────────────────────
+-- Add review/stat columns for Review Hub
+-- Safe even if schema.sql already has these columns.
+-- ─────────────────────────────────────────────────────────
+
+ALTER TABLE "Menu"
+ADD COLUMN IF NOT EXISTS "item_rating" DECIMAL(2,1) DEFAULT 4.0,
+ADD COLUMN IF NOT EXISTS "item_review_count" INT DEFAULT 0,
+ADD COLUMN IF NOT EXISTS "taste_rating" DECIMAL(2,1) DEFAULT 4.0,
+ADD COLUMN IF NOT EXISTS "value_rating" DECIMAL(2,1) DEFAULT 4.0,
+ADD COLUMN IF NOT EXISTS "portion_rating" DECIMAL(2,1) DEFAULT 4.0,
+ADD COLUMN IF NOT EXISTS "order_count" INT DEFAULT 0;
+
+
+-- ─────────────────────────────────────────────────────────
+-- Seed review stats for menu items
+-- These are starting values for Review Hub.
+-- Real review calculation will be added later.
+-- ─────────────────────────────────────────────────────────
+
+UPDATE "Menu"
+SET
+  "item_rating" = CASE "food_id"
+    WHEN 1 THEN 4.6
+    WHEN 2 THEN 4.3
+    WHEN 3 THEN 4.1
+    WHEN 4 THEN 3.9
+    WHEN 5 THEN 4.7
+    WHEN 6 THEN 4.2
+    WHEN 7 THEN 4.4
+    WHEN 8 THEN 4.1
+    WHEN 9 THEN 4.7
+    WHEN 10 THEN 4.4
+    WHEN 11 THEN 4.5
+    WHEN 12 THEN 4.0
+    WHEN 13 THEN 4.2
+    WHEN 14 THEN 4.5
+    WHEN 15 THEN 4.1
+    WHEN 16 THEN 4.4
+    WHEN 17 THEN 4.3
+    WHEN 18 THEN 4.1
+    WHEN 19 THEN 3.9
+    WHEN 20 THEN 4.4
+    WHEN 21 THEN 4.6
+    WHEN 22 THEN 4.2
+    WHEN 23 THEN 4.0
+    WHEN 24 THEN 4.7
+    WHEN 25 THEN 4.7
+    WHEN 26 THEN 4.2
+    WHEN 27 THEN 4.1
+    WHEN 28 THEN 4.3
+    WHEN 29 THEN 4.8
+    WHEN 30 THEN 4.3
+    WHEN 31 THEN 4.2
+    WHEN 32 THEN 4.0
+    WHEN 33 THEN 4.8
+    WHEN 34 THEN 4.5
+    WHEN 35 THEN 4.3
+    WHEN 36 THEN 4.6
+    WHEN 37 THEN 4.4
+    WHEN 38 THEN 4.2
+    WHEN 39 THEN 4.1
+    WHEN 40 THEN 4.5
+    WHEN 41 THEN 4.1
+    WHEN 42 THEN 4.5
+    WHEN 43 THEN 4.2
+    WHEN 44 THEN 4.6
+    WHEN 45 THEN 4.6
+    WHEN 46 THEN 4.1
+    WHEN 47 THEN 4.3
+    WHEN 48 THEN 4.7
+    WHEN 49 THEN 4.5
+    WHEN 50 THEN 4.0
+    WHEN 51 THEN 4.2
+    WHEN 52 THEN 4.6
+    WHEN 53 THEN 4.6
+    WHEN 54 THEN 4.2
+    WHEN 55 THEN 4.7
+    WHEN 56 THEN 4.1
+    WHEN 57 THEN 4.1
+    WHEN 58 THEN 4.4
+    WHEN 59 THEN 4.0
+    WHEN 60 THEN 4.5
+    WHEN 61 THEN 4.4
+    WHEN 62 THEN 4.2
+    WHEN 63 THEN 4.3
+    WHEN 64 THEN 4.6
+    WHEN 65 THEN 4.6
+    WHEN 66 THEN 4.3
+    WHEN 67 THEN 4.2
+    WHEN 68 THEN 4.7
+    WHEN 69 THEN 4.1
+    WHEN 70 THEN 4.5
+    WHEN 71 THEN 4.0
+    WHEN 72 THEN 4.3
+    ELSE 4.0
+  END,
+
+  "item_review_count" = CASE "food_id"
+    WHEN 1 THEN 94
+    WHEN 2 THEN 47
+    WHEN 3 THEN 38
+    WHEN 4 THEN 19
+    WHEN 5 THEN 106
+    WHEN 6 THEN 41
+    WHEN 7 THEN 62
+    WHEN 8 THEN 27
+    WHEN 9 THEN 168
+    WHEN 10 THEN 124
+    WHEN 11 THEN 89
+    WHEN 12 THEN 36
+    WHEN 13 THEN 44
+    WHEN 14 THEN 77
+    WHEN 15 THEN 58
+    WHEN 16 THEN 63
+    WHEN 17 THEN 39
+    WHEN 18 THEN 28
+    WHEN 19 THEN 15
+    WHEN 20 THEN 31
+    WHEN 21 THEN 91
+    WHEN 22 THEN 52
+    WHEN 23 THEN 36
+    WHEN 24 THEN 73
+    WHEN 25 THEN 132
+    WHEN 26 THEN 48
+    WHEN 27 THEN 35
+    WHEN 28 THEN 42
+    WHEN 29 THEN 144
+    WHEN 30 THEN 68
+    WHEN 31 THEN 57
+    WHEN 32 THEN 26
+    WHEN 33 THEN 186
+    WHEN 34 THEN 142
+    WHEN 35 THEN 64
+    WHEN 36 THEN 97
+    WHEN 37 THEN 111
+    WHEN 38 THEN 83
+    WHEN 39 THEN 46
+    WHEN 40 THEN 71
+    WHEN 41 THEN 35
+    WHEN 42 THEN 88
+    WHEN 43 THEN 54
+    WHEN 44 THEN 69
+    WHEN 45 THEN 102
+    WHEN 46 THEN 41
+    WHEN 47 THEN 58
+    WHEN 48 THEN 76
+    WHEN 49 THEN 208
+    WHEN 50 THEN 87
+    WHEN 51 THEN 96
+    WHEN 52 THEN 176
+    WHEN 53 THEN 129
+    WHEN 54 THEN 74
+    WHEN 55 THEN 118
+    WHEN 56 THEN 51
+    WHEN 57 THEN 42
+    WHEN 58 THEN 66
+    WHEN 59 THEN 31
+    WHEN 60 THEN 58
+    WHEN 61 THEN 73
+    WHEN 62 THEN 49
+    WHEN 63 THEN 53
+    WHEN 64 THEN 81
+    WHEN 65 THEN 121
+    WHEN 66 THEN 86
+    WHEN 67 THEN 59
+    WHEN 68 THEN 93
+    WHEN 69 THEN 28
+    WHEN 70 THEN 54
+    WHEN 71 THEN 22
+    WHEN 72 THEN 39
+    ELSE 0
+  END,
+
+  "taste_rating" = CASE "food_id"
+    WHEN 1 THEN 4.7
+    WHEN 2 THEN 4.4
+    WHEN 3 THEN 4.2
+    WHEN 4 THEN 4.0
+    WHEN 5 THEN 4.8
+    WHEN 6 THEN 4.3
+    WHEN 7 THEN 4.5
+    WHEN 8 THEN 4.2
+    WHEN 9 THEN 4.7
+    WHEN 10 THEN 4.5
+    WHEN 11 THEN 4.4
+    WHEN 12 THEN 4.0
+    WHEN 13 THEN 4.2
+    WHEN 14 THEN 4.6
+    WHEN 15 THEN 4.1
+    WHEN 16 THEN 4.6
+    WHEN 17 THEN 4.4
+    WHEN 18 THEN 4.2
+    WHEN 19 THEN 3.9
+    WHEN 20 THEN 4.5
+    WHEN 21 THEN 4.5
+    WHEN 22 THEN 4.1
+    WHEN 23 THEN 4.0
+    WHEN 24 THEN 4.6
+    WHEN 25 THEN 4.8
+    WHEN 26 THEN 4.2
+    WHEN 27 THEN 4.1
+    WHEN 28 THEN 4.4
+    WHEN 29 THEN 4.9
+    WHEN 30 THEN 4.4
+    WHEN 31 THEN 4.3
+    WHEN 32 THEN 4.0
+    WHEN 33 THEN 4.8
+    WHEN 34 THEN 4.6
+    WHEN 35 THEN 4.3
+    WHEN 36 THEN 4.7
+    WHEN 37 THEN 4.5
+    WHEN 38 THEN 4.2
+    WHEN 39 THEN 4.1
+    WHEN 40 THEN 4.6
+    WHEN 41 THEN 4.2
+    WHEN 42 THEN 4.6
+    WHEN 43 THEN 4.3
+    WHEN 44 THEN 4.7
+    WHEN 45 THEN 4.7
+    WHEN 46 THEN 4.2
+    WHEN 47 THEN 4.4
+    WHEN 48 THEN 4.8
+    WHEN 49 THEN 4.6
+    WHEN 50 THEN 4.0
+    WHEN 51 THEN 4.2
+    WHEN 52 THEN 4.7
+    WHEN 53 THEN 4.6
+    WHEN 54 THEN 4.2
+    WHEN 55 THEN 4.7
+    WHEN 56 THEN 4.1
+    WHEN 57 THEN 4.1
+    WHEN 58 THEN 4.5
+    WHEN 59 THEN 4.0
+    WHEN 60 THEN 4.6
+    WHEN 61 THEN 4.4
+    WHEN 62 THEN 4.2
+    WHEN 63 THEN 4.3
+    WHEN 64 THEN 4.7
+    WHEN 65 THEN 4.6
+    WHEN 66 THEN 4.3
+    WHEN 67 THEN 4.2
+    WHEN 68 THEN 4.7
+    WHEN 69 THEN 4.1
+    WHEN 70 THEN 4.6
+    WHEN 71 THEN 4.0
+    WHEN 72 THEN 4.4
+    ELSE 4.2
+  END,
+
+  "value_rating" = CASE "food_id"
+    WHEN 1 THEN 4.4
+    WHEN 2 THEN 4.2
+    WHEN 3 THEN 4.1
+    WHEN 4 THEN 3.8
+    WHEN 5 THEN 4.3
+    WHEN 6 THEN 4.0
+    WHEN 7 THEN 4.2
+    WHEN 8 THEN 4.1
+    WHEN 9 THEN 4.8
+    WHEN 10 THEN 4.6
+    WHEN 11 THEN 4.4
+    WHEN 12 THEN 4.3
+    WHEN 13 THEN 4.3
+    WHEN 14 THEN 4.6
+    WHEN 15 THEN 4.0
+    WHEN 16 THEN 4.2
+    WHEN 17 THEN 4.1
+    WHEN 18 THEN 3.9
+    WHEN 19 THEN 4.2
+    WHEN 20 THEN 4.0
+    WHEN 21 THEN 4.5
+    WHEN 22 THEN 4.2
+    WHEN 23 THEN 4.1
+    WHEN 24 THEN 4.3
+    WHEN 25 THEN 4.5
+    WHEN 26 THEN 4.4
+    WHEN 27 THEN 4.1
+    WHEN 28 THEN 4.0
+    WHEN 29 THEN 4.4
+    WHEN 30 THEN 4.1
+    WHEN 31 THEN 4.3
+    WHEN 32 THEN 4.0
+    WHEN 33 THEN 4.8
+    WHEN 34 THEN 4.6
+    WHEN 35 THEN 4.2
+    WHEN 36 THEN 4.4
+    WHEN 37 THEN 4.6
+    WHEN 38 THEN 4.3
+    WHEN 39 THEN 4.1
+    WHEN 40 THEN 4.4
+    WHEN 41 THEN 4.2
+    WHEN 42 THEN 4.5
+    WHEN 43 THEN 4.1
+    WHEN 44 THEN 4.3
+    WHEN 45 THEN 4.4
+    WHEN 46 THEN 4.0
+    WHEN 47 THEN 4.2
+    WHEN 48 THEN 4.3
+    WHEN 49 THEN 4.2
+    WHEN 50 THEN 3.9
+    WHEN 51 THEN 4.0
+    WHEN 52 THEN 4.1
+    WHEN 53 THEN 4.1
+    WHEN 54 THEN 4.0
+    WHEN 55 THEN 4.2
+    WHEN 56 THEN 4.0
+    WHEN 57 THEN 4.0
+    WHEN 58 THEN 4.1
+    WHEN 59 THEN 3.8
+    WHEN 60 THEN 4.2
+    WHEN 61 THEN 4.2
+    WHEN 62 THEN 4.0
+    WHEN 63 THEN 4.1
+    WHEN 64 THEN 4.3
+    WHEN 65 THEN 4.7
+    WHEN 66 THEN 4.5
+    WHEN 67 THEN 4.3
+    WHEN 68 THEN 4.5
+    WHEN 69 THEN 4.0
+    WHEN 70 THEN 4.2
+    WHEN 71 THEN 3.9
+    WHEN 72 THEN 4.1
+    ELSE 4.1
+  END,
+
+  "portion_rating" = CASE "food_id"
+    WHEN 1 THEN 4.5
+    WHEN 2 THEN 4.0
+    WHEN 3 THEN 4.2
+    WHEN 4 THEN 4.1
+    WHEN 5 THEN 4.6
+    WHEN 6 THEN 4.3
+    WHEN 7 THEN 4.4
+    WHEN 8 THEN 4.0
+    WHEN 9 THEN 4.5
+    WHEN 10 THEN 4.4
+    WHEN 11 THEN 4.6
+    WHEN 12 THEN 3.8
+    WHEN 13 THEN 4.0
+    WHEN 14 THEN 4.4
+    WHEN 15 THEN 4.1
+    WHEN 16 THEN 4.3
+    WHEN 17 THEN 4.2
+    WHEN 18 THEN 4.0
+    WHEN 19 THEN 3.7
+    WHEN 20 THEN 4.3
+    WHEN 21 THEN 4.3
+    WHEN 22 THEN 4.1
+    WHEN 23 THEN 3.9
+    WHEN 24 THEN 4.5
+    WHEN 25 THEN 4.6
+    WHEN 26 THEN 4.2
+    WHEN 27 THEN 4.0
+    WHEN 28 THEN 4.3
+    WHEN 29 THEN 4.7
+    WHEN 30 THEN 4.4
+    WHEN 31 THEN 4.1
+    WHEN 32 THEN 4.0
+    WHEN 33 THEN 4.6
+    WHEN 34 THEN 4.5
+    WHEN 35 THEN 4.3
+    WHEN 36 THEN 4.7
+    WHEN 37 THEN 4.4
+    WHEN 38 THEN 4.2
+    WHEN 39 THEN 4.0
+    WHEN 40 THEN 4.5
+    WHEN 41 THEN 4.0
+    WHEN 42 THEN 4.5
+    WHEN 43 THEN 4.2
+    WHEN 44 THEN 4.6
+    WHEN 45 THEN 4.5
+    WHEN 46 THEN 4.0
+    WHEN 47 THEN 4.2
+    WHEN 48 THEN 4.6
+    WHEN 49 THEN 4.3
+    WHEN 50 THEN 3.9
+    WHEN 51 THEN 4.0
+    WHEN 52 THEN 4.4
+    WHEN 53 THEN 4.1
+    WHEN 54 THEN 4.0
+    WHEN 55 THEN 4.2
+    WHEN 56 THEN 4.0
+    WHEN 57 THEN 4.0
+    WHEN 58 THEN 4.2
+    WHEN 59 THEN 3.7
+    WHEN 60 THEN 4.3
+    WHEN 61 THEN 4.2
+    WHEN 62 THEN 4.0
+    WHEN 63 THEN 4.1
+    WHEN 64 THEN 4.4
+    WHEN 65 THEN 4.5
+    WHEN 66 THEN 4.4
+    WHEN 67 THEN 4.2
+    WHEN 68 THEN 4.6
+    WHEN 69 THEN 4.0
+    WHEN 70 THEN 4.3
+    WHEN 71 THEN 3.8
+    WHEN 72 THEN 4.2
+    ELSE 4.1
+  END,
+
+  "order_count" = CASE "food_id"
+    WHEN 1 THEN 156
+    WHEN 2 THEN 82
+    WHEN 3 THEN 61
+    WHEN 4 THEN 33
+    WHEN 5 THEN 171
+    WHEN 6 THEN 67
+    WHEN 7 THEN 101
+    WHEN 8 THEN 44
+    WHEN 9 THEN 244
+    WHEN 10 THEN 198
+    WHEN 11 THEN 137
+    WHEN 12 THEN 52
+    WHEN 13 THEN 73
+    WHEN 14 THEN 121
+    WHEN 15 THEN 90
+    WHEN 16 THEN 98
+    WHEN 17 THEN 63
+    WHEN 18 THEN 42
+    WHEN 19 THEN 23
+    WHEN 20 THEN 46
+    WHEN 21 THEN 132
+    WHEN 22 THEN 78
+    WHEN 23 THEN 49
+    WHEN 24 THEN 104
+    WHEN 25 THEN 211
+    WHEN 26 THEN 76
+    WHEN 27 THEN 59
+    WHEN 28 THEN 68
+    WHEN 29 THEN 228
+    WHEN 30 THEN 105
+    WHEN 31 THEN 87
+    WHEN 32 THEN 43
+    WHEN 33 THEN 286
+    WHEN 34 THEN 224
+    WHEN 35 THEN 92
+    WHEN 36 THEN 156
+    WHEN 37 THEN 171
+    WHEN 38 THEN 132
+    WHEN 39 THEN 69
+    WHEN 40 THEN 108
+    WHEN 41 THEN 54
+    WHEN 42 THEN 138
+    WHEN 43 THEN 81
+    WHEN 44 THEN 103
+    WHEN 45 THEN 168
+    WHEN 46 THEN 63
+    WHEN 47 THEN 91
+    WHEN 48 THEN 122
+    WHEN 49 THEN 322
+    WHEN 50 THEN 124
+    WHEN 51 THEN 143
+    WHEN 52 THEN 264
+    WHEN 53 THEN 183
+    WHEN 54 THEN 105
+    WHEN 55 THEN 171
+    WHEN 56 THEN 77
+    WHEN 57 THEN 62
+    WHEN 58 THEN 94
+    WHEN 59 THEN 48
+    WHEN 60 THEN 79
+    WHEN 61 THEN 103
+    WHEN 62 THEN 76
+    WHEN 63 THEN 88
+    WHEN 64 THEN 119
+    WHEN 65 THEN 189
+    WHEN 66 THEN 132
+    WHEN 67 THEN 86
+    WHEN 68 THEN 145
+    WHEN 69 THEN 39
+    WHEN 70 THEN 83
+    WHEN 71 THEN 31
+    WHEN 72 THEN 58
+    ELSE 0
+  END;
+
+
+-- ─────────────────────────────────────────────────────────
+-- Estimated dish metadata
+-- ─────────────────────────────────────────────────────────
+
 UPDATE "Menu"
 SET
   "description" = CASE
@@ -289,7 +812,7 @@ SET
     ELSE 'Moderate'
   END,
 
-    "carb_level" = CASE
+  "carb_level" = CASE
     WHEN LOWER("category") LIKE '%rice%' OR LOWER("category") LIKE '%noodle%' THEN 'High carb'
     WHEN LOWER("name") LIKE '%burger%' OR LOWER("name") LIKE '%sandwich%' OR LOWER("name") LIKE '%wrap%' THEN 'Medium carb'
     WHEN LOWER("category") LIKE '%drink%' THEN 'Low carb'

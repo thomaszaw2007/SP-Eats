@@ -8,7 +8,8 @@
 
     <link rel="stylesheet" href="./style.css" />
   </head>
-  <body>
+
+  <body class="stall-detail-page">
     <nav class="navbar">
       <div class="logo">
         <span class="sp-badge">SP</span>
@@ -22,8 +23,6 @@
     </nav>
 
     <main class="page-container">
-      <a href="./stalls.html" class="back-link">← Back to Stalls</a>
-
       <!-- Stall information loads here -->
       <section id="stallHeader" class="stall-detail-header">
         <p>Loading stall details...</p>
@@ -31,31 +30,55 @@
 
       <!-- Menu section -->
       <section class="stall-menu-section">
-        <div class="section-title-row">
-          <div>
-            <p class="small-title red-text">Selected Stall Menu</p>
-            <h2>Choose from this stall</h2>
+        <div class="stall-menu-tools">
+          <div class="stall-menu-search-box">
+            <label for="stallMenuSearch">Search this menu</label>
+
+            <div class="stall-menu-search-row">
+              <input
+                type="text"
+                id="stallMenuSearch"
+                placeholder="Search food name, category, description..."
+              />
+
+              <button id="clearStallMenuSearchBtn" type="button">
+                Clear
+              </button>
+            </div>
           </div>
 
-          <p id="menuResultCount" class="result-count">Loading menu...</p>
+          <div class="stall-menu-sort-box">
+            <label for="stallMenuSort">Sort menu</label>
+
+            <select id="stallMenuSort">
+              <option value="default">Default</option>
+              <option value="name-asc">Name A-Z</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="popular-first">Popular First</option>
+              <option value="available-first">Available First</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Popular picks will be inserted above this row by JavaScript -->
+        <div class="category-result-row">
+          <div id="categoryContainer" class="stall-category-row"></div>
 
-        <div id="categoryContainer" class="stall-category-row">
-          <!-- Category buttons load here -->
+          <p id="menuResultCount" class="result-count menu-result-count">
+            Loading menu...
+          </p>
         </div>
 
-        <section id="menuContainer" class="card-grid">
-          <!-- Menu item cards load here -->
-        </section>
-           </section>
+        <section id="menuContainer" class="card-grid"></section>
+      </section>
     </main>
 
     <!-- Menu item details modal -->
     <div id="menuItemModal" class="menu-modal-overlay hidden">
       <div class="menu-modal">
-        <button id="closeMenuModalBtn" class="menu-modal-close">×</button>
+        <button id="closeMenuModalBtn" class="menu-modal-close" type="button">
+          ×
+        </button>
 
         <div id="menuItemModalContent">
           <!-- Menu item details load here -->

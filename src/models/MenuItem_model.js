@@ -40,7 +40,16 @@ const MENU_ITEM_SELECT = `
         M."allergen_info" AS allergen_info,
         M."portion_size" AS portion_size,
 
+        M."item_rating",
+        M."item_review_count",
+        M."taste_rating",
+        M."value_rating",
+        M."portion_rating",
+        M."order_count",
+
         M."created_at" AS created_at
+
+        
 
 
     FROM "Menu" M
