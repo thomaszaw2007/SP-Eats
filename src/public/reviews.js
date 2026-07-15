@@ -1,0 +1,1 @@
+console.log('Review Hub page loaded.');

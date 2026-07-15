@@ -1,0 +1,1 @@
+console.log('What Should I Eat page loaded.');
