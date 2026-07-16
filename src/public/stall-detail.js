@@ -291,28 +291,12 @@ function filterAndDisplayMenu() {
   }
 
   if (selectedSearchQuery) {
-    const searchWords = selectedSearchQuery
-      .split(' ')
-      .map((word) => word.trim())
-      .filter((word) => word.length > 0);
+    const searchText = selectedSearchQuery.toLowerCase().trim();
 
     filteredMenu = filteredMenu.filter((item) => {
-      const searchableText = [
-        item.item_name,
-        item.category,
-        item.item_description,
-        item.variation,
-        item.carb_level,
-        item.protein_level,
-        item.fat_level,
-        item.sugar_level,
-        item.spice_level,
-        item.portion_size,
-      ]
-        .join(' ')
-        .toLowerCase();
+      const itemName = String(item.item_name || item.name || '').toLowerCase();
 
-      return searchWords.every((word) => searchableText.includes(word));
+      return itemName.includes(searchText);
     });
   }
 
