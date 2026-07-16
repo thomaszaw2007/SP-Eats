@@ -1,98 +1,422 @@
 // =========================================================
 // SP QuickBite - Browse Stalls Page
-// Uses API response names like stall_name, item_name, etc.
+// Handles: stall loading, search, filters, recently viewed, navigation
 // =========================================================
 
 // ---------- HTML ELEMENTS ----------
 const stallContainer = document.getElementById('stallContainer');
-const resultCount = document.getElementById('resultCount');
+const stallResultCount = document.getElementById('stallResultCount');
 
-const searchInput = document.getElementById('searchInput');
-const searchButton = document.getElementById('searchButton');
-
+const stallSearchInput = document.getElementById('stallSearchInput');
 const foodCourtFilter = document.getElementById('foodCourtFilter');
-const foodTypeFilter = document.getElementById('foodTypeFilter');
-const dietaryFilter = document.getElementById('dietaryFilter');
+const cuisineFilter = document.getElementById('cuisineFilter');
 const statusFilter = document.getElementById('statusFilter');
-const clearFilterButton = document.getElementById('clearFilterButton');
+const budgetRange = document.getElementById('budgetRange');
+const budgetValue = document.getElementById('budgetValue');
+const clearStallFiltersBtn = document.getElementById('clearStallFiltersBtn');
 
-// ---------- PAGE LOAD ----------
+const dietaryChipButtons = document.querySelectorAll('.sd-diet-chip');
+
+const recentlyViewedSection = document.getElementById('recentlyViewedSection');
+const recentlyViewedRow = document.getElementById('recentlyViewedRow');
+const stallsThemeToggle = document.getElementById('stallsThemeToggle');
+
+// ---------- PAGE STATE ----------
+let allStallsData = [];
+let selectedDietFilters = [];
+
+const RECENTLY_VIEWED_KEY = 'recentlyViewedStalls';
+
+// =========================================================
+// PAGE LOAD
+// =========================================================
+
 window.addEventListener('DOMContentLoaded', () => {
+  setupStallPageEvents();
+  applyFiltersFromUrl();
+  loadStalls();
   displayRecentlyViewedStalls();
-  getStalls(false);
 });
 
-// ---------- SEARCH AND FILTER EVENTS ----------
-searchButton.addEventListener('click', () => {
-  getStalls(true);
-});
+// =========================================================
+// SETUP EVENTS
+// =========================================================
 
-searchInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
-    getStalls(true);
+function setupStallPageEvents() {
+  const filterInputs = [
+    stallSearchInput,
+    foodCourtFilter,
+    cuisineFilter,
+    statusFilter,
+    budgetRange,
+  ];
+
+  filterInputs.forEach((input) => {
+    if (!input) {
+      return;
+    }
+
+    input.addEventListener('input', () => {
+      updateBudgetText();
+      filterAndDisplayStalls();
+      updateFilterUrl();
+    });
+
+    input.addEventListener('change', () => {
+      updateBudgetText();
+      filterAndDisplayStalls();
+      updateFilterUrl();
+    });
+  });
+
+  dietaryChipButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const selectedFilter = button.dataset.filter;
+
+      if (selectedDietFilters.includes(selectedFilter)) {
+        selectedDietFilters = selectedDietFilters.filter((filter) => {
+          return filter !== selectedFilter;
+        });
+      } else {
+        selectedDietFilters.push(selectedFilter);
+      }
+
+      updateDietButtons();
+      filterAndDisplayStalls();
+      updateFilterUrl();
+    });
+  });
+
+  if (clearStallFiltersBtn) {
+    clearStallFiltersBtn.addEventListener('click', clearStallFilters);
   }
-});
 
-foodCourtFilter.addEventListener('change', () => getStalls(true));
-foodTypeFilter.addEventListener('change', () => getStalls(true));
-dietaryFilter.addEventListener('change', () => getStalls(true));
-statusFilter.addEventListener('change', () => getStalls(true));
+  if (stallsThemeToggle) {
+    stallsThemeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('home-dark-mode');
+    });
+  }
 
-clearFilterButton.addEventListener('click', () => {
-  searchInput.value = '';
-  foodCourtFilter.value = '';
-  foodTypeFilter.value = '';
-  dietaryFilter.value = '';
-  statusFilter.value = '';
-
-  getStalls(true);
-});
+  updateBudgetText();
+}
 
 // =========================================================
 // API
 // =========================================================
 
-function buildStallUrl() {
-  const params = [];
-
-  addQueryParam(params, 'search', searchInput.value.trim());
-  addQueryParam(params, 'foodCourt', foodCourtFilter.value);
-  addQueryParam(params, 'foodType', foodTypeFilter.value);
-  addQueryParam(params, 'dietary', dietaryFilter.value);
-  addQueryParam(params, 'status', statusFilter.value);
-
-  if (params.length === 0) {
-    return '/api/stalls';
-  }
-
-  return '/api/stalls?' + params.join('&');
-}
-
-function addQueryParam(params, key, value) {
-  if (value !== '') {
-    params.push(key + '=' + encodeURIComponent(value));
-  }
-}
-
-function getStalls(shouldScroll) {
-  resultCount.textContent = 'Loading stalls...';
-  stallContainer.classList.add('loading-soft');
-
-  fetch(buildStallUrl())
+function loadStalls() {
+  fetch('/api/stalls')
     .then((response) => response.json())
     .then((result) => {
-      displayStalls(result.data || []);
-      stallContainer.classList.remove('loading-soft');
-
-      if (shouldScroll) {
-        smoothScrollToResults();
-      }
+      allStallsData = normalizeStalls(result.data || []);
+      filterAndDisplayStalls();
     })
     .catch((error) => {
       console.error('Error loading stalls:', error);
-      stallContainer.classList.remove('loading-soft');
-      showError('Unable to load stalls. Please try again later.');
+      showStallLoadError();
     });
+}
+
+function normalizeStalls(stalls) {
+  return stalls.map((stall) => {
+    const stallId = stall.stall_id || stall.raw_stall_id || stall.id;
+    const stallName = stall.stall_name || stall.name || 'Unnamed Stall';
+
+    const foodCourt =
+      stall.food_court ||
+      stall.food_court_name ||
+      stall.foodcourt_name ||
+      stall.foodcourt ||
+      '';
+
+    const cuisine = stall.cuisine_type || stall.cuisine || 'Campus Food';
+    const rating = Number(stall.rating || stall.stall_rating || 4.0);
+    const ratingCount = Number(stall.rating_count || stall.review_count || 0);
+    const openingStatus = stall.opening_status || stall.status || 'open';
+
+    const normalizedStall = {
+      ...stall,
+      stall_id: stallId,
+      api_stall_id: getApiStallId(stallId),
+      stall_name: stallName,
+      food_court: foodCourt,
+      cuisine_type: cuisine,
+      rating,
+      rating_count: ratingCount,
+      opening_status: openingStatus,
+      location_detail: stall.location_detail || stall.food_court_location || foodCourt,
+      estimated_wait_time: stall.estimated_wait_time || stall.wait_time || '5-10 min',
+      stall_description:
+        stall.stall_description ||
+        stall.description ||
+        'Campus food stall serving student-friendly meals.',
+      image_url: stall.image_url || null,
+      is_halal: Boolean(stall.is_halal || stall.halal),
+      is_vegetarian: Boolean(stall.is_vegetarian || stall.vegetarian),
+      is_vegan: Boolean(stall.is_vegan || stall.vegan),
+    };
+
+    normalizedStall.estimated_budget = getEstimatedBudget(normalizedStall);
+
+    return normalizedStall;
+  });
+}
+
+// =========================================================
+// FILTERING
+// =========================================================
+
+function filterAndDisplayStalls() {
+  let filteredStalls = [...allStallsData];
+
+  const searchValue = getInputValue(stallSearchInput).toLowerCase();
+  const selectedFoodCourt = getInputValue(foodCourtFilter);
+  const selectedCuisine = getInputValue(cuisineFilter);
+  const selectedStatus = getInputValue(statusFilter);
+  const selectedBudget = Number(getInputValue(budgetRange) || 10);
+
+  if (searchValue) {
+    const searchWords = searchValue
+      .split(' ')
+      .map((word) => word.trim())
+      .filter((word) => word.length > 0);
+
+    filteredStalls = filteredStalls.filter((stall) => {
+      const searchableText = [
+        stall.stall_name,
+        stall.cuisine_type,
+        stall.food_court,
+        stall.location_detail,
+        stall.stall_description,
+        stall.is_halal ? 'halal' : '',
+        stall.is_vegetarian ? 'vegetarian' : '',
+        stall.is_vegan ? 'vegan' : '',
+        stall.opening_status,
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      return searchWords.every((word) => searchableText.includes(word));
+    });
+  }
+
+  if (selectedFoodCourt !== 'all') {
+    filteredStalls = filteredStalls.filter((stall) => {
+      return stall.food_court === selectedFoodCourt;
+    });
+  }
+
+  if (selectedCuisine !== 'all') {
+    filteredStalls = filteredStalls.filter((stall) => {
+      return stall.cuisine_type.toLowerCase().includes(selectedCuisine.toLowerCase());
+    });
+  }
+
+  if (selectedStatus !== 'all') {
+    filteredStalls = filteredStalls.filter((stall) => {
+      return stall.opening_status === selectedStatus;
+    });
+  }
+
+  if (selectedDietFilters.length > 0) {
+    filteredStalls = filteredStalls.filter((stall) => {
+      return selectedDietFilters.every((filter) => {
+        return stallMatchesDietFilter(stall, filter);
+      });
+    });
+  }
+
+  filteredStalls = filteredStalls.filter((stall) => {
+    return Number(stall.estimated_budget) <= selectedBudget;
+  });
+
+  displayStalls(filteredStalls);
+}
+
+function stallMatchesDietFilter(stall, filter) {
+  const text = [
+    stall.stall_name,
+    stall.cuisine_type,
+    stall.stall_description,
+  ]
+    .join(' ')
+    .toLowerCase();
+
+  if (filter === 'spicy') {
+    return (
+      text.includes('korean') ||
+      text.includes('curry') ||
+      text.includes('spicy') ||
+      text.includes('mala') ||
+      text.includes('laksa')
+    );
+  }
+
+  if (filter === 'healthy') {
+    return (
+      stall.is_vegetarian ||
+      stall.is_vegan ||
+      text.includes('green') ||
+      text.includes('soup') ||
+      text.includes('subway')
+    );
+  }
+
+  if (filter === 'high-protein') {
+    return (
+      text.includes('chicken') ||
+      text.includes('beef') ||
+      text.includes('fish') ||
+      text.includes('salmon') ||
+      text.includes('kfc')
+    );
+  }
+
+  if (filter === 'light') {
+    return (
+      text.includes('soup') ||
+      text.includes('salad') ||
+      text.includes('vegetarian') ||
+      text.includes('subway')
+    );
+  }
+
+  if (filter === 'budget') {
+    return Number(stall.estimated_budget) <= 5;
+  }
+
+  return true;
+}
+
+function getInputValue(input) {
+  if (!input) {
+    return 'all';
+  }
+
+  return input.value.trim();
+}
+
+function clearStallFilters() {
+  if (stallSearchInput) {
+    stallSearchInput.value = '';
+  }
+
+  if (foodCourtFilter) {
+    foodCourtFilter.value = 'all';
+  }
+
+  if (cuisineFilter) {
+    cuisineFilter.value = 'all';
+  }
+
+  if (statusFilter) {
+    statusFilter.value = 'all';
+  }
+
+  if (budgetRange) {
+    budgetRange.value = '10';
+  }
+
+  selectedDietFilters = [];
+
+  updateBudgetText();
+  updateDietButtons();
+  filterAndDisplayStalls();
+  updateFilterUrl();
+}
+
+function updateFilterUrl() {
+  const queryParams = new URLSearchParams();
+
+  const searchValue = getInputValue(stallSearchInput);
+  const selectedFoodCourt = getInputValue(foodCourtFilter);
+  const selectedCuisine = getInputValue(cuisineFilter);
+  const selectedStatus = getInputValue(statusFilter);
+  const selectedBudget = getInputValue(budgetRange);
+
+  if (searchValue) {
+    queryParams.set('search', searchValue);
+  }
+
+  if (selectedFoodCourt !== 'all') {
+    queryParams.set('foodCourt', selectedFoodCourt);
+  }
+
+  if (selectedCuisine !== 'all') {
+    queryParams.set('cuisine', selectedCuisine);
+  }
+
+  if (selectedStatus !== 'all') {
+    queryParams.set('status', selectedStatus);
+  }
+
+  if (selectedDietFilters.length > 0) {
+    queryParams.set('diet', selectedDietFilters.join(','));
+  }
+
+  if (selectedBudget !== '10') {
+    queryParams.set('budget', selectedBudget);
+  }
+
+  const newUrl = queryParams.toString()
+    ? `${window.location.pathname}?${queryParams.toString()}`
+    : window.location.pathname;
+
+  window.history.replaceState({}, '', newUrl);
+}
+
+function applyFiltersFromUrl() {
+  const queryParams = new URLSearchParams(window.location.search);
+
+  if (stallSearchInput && queryParams.get('search')) {
+    stallSearchInput.value = queryParams.get('search');
+  }
+
+  if (foodCourtFilter && queryParams.get('foodCourt')) {
+    foodCourtFilter.value = queryParams.get('foodCourt');
+  }
+
+  if (cuisineFilter && queryParams.get('cuisine')) {
+    cuisineFilter.value = queryParams.get('cuisine');
+  }
+
+  if (statusFilter && queryParams.get('status')) {
+    statusFilter.value = queryParams.get('status');
+  }
+
+  if (budgetRange && queryParams.get('budget')) {
+    budgetRange.value = queryParams.get('budget');
+  }
+
+  if (queryParams.get('diet')) {
+    selectedDietFilters = queryParams
+      .get('diet')
+      .split(',')
+      .filter((filter) => filter.length > 0);
+  }
+
+  updateBudgetText();
+  updateDietButtons();
+}
+
+function updateDietButtons() {
+  dietaryChipButtons.forEach((button) => {
+    const filter = button.dataset.filter;
+
+    if (selectedDietFilters.includes(filter)) {
+      button.classList.add('active');
+    } else {
+      button.classList.remove('active');
+    }
+  });
+}
+
+function updateBudgetText() {
+  if (!budgetRange || !budgetValue) {
+    return;
+  }
+
+  budgetValue.textContent = `$${Number(budgetRange.value).toFixed(2)}`;
 }
 
 // =========================================================
@@ -100,89 +424,120 @@ function getStalls(shouldScroll) {
 // =========================================================
 
 function displayStalls(stalls) {
-  stallContainer.innerHTML = '';
-
-  if (stalls.length === 0) {
-    resultCount.textContent = 'Showing 0 stalls';
-    showError('No stalls found. Try changing your search or filters.');
+  if (!stallContainer) {
     return;
   }
 
-  resultCount.textContent = 'Showing ' + stalls.length + ' stalls';
+  stallContainer.innerHTML = '';
 
-  for (let i = 0; i < stalls.length; i++) {
-    stallContainer.appendChild(createStallCard(stalls[i]));
+  if (!stalls || stalls.length === 0) {
+    if (stallResultCount) {
+      stallResultCount.textContent = '0 stalls found';
+    }
+
+    stallContainer.innerHTML = `
+      <div class="stalls-empty-state">
+        <h3>No stalls found</h3>
+        <p>Try changing your search keyword or filters.</p>
+      </div>
+    `;
+    return;
   }
+
+  if (stallResultCount) {
+    stallResultCount.textContent = `${stalls.length} stall${stalls.length === 1 ? '' : 's'} found`;
+  }
+
+  stalls.forEach((stall) => {
+    const stallCard = createStallCard(stall);
+    stallContainer.appendChild(stallCard);
+  });
 }
 
 function createStallCard(stall) {
-  const isClosed = stall.opening_status === 'closed';
+  const card = document.createElement('article');
+  card.className = 'sd-stall-card';
 
-  const card = document.createElement('div');
-  card.className = 'stall-card';
-
-  if (isClosed) {
+  if (stall.opening_status === 'closed') {
     card.classList.add('closed');
   }
 
+  const isClosed = stall.opening_status === 'closed';
+
   card.innerHTML = `
-    <div class="stall-image-wrap">
-      <img
-        src="${stall.image_url}"
-        alt="${stall.stall_name}"
-        class="stall-image"
-        onerror="this.src='/images/default-food.jpg'"
-      />
-
-      <span class="food-court-badge">${stall.food_court}</span>
-    </div>
-
-    <div class="stall-content">
-      <div class="stall-top-row">
-        <span class="status-badge ${isClosed ? 'status-closed' : 'status-open'}">
-          ${isClosed ? 'Closed' : 'Open'}
-        </span>
-
-        <span class="rating-pill">★ ${stall.rating}</span>
-      </div>
-
-      <h3>${stall.stall_name}</h3>
-      <p class="stall-cuisine">${stall.cuisine_type}</p>
-      <p class="stall-description">${stall.stall_description}</p>
-
-      <div class="dietary-row">
-        ${stall.is_halal ? `<span class="dietary-badge">Halal</span>` : ''}
-        ${stall.is_vegetarian ? `<span class="dietary-badge">Vegetarian</span>` : ''}
-        ${stall.is_vegan ? `<span class="dietary-badge">Vegan</span>` : ''}
-      </div>
-
-      <p class="stall-info">Location: ${stall.location_detail}</p>
-      <p class="stall-info">Wait: ${stall.estimated_wait_time}</p>
-
+    <div class="sd-stall-image-wrap">
       ${
-        isClosed
-          ? `<p class="opening-time">Opens: ${stall.opening_time}</p>`
-          : `<p class="opening-time">Open until: ${stall.closing_time}</p>`
+        stall.image_url
+          ? `<img
+              src="${stall.image_url}"
+              alt="${stall.stall_name}"
+              class="sd-stall-image"
+            />`
+          : `<div class="sd-stall-image sd-stall-image-placeholder">
+              <span>No image yet</span>
+            </div>`
       }
 
-      <button 
-        class="view-menu-btn ${isClosed ? 'closed-view-btn' : ''}" 
-        onclick="goToMenu('${stall.stall_id}')"
-      >
-        ${isClosed ? 'View Menu - Closed' : 'View Menu'}
+      <span class="${isClosed ? 'sd-status-badge closed' : 'sd-status-badge open'}">
+        ${isClosed ? 'Closed' : 'Open'}
+      </span>
+    </div>
+
+    <div class="sd-stall-body">
+      <h3>${stall.stall_name}</h3>
+
+      <p class="sd-cuisine-text">${stall.cuisine_type}</p>
+
+      <div class="sd-rating-row">
+        <span class="sd-stars">★★★★★</span>
+        <strong>${formatRating(stall.rating)}</strong>
+        <span>(${stall.rating_count})</span>
+      </div>
+
+      <p class="sd-location-text">
+        ${formatFoodCourtLabel(stall)}
+      </p>
+
+      <div class="sd-card-meta-row">
+        <span class="${getWaitClass(stall.estimated_wait_time)}">
+          ● ${stall.estimated_wait_time || '5-10 min'}
+        </span>
+
+        <span>💬 ${stall.rating_count}</span>
+      </div>
+
+      <button class="sd-view-menu-btn" type="button">
+        View Menu
       </button>
     </div>
   `;
 
+  card.addEventListener('click', () => {
+    goToMenu(stall.stall_id);
+  });
+
+  const viewMenuButton = card.querySelector('.sd-view-menu-btn');
+  viewMenuButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    goToMenu(stall.stall_id);
+  });
+
   return card;
 }
 
-function showError(message) {
-  stallContainer.innerHTML = `
-    <div class="empty-message">
-      ${message}
-    </div>
-  `;
+function showStallLoadError() {
+  if (stallResultCount) {
+    stallResultCount.textContent = 'Unable to load stalls.';
+  }
+
+  if (stallContainer) {
+    stallContainer.innerHTML = `
+      <div class="stalls-empty-state">
+        <h3>Unable to load stalls</h3>
+        <p>Please try again later.</p>
+      </div>
+    `;
+  }
 }
 
 // =========================================================
@@ -190,118 +545,135 @@ function showError(message) {
 // =========================================================
 
 function displayRecentlyViewedStalls() {
-  const recentlyViewed = getRecentlyViewedStalls();
-
-  if (recentlyViewed.length === 0) {
+  if (!recentlyViewedSection || !recentlyViewedRow) {
     return;
   }
 
-  let recentSection = document.getElementById('recentlyViewedSection');
-
-  if (!recentSection) {
-    recentSection = document.createElement('section');
-    recentSection.id = 'recentlyViewedSection';
-    recentSection.className = 'recently-viewed-section';
-
-    resultCount.parentNode.insertBefore(recentSection, resultCount);
-  }
-
-  recentSection.innerHTML = buildRecentlyViewedHTML(recentlyViewed);
-}
-
-function getRecentlyViewedStalls() {
-  const savedData = localStorage.getItem('recentlyViewedStalls');
+  const savedData = localStorage.getItem(RECENTLY_VIEWED_KEY);
 
   if (!savedData) {
-    return [];
+    recentlyViewedSection.classList.add('hidden');
+    return;
   }
+
+  let recentlyViewed = [];
 
   try {
-    return JSON.parse(savedData);
-  } catch {
-    localStorage.removeItem('recentlyViewedStalls');
-    return [];
+    recentlyViewed = JSON.parse(savedData);
+  } catch (error) {
+    localStorage.removeItem(RECENTLY_VIEWED_KEY);
+    recentlyViewedSection.classList.add('hidden');
+    return;
   }
+
+  if (!recentlyViewed || recentlyViewed.length === 0) {
+    recentlyViewedSection.classList.add('hidden');
+    return;
+  }
+
+  recentlyViewedSection.classList.remove('hidden');
+  recentlyViewedRow.innerHTML = '';
+
+  recentlyViewed.slice(0, 4).forEach((stall) => {
+    const normalizedStall = normalizeStalls([stall])[0];
+    const recentCard = createRecentStallCard(normalizedStall);
+
+    recentlyViewedRow.appendChild(recentCard);
+  });
 }
 
-function buildRecentlyViewedHTML(recentlyViewed) {
-  let html = `
-    <div class="recently-viewed-header">
-      <div>
-        <p class="small-title red-text">Recently Viewed</p>
-        <h2>Continue browsing</h2>
-      </div>
+function createRecentStallCard(stall) {
+  const card = document.createElement('article');
+  card.className = 'sd-recent-stall-card';
 
-      <button class="clear-recent-btn" onclick="clearRecentlyViewedStalls()">
-        Clear
-      </button>
-    </div>
-
-    <div class="recently-viewed-row">
+  card.innerHTML = `
+    <h3>${stall.stall_name}</h3>
+    <p>${stall.cuisine_type}</p>
   `;
 
-  for (let i = 0; i < recentlyViewed.length; i++) {
-    html += createRecentStallHTML(recentlyViewed[i]);
-  }
+  card.addEventListener('click', () => {
+    goToMenu(stall.stall_id);
+  });
 
-  html += `</div>`;
-
-  return html;
+  return card;
 }
 
-function createRecentStallHTML(stall) {
-  const isClosed = stall.opening_status === 'closed';
-
-  return `
-    <div class="recent-stall-card" onclick="goToMenu('${stall.stall_id}')">
-      <img
-        src="${stall.image_url}"
-        alt="${stall.stall_name}"
-        class="recent-stall-image"
-        onerror="this.src='/images/default-food.jpg'"
-      />
-
-      <div class="recent-stall-content">
-        <div class="recent-stall-top">
-          <span class="status-badge ${isClosed ? 'status-closed' : 'status-open'}">
-            ${isClosed ? 'Closed' : 'Open'}
-          </span>
-
-          <span class="rating-pill">★ ${stall.rating}</span>
-        </div>
-
-        <h3>${stall.stall_name}</h3>
-        <p>${stall.cuisine_type}</p>
-        <span class="recent-food-court">${stall.food_court}</span>
-      </div>
-    </div>
-  `;
-}
-
-function clearRecentlyViewedStalls() {
-  localStorage.removeItem('recentlyViewedStalls');
-
-  const recentSection = document.getElementById('recentlyViewedSection');
-
-  if (recentSection) {
-    recentSection.remove();
-  }
-}
-function smoothScrollToResults() {
-  setTimeout(() => {
-    resultCount.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    });
-  }, 120);
-}
 // =========================================================
-// NAVIGATION
+// NAVIGATION + HELPERS
 // =========================================================
 
 function goToMenu(stallId) {
-  window.location.href = './stall-detail.html?stall_id=' + stallId;
+  window.location.href = './stall-detail.html?stall_id=' + encodeURIComponent(stallId);
 }
 
-window.clearRecentlyViewedStalls = clearRecentlyViewedStalls;
-window.goToMenu = goToMenu;
+function getApiStallId(id) {
+  if (!id) {
+    return '';
+  }
+
+  const textId = String(id);
+
+  if (textId.startsWith('stall_')) {
+    return String(Number(textId.replace('stall_', '')));
+  }
+
+  return textId;
+}
+
+function formatRating(rating) {
+  return Number(rating || 0).toFixed(1);
+}
+
+function formatFoodCourtLabel(stall) {
+  const foodCourt = stall.food_court || 'Food Court';
+  const shortName = foodCourt.replace('Food Court ', 'FC');
+
+  if (!stall.location_detail || stall.location_detail === foodCourt) {
+    return shortName;
+  }
+
+  return `${shortName} — ${stall.location_detail}`;
+}
+
+function getEstimatedBudget(stall) {
+  const text = [stall.stall_name, stall.cuisine_type]
+    .join(' ')
+    .toLowerCase();
+
+  if (text.includes('chicken rice')) {
+    return 4.5;
+  }
+
+  if (text.includes('noodle') || text.includes('soup')) {
+    return 5;
+  }
+
+  if (text.includes('vegetarian') || text.includes('green')) {
+    return 5.5;
+  }
+
+  if (text.includes('korean') || text.includes('japanese')) {
+    return 6.5;
+  }
+
+  if (text.includes('subway') || text.includes('kfc') || text.includes('western')) {
+    return 7.5;
+  }
+
+  return 6;
+}
+
+function getWaitClass(waitTime) {
+  const numberMatch = String(waitTime || '').match(/\d+/);
+  const waitNumber = numberMatch ? Number(numberMatch[0]) : 10;
+
+  if (waitNumber <= 5) {
+    return 'sd-wait-fast';
+  }
+
+  if (waitNumber <= 8) {
+    return 'sd-wait-medium';
+  }
+
+  return 'sd-wait-long';
+}
