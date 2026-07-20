@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Campus Food Map | SP QuickBite</title>
+
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body class="home-page food-map-page">
+    <nav class="home-navbar">
+      <a href="./index.html" class="home-logo">
+        <span class="home-logo-badge">SP</span>
+        <span>QuickBite</span>
+      </a>
+
+      <div class="home-nav-links">
+        <a href="./index.html">Home</a>
+        <a href="./stalls.html">Stalls</a>
+        <a href="./food-map.html" class="active">Map</a>
+        <a href="./reviews.html">Reviews</a>
+        <a href="./quiz.html">Quiz</a>
+      </div>
+
+      <button id="mapThemeToggle" class="home-theme-btn" type="button">
+        ◐
+      </button>
+    </nav>
+
+    <header class="food-map-hero compact-map-hero">
+      <div class="food-map-hero-content">
+        <span class="food-map-hero-badge">Campus Food Map</span>
+
+        <h1>Find Food Courts Faster</h1>
+
+        <p>
+          View SP food courts directly on the campus map.
+        </p>
+      </div>
+    </header>
+
+    <main class="real-map-main">
+      <section class="real-map-card">
+        <div class="real-map-header">
+          <div>
+            <p>Interactive SP Map</p>
+            <h2>Food Court Locations</h2>
+          </div>
+
+          <span id="mapMarkerCount">Loading...</span>
+        </div>
+
+        <div class="real-map-frame">
+          <img
+            src="./images/sp-campus-map.png"
+            alt="Singapore Polytechnic Campus Map"
+            class="real-sp-map-image"
+          />
+
+          <div id="foodCourtMarkersLayer" class="real-map-marker-layer">
+            <!-- Food court markers load here -->
+          </div>
+        </div>
+      </section>
+
+      <section class="real-map-selected-panel">
+        <div id="selectedFoodCourtPanel">
+          <div class="real-map-empty-state">
+            <span>📍</span>
+            <h3>Select a food court</h3>
+            <p>Click any orange marker on the map to view the food court details.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./food-map.js"></script>
+  </body>
+</html>

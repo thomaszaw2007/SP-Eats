@@ -7,6 +7,7 @@ const somethingRouter = require('./routers/Something.router');
 const personRouter = require('./routers/Person.router');
 const foodStallRouter = require('./routers/FoodStall_router');
 const menuItemRouter = require('./routers/MenuItem_router');
+const foodMapRouter = require('./routers/FoodMap_router');
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.use('/persons', personRouter);
 
 app.use('/api/stalls', foodStallRouter);
 app.use('/api/menu-items', menuItemRouter);
+
+app.use('/api/food-map', foodMapRouter);
 
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
   res.status(204).end();

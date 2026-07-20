@@ -1973,3 +1973,398 @@ select:focus-visible {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* =========================================================
+   FOOD COURT MAP - REAL SP MAP BACKGROUND VERSION
+========================================================= */
+
+.food-map-page {
+  min-height: 100vh;
+  background: #f7f7f8;
+}
+
+.compact-map-hero {
+  min-height: 185px;
+  padding: 42px 20px 64px;
+}
+
+.real-map-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 22px 90px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 22px;
+  align-items: start;
+  position: relative;
+  z-index: 5;
+  transform: translateY(-36px);
+}
+
+.real-map-card,
+.real-map-selected-panel {
+  background: white;
+  border-radius: 28px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.1);
+}
+
+.real-map-card {
+  padding: 16px;
+}
+
+.real-map-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.real-map-header p {
+  margin: 0 0 5px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.real-map-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 950;
+  letter-spacing: -0.6px;
+}
+
+.real-map-header > span {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.real-map-frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.real-sp-map-image {
+  width: 100%;
+  display: block;
+}
+
+.real-map-marker-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.real-food-court-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: white;
+  cursor: pointer;
+  box-shadow:
+    0 14px 28px rgba(239, 68, 68, 0.35),
+    0 0 0 7px rgba(239, 68, 68, 0.16);
+  pointer-events: auto;
+  z-index: 5;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.real-food-court-marker:hover,
+.real-food-court-marker.active {
+  transform: translate(-50%, -50%) scale(1.13);
+  background: #111827;
+  box-shadow:
+    0 18px 34px rgba(15, 23, 42, 0.35),
+    0 0 0 9px rgba(249, 115, 22, 0.22);
+}
+
+.real-marker-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.real-marker-rating {
+  position: absolute;
+  left: 50%;
+  top: -28px;
+  transform: translateX(-50%);
+  min-width: 46px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: white;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 950;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.15);
+}
+
+.real-marker-rating::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid white;
+}
+
+.real-map-selected-panel {
+  min-height: 430px;
+  padding: 22px;
+}
+
+.real-map-empty-state {
+  min-height: 386px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+.real-map-empty-state span {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff7ed;
+  font-size: 25px;
+}
+
+.real-map-empty-state h3 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.real-map-empty-state p {
+  margin: 0;
+  max-width: 250px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.real-selected-food-court {
+  animation: cardFadeIn 0.25s ease;
+}
+
+.real-selected-label {
+  display: inline-flex;
+  margin-bottom: 13px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: white;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.real-selected-food-court h2 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 30px;
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: -0.9px;
+}
+
+.real-selected-location {
+  margin: 0 0 14px;
+  color: #ef4444;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.real-selected-description {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.real-map-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.real-map-stat-row div {
+  padding: 12px;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.real-map-stat-row span {
+  display: block;
+  margin-bottom: 5px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.real-map-stat-row strong {
+  color: #111827;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.real-selected-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.real-map-primary-btn,
+.real-map-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 10px 15px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 950;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.real-map-primary-btn {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: white;
+  box-shadow: 0 10px 22px rgba(239, 68, 68, 0.24);
+}
+
+.real-map-secondary-btn {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.real-map-note {
+  margin: 20px 0 0;
+  padding: 13px;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.home-dark-mode.food-map-page {
+  background: #0f172a;
+}
+
+.home-dark-mode .real-map-card,
+.home-dark-mode .real-map-selected-panel {
+  background: #111827;
+  border-color: #334155;
+}
+
+.home-dark-mode .real-map-header h2,
+.home-dark-mode .real-map-empty-state h3,
+.home-dark-mode .real-selected-food-court h2,
+.home-dark-mode .real-map-stat-row strong {
+  color: white;
+}
+
+.home-dark-mode .real-selected-description,
+.home-dark-mode .real-map-empty-state p {
+  color: #cbd5e1;
+}
+
+.home-dark-mode .real-map-stat-row div,
+.home-dark-mode .real-map-note {
+  background: #0f172a;
+}
+
+@media (max-width: 1100px) {
+  .real-map-main {
+    grid-template-columns: 1fr;
+  }
+
+  .real-map-selected-panel {
+    min-height: auto;
+  }
+
+  .real-map-empty-state {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 700px) {
+  .real-map-main {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .real-map-card,
+  .real-map-selected-panel {
+    border-radius: 22px;
+  }
+
+  .real-map-card {
+    padding: 12px;
+  }
+
+  .real-map-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .real-map-frame {
+    overflow-x: auto;
+  }
+
+  .real-sp-map-image,
+  .real-map-marker-layer {
+    min-width: 820px;
+  }
+
+  .real-food-court-marker {
+    width: 46px;
+    height: 46px;
+  }
+
+  .real-marker-number {
+    font-size: 14px;
+  }
+
+  .real-selected-actions,
+  .real-map-stat-row {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+}
