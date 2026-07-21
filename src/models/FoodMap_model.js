@@ -40,7 +40,7 @@ const foodCourtMarkers = {
 };
 
 module.exports.selectFoodMapMarkers = (callback) => {
-  const sql = `
+  const foodCourtSql = `
     SELECT
       fc."foodcourt_id",
       fc."name",
@@ -64,35 +64,93 @@ module.exports.selectFoodMapMarkers = (callback) => {
     ORDER BY fc."foodcourt_id" ASC;
   `;
 
-  pool.query(sql, (error, result) => {
-    if (error) {
-      callback(error, null);
+  const popularDishSql = `
+    SELECT
+      fc."foodcourt_id",
+      m."food_id",
+      m."name" AS item_name,
+      m."price",
+      m."category",
+      m."image_url",
+      m."is_popular",
+      s."stall_id",
+      s."name" AS stall_name,
+      s."rating" AS stall_rating,
+      s."rating_count"
+    FROM "FoodCourt" fc
+    INNER JOIN "Stalls" s
+      ON fc."foodcourt_id" = s."foodcourt_id"
+    INNER JOIN "Menu" m
+      ON s."stall_id" = m."stall_id"
+    WHERE m."is_available" = TRUE
+    ORDER BY
+      fc."foodcourt_id" ASC,
+      m."is_popular" DESC,
+      s."rating" DESC,
+      s."rating_count" DESC,
+      m."price" ASC;
+  `;
+
+  pool.query(foodCourtSql, (foodCourtError, foodCourtResult) => {
+    if (foodCourtError) {
+      callback(foodCourtError, null);
       return;
     }
 
-    const foodCourts = result.rows.map((foodCourt) => {
-      const marker = foodCourtMarkers[foodCourt.foodcourt_id] || {
-        marker_number: foodCourt.foodcourt_id,
-        marker_label: `FC${foodCourt.foodcourt_id}`,
-        map_x: 50,
-        map_y: 50,
-      };
+    pool.query(popularDishSql, (dishError, dishResult) => {
+      if (dishError) {
+        callback(dishError, null);
+        return;
+      }
 
-      return {
-        foodcourt_id: foodCourt.foodcourt_id,
-        name: foodCourt.name,
-        location: foodCourt.location,
-        description: foodCourt.description,
-        stall_count: Number(foodCourt.stall_count || 0),
-        open_stall_count: Number(foodCourt.open_stall_count || 0),
-        average_rating: Number(foodCourt.average_rating || 0),
-        marker_number: marker.marker_number,
-        marker_label: marker.marker_label,
-        map_x: marker.map_x,
-        map_y: marker.map_y,
-      };
+      const popularDishMap = {};
+
+      dishResult.rows.forEach((dish) => {
+        if (!popularDishMap[dish.foodcourt_id]) {
+          popularDishMap[dish.foodcourt_id] = [];
+        }
+
+        if (popularDishMap[dish.foodcourt_id].length < 3) {
+          popularDishMap[dish.foodcourt_id].push({
+            food_id: dish.food_id,
+            item_name: dish.item_name,
+            price: Number(dish.price || 0),
+            category: dish.category,
+            image_url: dish.image_url,
+            is_popular: dish.is_popular,
+            stall_id: dish.stall_id,
+            stall_name: dish.stall_name,
+            rating: Number(dish.stall_rating || 0),
+            rating_count: Number(dish.rating_count || 0),
+          });
+        }
+      });
+
+      const foodCourts = foodCourtResult.rows.map((foodCourt) => {
+        const marker = foodCourtMarkers[foodCourt.foodcourt_id] || {
+          marker_number: foodCourt.foodcourt_id,
+          marker_label: `FC${foodCourt.foodcourt_id}`,
+          map_x: 50,
+          map_y: 50,
+        };
+
+        return {
+          foodcourt_id: foodCourt.foodcourt_id,
+          name: foodCourt.name,
+          location: foodCourt.location,
+          description: foodCourt.description,
+          stall_count: Number(foodCourt.stall_count || 0),
+          open_stall_count: Number(foodCourt.open_stall_count || 0),
+          average_rating: Number(foodCourt.average_rating || 0),
+          marker_number: marker.marker_number,
+          marker_label: marker.marker_label,
+          map_x: marker.map_x,
+          map_y: marker.map_y,
+          popular_dishes: popularDishMap[foodCourt.foodcourt_id] || [],
+        };
+      });
+
+      callback(null, foodCourts);
     });
-
-    callback(null, foodCourts);
   });
 };

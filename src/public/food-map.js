@@ -1,6 +1,6 @@
 // =========================================================
-// SP QuickBite - Food Court Map Foundation
-// Handles: backend FC marker data + markers on real SP map image
+// SP QuickBite - Food Court Map
+// Handles: backend FC marker data + popular dishes preview
 // =========================================================
 
 const foodCourtMarkersLayer = document.getElementById('foodCourtMarkersLayer');
@@ -71,8 +71,10 @@ function displayFoodCourtMarkers() {
         ${formatRating(foodCourt.average_rating)}★
       </span>
 
-      <span class="real-marker-number">
-        ${foodCourt.marker_number}
+      <span class="real-marker-pin">
+        <span class="real-marker-number">
+          ${foodCourt.marker_number}
+        </span>
       </span>
     `;
 
@@ -91,11 +93,19 @@ function displaySelectedFoodCourt(foodCourt) {
     return;
   }
 
+  const popularDishes = createPopularDishCards(foodCourt.popular_dishes || []);
+
   selectedFoodCourtPanel.innerHTML = `
     <div class="real-selected-food-court">
-      <span class="real-selected-label">
-        ${foodCourt.marker_label}
-      </span>
+      <div class="real-selected-top-row">
+        <span class="real-selected-label">
+          ${foodCourt.marker_label}
+        </span>
+
+        <span class="real-selected-rating">
+          ★ ${formatRating(foodCourt.average_rating)}
+        </span>
+      </div>
 
       <h2>${foodCourt.name}</h2>
 
@@ -103,19 +113,7 @@ function displaySelectedFoodCourt(foodCourt) {
         ${foodCourt.location || 'Singapore Polytechnic Campus'}
       </p>
 
-      <p class="real-selected-description">
-        ${
-          foodCourt.description ||
-          'This food court is marked on the SP campus map.'
-        }
-      </p>
-
       <div class="real-map-stat-row">
-        <div>
-          <span>Rating</span>
-          <strong>${formatRating(foodCourt.average_rating)}</strong>
-        </div>
-
         <div>
           <span>Stalls</span>
           <strong>${foodCourt.stall_count}</strong>
@@ -125,7 +123,23 @@ function displaySelectedFoodCourt(foodCourt) {
           <span>Open</span>
           <strong>${foodCourt.open_stall_count}</strong>
         </div>
+
+        <div>
+          <span>Popular</span>
+          <strong>${foodCourt.popular_dishes.length}</strong>
+        </div>
       </div>
+
+      <section class="real-popular-dishes-section">
+        <div class="real-panel-section-title">
+          <span>🔥</span>
+          <h3>Popular Dishes</h3>
+        </div>
+
+        <div class="real-popular-dish-list">
+          ${popularDishes}
+        </div>
+      </section>
 
       <div class="real-selected-actions">
         <a href="./stalls.html?foodCourt=${encodeURIComponent(foodCourt.name)}" class="real-map-primary-btn">
@@ -136,12 +150,52 @@ function displaySelectedFoodCourt(foodCourt) {
           Clear
         </button>
       </div>
-
-      <p class="real-map-note">
-        This version focuses on accurate map markers. Stall list display will be added in a later commit.
-      </p>
     </div>
   `;
+}
+
+function createPopularDishCards(dishes) {
+  if (!dishes || dishes.length === 0) {
+    return `
+      <div class="real-no-dishes-card">
+        No popular dishes available yet.
+      </div>
+    `;
+  }
+
+  return dishes
+    .slice(0, 3)
+    .map((dish) => {
+      return `
+        <article class="real-popular-dish-card">
+          <div class="real-popular-dish-image-wrap">
+            ${
+              dish.image_url
+                ? `<img
+                    src="${dish.image_url}"
+                    alt="${dish.item_name}"
+                    class="real-popular-dish-image"
+                  />`
+                : `<div class="real-popular-dish-placeholder">
+                    No image
+                  </div>`
+            }
+          </div>
+
+          <div class="real-popular-dish-info">
+            <h4>${dish.item_name}</h4>
+
+            <p>${dish.stall_name}</p>
+
+            <div class="real-popular-dish-meta">
+              <span>$${formatPrice(dish.price)}</span>
+              <span>★ ${formatRating(dish.rating)}</span>
+            </div>
+          </div>
+        </article>
+      `;
+    })
+    .join('');
 }
 
 function clearSelectedFoodCourt() {
@@ -152,7 +206,7 @@ function clearSelectedFoodCourt() {
     <div class="real-map-empty-state">
       <span>📍</span>
       <h3>Select a food court</h3>
-      <p>Click any orange marker on the map to view the food court details.</p>
+      <p>Click any orange marker on the map to view food court details and popular dishes.</p>
     </div>
   `;
 }
@@ -175,4 +229,8 @@ function showFoodMapError() {
 
 function formatRating(rating) {
   return Number(rating || 0).toFixed(1);
+}
+
+function formatPrice(price) {
+  return Number(price || 0).toFixed(2);
 }
