@@ -22,6 +22,10 @@ function setupFoodMapEvents() {
       document.body.classList.toggle('home-dark-mode');
     });
   }
+
+  if (selectedFoodCourtPanel) {
+    selectedFoodCourtPanel.addEventListener('click', handleFoodMapPanelClick);
+  }
 }
 
 function loadFoodCourtMarkers() {
@@ -40,6 +44,7 @@ function loadFoodCourtMarkers() {
       }
 
       displayFoodCourtMarkers();
+      autoSelectFirstFoodCourt();
     })
     .catch((error) => {
       console.error('Error loading food court map markers:', error);
@@ -76,6 +81,10 @@ function displayFoodCourtMarkers() {
           ${foodCourt.marker_number}
         </span>
       </span>
+
+      <span class="real-marker-label">
+        ${foodCourt.marker_label}
+      </span>
     `;
 
     marker.addEventListener('click', () => {
@@ -88,12 +97,25 @@ function displayFoodCourtMarkers() {
   });
 }
 
+function autoSelectFirstFoodCourt() {
+  if (selectedFoodCourtId || foodCourts.length === 0) {
+    return;
+  }
+
+  const firstFoodCourt = foodCourts[0];
+
+  selectedFoodCourtId = firstFoodCourt.foodcourt_id;
+  displayFoodCourtMarkers();
+  displaySelectedFoodCourt(firstFoodCourt);
+}
+
 function displaySelectedFoodCourt(foodCourt) {
   if (!selectedFoodCourtPanel) {
     return;
   }
 
   const popularDishes = createPopularDishCards(foodCourt.popular_dishes || []);
+  const popularDishCount = (foodCourt.popular_dishes || []).length;
 
   selectedFoodCourtPanel.innerHTML = `
     <div class="real-selected-food-court">
@@ -126,7 +148,7 @@ function displaySelectedFoodCourt(foodCourt) {
 
         <div>
           <span>Popular</span>
-          <strong>${foodCourt.popular_dishes.length}</strong>
+          <strong>${popularDishCount}</strong>
         </div>
       </div>
 
@@ -142,11 +164,18 @@ function displaySelectedFoodCourt(foodCourt) {
       </section>
 
       <div class="real-selected-actions">
-        <a href="./stalls.html?foodCourt=${encodeURIComponent(foodCourt.name)}" class="real-map-primary-btn">
+        <a
+          href="./stalls.html?foodCourt=${encodeURIComponent(foodCourt.name)}"
+          class="real-map-primary-btn"
+        >
           Browse This Food Court
         </a>
 
-        <button class="real-map-secondary-btn" type="button" onclick="clearSelectedFoodCourt()">
+        <button
+          class="real-map-secondary-btn"
+          type="button"
+          data-map-action="clear"
+        >
           Clear
         </button>
       </div>
@@ -167,7 +196,11 @@ function createPopularDishCards(dishes) {
     .slice(0, 3)
     .map((dish) => {
       return `
-        <article class="real-popular-dish-card">
+        <button
+          class="real-popular-dish-card clickable-dish-card"
+          type="button"
+          data-stall-id="${dish.stall_id}"
+        >
           <div class="real-popular-dish-image-wrap">
             ${
               dish.image_url
@@ -190,17 +223,41 @@ function createPopularDishCards(dishes) {
             <div class="real-popular-dish-meta">
               <span>$${formatPrice(dish.price)}</span>
               <span>★ ${formatRating(dish.rating)}</span>
+              <span>View →</span>
             </div>
           </div>
-        </article>
+        </button>
       `;
     })
     .join('');
 }
 
+function handleFoodMapPanelClick(event) {
+  const clearButton = event.target.closest('[data-map-action="clear"]');
+
+  if (clearButton) {
+    clearSelectedFoodCourt();
+    return;
+  }
+
+  const dishCard = event.target.closest('.clickable-dish-card');
+
+  if (dishCard) {
+    const stallId = dishCard.dataset.stallId;
+
+    if (stallId) {
+      window.location.href = `./stall-detail.html?stall_id=${stallId}`;
+    }
+  }
+}
+
 function clearSelectedFoodCourt() {
   selectedFoodCourtId = null;
   displayFoodCourtMarkers();
+
+  if (!selectedFoodCourtPanel) {
+    return;
+  }
 
   selectedFoodCourtPanel.innerHTML = `
     <div class="real-map-empty-state">
