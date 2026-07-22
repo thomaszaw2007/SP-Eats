@@ -2924,3 +2924,156 @@ select:focus-visible {
     font-size: 10px;
   }
 }
+
+/* =========================================================
+   FOOD MAP ZOOM + DRAG FEATURE
+========================================================= */
+
+.real-map-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top left, rgba(239, 68, 68, 0.1), transparent 34%),
+    #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.real-map-tool-text span {
+  display: block;
+  margin-bottom: 3px;
+  color: #ef4444;
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.real-map-tool-text p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.real-map-zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.real-map-zoom-controls button {
+  min-width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 999px;
+  background: white;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.real-map-zoom-controls button:hover {
+  transform: translateY(-1px);
+  background: #ef4444;
+  color: white;
+}
+
+.real-map-zoom-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+  background: white;
+  color: #94a3b8;
+}
+
+.zoomable-map-frame {
+  overflow: hidden !important;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.zoomable-map-frame.dragging {
+  cursor: grabbing;
+}
+
+.map-zoom-canvas {
+  position: relative;
+  width: 100%;
+  transform-origin: center center;
+  transition: transform 0.18s ease;
+  will-change: transform;
+}
+
+.zoomable-map-frame.dragging .map-zoom-canvas {
+  transition: none;
+}
+
+.zoomable-map-frame .real-sp-map-image {
+  width: 100%;
+  min-width: 0 !important;
+  pointer-events: none;
+}
+
+.zoomable-map-frame .real-map-marker-layer {
+  min-width: 0 !important;
+  pointer-events: none;
+}
+
+.zoomable-map-frame .real-food-court-marker {
+  pointer-events: auto;
+}
+
+/* Dark mode */
+.home-dark-mode .real-map-tools {
+  background:
+    radial-gradient(circle at top left, rgba(249, 115, 22, 0.14), transparent 34%),
+    #0f172a;
+  border-color: #334155;
+}
+
+.home-dark-mode .real-map-tool-text p {
+  color: #cbd5e1;
+}
+
+.home-dark-mode .real-map-zoom-controls button {
+  background: #1e293b;
+  color: white;
+}
+
+.home-dark-mode .real-map-zoom-controls button:hover {
+  background: #f97316;
+}
+
+.home-dark-mode .real-map-zoom-controls button:disabled {
+  background: #1e293b;
+  color: #64748b;
+}
+
+@media (max-width: 700px) {
+  .real-map-tools {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .real-map-zoom-controls {
+    width: 100%;
+  }
+
+  .real-map-zoom-controls button {
+    flex: 1;
+  }
+}

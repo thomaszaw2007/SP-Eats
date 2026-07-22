@@ -8,12 +8,26 @@ const selectedFoodCourtPanel = document.getElementById('selectedFoodCourtPanel')
 const mapMarkerCount = document.getElementById('mapMarkerCount');
 const mapThemeToggle = document.getElementById('mapThemeToggle');
 
+const mapFrame = document.getElementById('mapFrame');
+const mapZoomCanvas = document.getElementById('mapZoomCanvas');
+const mapZoomIn = document.getElementById('mapZoomIn');
+const mapZoomOut = document.getElementById('mapZoomOut');
+const mapZoomReset = document.getElementById('mapZoomReset');
+
 let foodCourts = [];
 let selectedFoodCourtId = null;
+
+let mapScale = 1;
+let mapTranslateX = 0;
+let mapTranslateY = 0;
+let isDraggingMap = false;
+let dragStartX = 0;
+let dragStartY = 0;
 
 window.addEventListener('DOMContentLoaded', () => {
   setupFoodMapEvents();
   loadFoodCourtMarkers();
+  updateMapTransform();
 });
 
 function setupFoodMapEvents() {
@@ -26,6 +40,8 @@ function setupFoodMapEvents() {
   if (selectedFoodCourtPanel) {
     selectedFoodCourtPanel.addEventListener('click', handleFoodMapPanelClick);
   }
+
+  setupMapZoomControls();
 }
 
 function loadFoodCourtMarkers() {
@@ -266,6 +282,138 @@ function clearSelectedFoodCourt() {
       <p>Click any orange marker on the map to view food court details and popular dishes.</p>
     </div>
   `;
+}
+
+function setupMapZoomControls() {
+  if (!mapFrame || !mapZoomCanvas) {
+    return;
+  }
+
+  if (mapZoomIn) {
+    mapZoomIn.addEventListener('click', () => {
+      zoomMap(0.2);
+    });
+  }
+
+  if (mapZoomOut) {
+    mapZoomOut.addEventListener('click', () => {
+      zoomMap(-0.2);
+    });
+  }
+
+  if (mapZoomReset) {
+    mapZoomReset.addEventListener('click', resetMapZoom);
+  }
+
+  mapFrame.addEventListener('wheel', handleMapWheelZoom, {
+    passive: false,
+  });
+
+  mapFrame.addEventListener('pointerdown', startMapDrag);
+  window.addEventListener('pointermove', dragMap);
+  window.addEventListener('pointerup', stopMapDrag);
+}
+
+function zoomMap(change) {
+  const nextScale = Math.min(2.5, Math.max(1, mapScale + change));
+
+  mapScale = Number(nextScale.toFixed(2));
+
+  if (mapScale === 1) {
+    mapTranslateX = 0;
+    mapTranslateY = 0;
+  }
+
+  limitMapDrag();
+  updateMapTransform();
+}
+
+function resetMapZoom() {
+  mapScale = 1;
+  mapTranslateX = 0;
+  mapTranslateY = 0;
+
+  updateMapTransform();
+}
+
+function handleMapWheelZoom(event) {
+  event.preventDefault();
+
+  if (event.deltaY < 0) {
+    zoomMap(0.1);
+  } else {
+    zoomMap(-0.1);
+  }
+}
+
+function startMapDrag(event) {
+  if (mapScale <= 1) {
+    return;
+  }
+
+  if (event.target.closest('.real-food-court-marker')) {
+    return;
+  }
+
+  isDraggingMap = true;
+  dragStartX = event.clientX - mapTranslateX;
+  dragStartY = event.clientY - mapTranslateY;
+
+  mapFrame.classList.add('dragging');
+}
+
+function dragMap(event) {
+  if (!isDraggingMap) {
+    return;
+  }
+
+  mapTranslateX = event.clientX - dragStartX;
+  mapTranslateY = event.clientY - dragStartY;
+
+  limitMapDrag();
+  updateMapTransform();
+}
+
+function stopMapDrag() {
+  isDraggingMap = false;
+
+  if (mapFrame) {
+    mapFrame.classList.remove('dragging');
+  }
+}
+
+function limitMapDrag() {
+  if (!mapFrame) {
+    return;
+  }
+
+  const frameWidth = mapFrame.clientWidth;
+  const frameHeight = mapFrame.clientHeight;
+
+  const maxMoveX = (frameWidth * (mapScale - 1)) / 2;
+  const maxMoveY = (frameHeight * (mapScale - 1)) / 2;
+
+  mapTranslateX = Math.max(-maxMoveX, Math.min(maxMoveX, mapTranslateX));
+  mapTranslateY = Math.max(-maxMoveY, Math.min(maxMoveY, mapTranslateY));
+}
+
+function updateMapTransform() {
+  if (!mapZoomCanvas) {
+    return;
+  }
+
+  mapZoomCanvas.style.transform = `
+    translate(${mapTranslateX}px, ${mapTranslateY}px)
+    scale(${mapScale})
+  `;
+
+  if (mapZoomIn) {
+    mapZoomIn.disabled = mapScale >= 2.5;
+  }
+
+  if (mapZoomOut) {
+    mapZoomOut.disabled = mapScale <= 1;
+  }
 }
 
 function showFoodMapError() {

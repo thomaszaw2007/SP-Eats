@@ -36,7 +36,7 @@
         <h1>Find Food Courts Faster</h1>
 
         <p>
-          View SP food courts directly on the campus map.
+          Zoom, drag, and explore SP food courts directly on the campus map.
         </p>
       </div>
     </header>
@@ -52,15 +52,31 @@
           <span id="mapMarkerCount">Loading...</span>
         </div>
 
-        <div class="real-map-frame">
-          <img
-            src="./images/sp-campus-map.png"
-            alt="Singapore Polytechnic Campus Map"
-            class="real-sp-map-image"
-          />
+        <div class="real-map-tools">
+          <div class="real-map-tool-text">
+            <span>Navigation Mode</span>
+            <p>Zoom in and drag the map to view food courts clearly.</p>
+          </div>
 
-          <div id="foodCourtMarkersLayer" class="real-map-marker-layer">
-            <!-- Food court markers load here -->
+          <div class="real-map-zoom-controls">
+            <button id="mapZoomOut" type="button">−</button>
+            <button id="mapZoomReset" type="button">Reset</button>
+            <button id="mapZoomIn" type="button">+</button>
+          </div>
+        </div>
+
+        <div id="mapFrame" class="real-map-frame zoomable-map-frame">
+          <div id="mapZoomCanvas" class="map-zoom-canvas">
+            <img
+              src="./images/sp-campus-map.png"
+              alt="Singapore Polytechnic Campus Map"
+              class="real-sp-map-image"
+              draggable="false"
+            />
+
+            <div id="foodCourtMarkersLayer" class="real-map-marker-layer">
+              <!-- Food court markers load here -->
+            </div>
           </div>
         </div>
       </section>
