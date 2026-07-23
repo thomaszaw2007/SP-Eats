@@ -21,7 +21,23 @@ const seedSql = `
 -- Do not insert into food_stalls or menu_items because those are views.
 -- ─────────────────────────────────────────────────────────
 
+-- ─────────────────────────────────────────────────────────
+-- Review Hub Table
+-- ─────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS "Reviews" (
+  "review_id" SERIAL PRIMARY KEY,
+  "food_id" INT NOT NULL REFERENCES "Menu"("food_id") ON DELETE CASCADE,
+  "reviewer_name" TEXT NOT NULL,
+  "rating" DECIMAL(2, 1) NOT NULL CHECK ("rating" >= 1 AND "rating" <= 5),
+  "review_text" TEXT NOT NULL,
+  "review_tag" TEXT DEFAULT 'General',
+  "best_time_to_buy" TEXT DEFAULT 'Anytime',
+  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 TRUNCATE TABLE
+    "Reviews",
     "HistoryItems",
     "CartItems",
     "Cart",
@@ -33,7 +49,6 @@ TRUNCATE TABLE
     "Person",
     "Something"
 RESTART IDENTITY CASCADE;
-
 
 -- ─────────────────────────────────────────────────────────
 -- Starter Data
@@ -237,6 +252,46 @@ INSERT INTO "Menu" (
 ('Beef Noodle Soup', 'Soup', 'Beef noodles in warm broth.', 4.50, 18, 6, 'Noodles', '/images/Menu/Soup%20Stall/Soup_Stall-Beef_Noodles.avif', FALSE, TRUE),
 ('Fish Soup with Rice', 'Rice', 'Light fish soup served with rice.', 4.50, 18, 6, 'Soup', '/images/Menu/Soup%20Stall/Soup_Stall-Fish_Soup.png', FALSE, FALSE),
 ('Herbal Chicken Soup', 'Warm Bowl', 'Herbal chicken soup served hot.', 5.20, 18, 6, 'Soup', NULL, FALSE, TRUE);
+
+-- ─────────────────────────────────────────────────────────
+-- Review Hub Seed Reviews
+-- These are realistic student reviews for the Review Hub page.
+-- ─────────────────────────────────────────────────────────
+
+INSERT INTO "Reviews"
+  ("food_id", "reviewer_name", "rating", "review_text", "review_tag", "best_time_to_buy")
+VALUES
+  (1, 'Alicia', 4.8, 'The bibimbap is filling and flavourful. Good choice when I want a proper meal before a long class.', 'Filling', 'Lunch'),
+  (1, 'Marcus', 4.5, 'The vegetables and sauce mix well together. Portion is good for the price.', 'Value for money', 'Before 12pm'),
+  (2, 'Jia Min', 4.3, 'The kimchi tofu soup is warm and comforting, especially when the classroom is cold.', 'Comfort food', 'Rainy day'),
+  (5, 'Daniel', 4.7, 'Chicken katsu curry is crispy and satisfying. The curry is not too spicy, so it is easy to eat.', 'Popular pick', 'Lunch'),
+  (5, 'Siti', 4.6, 'Good portion and worth the price. Queue can be a bit long during peak lunch.', 'Filling', 'Before 12pm'),
+  (9, 'Ryan', 4.8, 'Steamed chicken rice is simple but always reliable. The queue moves fast too.', 'Quick bite', 'Lunch'),
+  (9, 'Nora', 4.6, 'Affordable and tasty. I usually get this when I cannot decide what to eat.', 'Budget', 'Anytime'),
+  (10, 'Ethan', 4.4, 'Roasted chicken rice has good flavour and the chilli makes it better.', 'Local favourite', 'Lunch'),
+  (14, 'Chloe', 4.5, 'Ban mian soup is warm and filling. Good when I want something simple after class.', 'Comfort food', 'Afternoon'),
+  (16, 'Wei Lun', 4.4, 'Spicy laksa noodles are tasty and the soup has a nice kick.', 'Spicy', 'Lunch'),
+  (21, 'Priya', 4.7, 'Vegetarian rice set is balanced and does not feel too heavy. Good healthier option.', 'Healthy', 'Lunch'),
+  (22, 'Hafiz', 4.2, 'Tofu noodle bowl is light but still enough for a quick meal.', 'Light meal', 'Afternoon'),
+  (24, 'Sarah', 4.7, 'Buddha bowl is fresh and colourful. I like it when I want something cleaner.', 'Healthy', 'After gym'),
+  (25, 'Brandon', 4.7, 'Chicken katsu curry bowl is one of the safest choices. Crispy chicken and curry match well.', 'Popular pick', 'Lunch'),
+  (29, 'Shermaine', 4.8, 'Spicy chicken bibimbap is really good if you like stronger flavour.', 'Spicy', 'Lunch'),
+  (29, 'Joel', 4.6, 'The portion is filling and the spicy chicken makes it more satisfying.', 'Filling', 'Lunch'),
+  (33, 'Farah', 4.8, 'Hainanese steamed chicken rice is affordable, tasty, and fast to get.', 'Budget', 'Before peak hour'),
+  (34, 'Kenneth', 4.5, 'Roasted chicken rice tastes good and the rice is fragrant.', 'Local favourite', 'Lunch'),
+  (36, 'Mei Qi', 4.6, 'Roasted drumstick rice is more filling than the normal chicken rice. Worth it when hungry.', 'Filling', 'Lunch'),
+  (40, 'Arun', 4.5, 'Lemon chicken rice is crispy and refreshing. Good if you want chicken but not chicken rice.', 'Crispy', 'Lunch'),
+  (42, 'Vanessa', 4.5, 'Dry ban mian is tasty and the sauce is not too salty.', 'Comfort food', 'Afternoon'),
+  (44, 'Jun Hao', 4.6, 'Tom yum ban mian is spicy and shiok. Good for people who like stronger soup.', 'Spicy', 'Lunch'),
+  (45, 'Isabelle', 4.6, 'Sweet spicy chicken bowl has nice sauce and decent portion.', 'Spicy', 'Lunch'),
+  (49, 'Darren', 4.5, 'KFC two piece meal is filling and convenient when I want something fast.', 'Filling', 'Lunch'),
+  (52, 'Natasha', 4.6, 'Zinger burger is tasty and good when I want a quick fast food meal.', 'Quick bite', 'Break time'),
+  (53, 'Rae', 4.6, 'Chicken Delight Sub is fresh and easy to eat between classes.', 'Quick bite', 'Lunch'),
+  (55, 'Irfan', 4.7, 'Veggie Delight Sub is a good lighter option and still feels fresh.', 'Healthy', 'Afternoon'),
+  (58, 'Grace', 4.4, 'Mushroom cream pasta is creamy and feels like cafe food.', 'Comfort food', 'Lunch'),
+  (65, 'Lucas', 4.6, 'Chicken udon soup is warm and good after sports.', 'Comfort food', 'After CCA'),
+  (68, 'Tanya', 4.7, 'Beef yakiniku rice is flavourful and filling. One of the better options at FC6.', 'Filling', 'Lunch')
+ON CONFLICT DO NOTHING;
 
 
 -- ─────────────────────────────────────────────────────────

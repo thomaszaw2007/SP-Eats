@@ -174,6 +174,17 @@ CREATE TABLE "Menu" (
         REFERENCES "FoodCourt" ("foodcourt_id")
 );
 
+CREATE TABLE IF NOT EXISTS "Reviews" (
+  "review_id" SERIAL PRIMARY KEY,
+  "food_id" INT NOT NULL REFERENCES "Menu"("food_id") ON DELETE CASCADE,
+  "reviewer_name" TEXT NOT NULL,
+  "rating" DECIMAL(2, 1) NOT NULL CHECK ("rating" >= 1 AND "rating" <= 5),
+  "review_text" TEXT NOT NULL,
+  "review_tag" TEXT DEFAULT 'General',
+  "best_time_to_buy" TEXT DEFAULT 'Anytime',
+  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE "Cart" (
     "cart_id" SERIAL PRIMARY KEY,
     "user_id" INT NOT NULL,
