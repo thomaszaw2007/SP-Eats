@@ -1,7 +1,40 @@
 const ReviewModel = require('../models/Review_model');
 
+function cleanText(value) {
+  return String(value || '').trim();
+}
+
+function getSortValue(value) {
+  const sort = cleanText(value).toLowerCase();
+  const allowedSorts = ['newest', 'highest', 'lowest', 'dish'];
+
+  if (allowedSorts.includes(sort)) {
+    return sort;
+  }
+
+  return 'newest';
+}
+
+function getMinRating(value) {
+  const rating = Number(value);
+
+  if (!rating || rating < 1 || rating > 5) {
+    return null;
+  }
+
+  return rating;
+}
+
 module.exports.readAllReviews = (req, res, next) => {
-  ReviewModel.selectAllReviews((error, reviews) => {
+  const filters = {
+    search: cleanText(req.query.search),
+    tag: cleanText(req.query.tag || 'all'),
+    foodCourt: cleanText(req.query.foodCourt || 'all'),
+    minRating: getMinRating(req.query.minRating),
+    sort: getSortValue(req.query.sort),
+  };
+
+  ReviewModel.selectReviews(filters, (error, reviews) => {
     if (error) {
       next(error);
       return;
@@ -9,6 +42,7 @@ module.exports.readAllReviews = (req, res, next) => {
 
     res.status(200).json({
       message: 'Review hub reviews retrieved successfully.',
+      filters,
       count: reviews.length,
       data: reviews,
     });
@@ -36,6 +70,20 @@ module.exports.readReviewsByFoodId = (req, res, next) => {
       food_id: foodId,
       count: reviews.length,
       data: reviews,
+    });
+  });
+};
+
+module.exports.readReviewSummary = (req, res, next) => {
+  ReviewModel.selectReviewSummary((error, summary) => {
+    if (error) {
+      next(error);
+      return;
+    }
+
+    res.status(200).json({
+      message: 'Review hub summary retrieved successfully.',
+      data: summary,
     });
   });
 };
