@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Review Hub | SP QuickBite</title>
+
     <link rel="stylesheet" href="./style.css" />
   </head>
 
-  <body class="home-page">
+  <body class="home-page review-hub-page">
     <nav class="home-navbar">
       <a href="./index.html" class="home-logo">
         <span class="home-logo-badge">SP</span>
@@ -22,13 +24,126 @@
         <a href="./quiz.html">Quiz</a>
       </div>
 
-      <button class="home-theme-btn" type="button">◐</button>
+      <button id="reviewThemeToggle" class="home-theme-btn" type="button">
+        ◐
+      </button>
     </nav>
 
-    <main class="home-main">
-      <section class="empty-message">
-        <h1>Review Hub</h1>
-        <p>This page will show student food reviews later.</p>
+    <header class="review-hub-hero">
+      <div class="review-hub-hero-content">
+        <span class="review-hub-badge">Student Review Hub</span>
+
+        <h1>See What Students Actually Think</h1>
+
+        <p>
+          Search student reviews, compare ratings, and find the best time to buy
+          before joining the queue.
+        </p>
+      </div>
+    </header>
+
+    <main class="review-hub-main">
+      <section class="review-hub-summary-grid">
+        <article class="review-summary-card">
+          <span>💬</span>
+
+          <div>
+            <p>Total Reviews</p>
+            <h2 id="totalReviewCount">--</h2>
+          </div>
+        </article>
+
+        <article class="review-summary-card">
+          <span>⭐</span>
+
+          <div>
+            <p>Average Rating</p>
+            <h2 id="averageReviewRating">--</h2>
+          </div>
+        </article>
+
+        <article class="review-summary-card">
+          <span>🔥</span>
+
+          <div>
+            <p>Top Review Tag</p>
+            <h2 id="topReviewTag">Loading...</h2>
+          </div>
+        </article>
+
+        <article class="review-summary-card review-summary-wide">
+          <span>🏆</span>
+
+          <div>
+            <p>Top Rated Dish</p>
+            <h2 id="topRatedDish">Loading...</h2>
+          </div>
+        </article>
+      </section>
+
+      <section class="review-hub-controls">
+        <div class="review-control-field review-search-field">
+          <label for="reviewSearchInput">Search reviews</label>
+
+          <input
+            id="reviewSearchInput"
+            type="text"
+            placeholder="Search dish, stall, food court, reviewer, or review..."
+          />
+        </div>
+
+        <div class="review-control-field">
+          <label for="reviewTagFilter">Tag</label>
+
+          <select id="reviewTagFilter">
+            <option value="all">All Tags</option>
+          </select>
+        </div>
+
+        <div class="review-control-field">
+          <label for="reviewFoodCourtFilter">Food Court</label>
+
+          <select id="reviewFoodCourtFilter">
+            <option value="all">All Food Courts</option>
+          </select>
+        </div>
+
+        <div class="review-control-field">
+          <label for="reviewMinRatingFilter">Min Rating</label>
+
+          <select id="reviewMinRatingFilter">
+            <option value="">Any Rating</option>
+            <option value="4.8">4.8+</option>
+            <option value="4.5">4.5+</option>
+            <option value="4.0">4.0+</option>
+            <option value="3.5">3.5+</option>
+          </select>
+        </div>
+
+        <div class="review-control-field">
+          <label for="reviewSortFilter">Sort</label>
+
+          <select id="reviewSortFilter">
+            <option value="newest">Newest</option>
+            <option value="highest">Highest Rating</option>
+            <option value="lowest">Lowest Rating</option>
+            <option value="dish">Dish Name</option>
+          </select>
+        </div>
+
+        <button id="clearReviewFiltersBtn" class="review-clear-btn" type="button">
+          Clear
+        </button>
+      </section>
+
+      <section class="review-hub-result-bar">
+        <div>
+          <p id="reviewResultCount">Loading reviews...</p>
+          <span id="reviewActiveFilters">Backend filters ready</span>
+        </div>
+      </section>
+
+      <section id="reviewList" class="review-card-grid">
       </section>
     </main>
 
