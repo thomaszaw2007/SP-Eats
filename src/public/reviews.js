@@ -1,100 +1,136 @@
 // =========================================================
-// SP QuickBite - Review Hub Frontend
-// Uses backend filters and review analytics API
+// SP QuickBite - Review Wall Frontend
+// Smooth UX: cached reviews, request cancelling, loading states
 // =========================================================
-
-const reviewThemeToggle = document.getElementById('reviewThemeToggle');
-
-const totalReviewCount = document.getElementById('totalReviewCount');
-const averageReviewRating = document.getElementById('averageReviewRating');
-const topReviewTag = document.getElementById('topReviewTag');
-const topRatedDish = document.getElementById('topRatedDish');
 
 const reviewSearchInput = document.getElementById('reviewSearchInput');
 const reviewTagFilter = document.getElementById('reviewTagFilter');
 const reviewFoodCourtFilter = document.getElementById('reviewFoodCourtFilter');
-const reviewMinRatingFilter = document.getElementById('reviewMinRatingFilter');
 const reviewSortFilter = document.getElementById('reviewSortFilter');
-const clearReviewFiltersBtn = document.getElementById('clearReviewFiltersBtn');
-
 const reviewResultCount = document.getElementById('reviewResultCount');
-const reviewActiveFilters = document.getElementById('reviewActiveFilters');
 const reviewList = document.getElementById('reviewList');
+
+const reviewCacheKey = 'spQuickBiteReviewHubCache';
 
 let reviewSearchTimer = null;
 let hasLoadedFilterOptions = false;
+let selectedMinRating = '';
+let selectedTagChip = 'all';
+let latestRequestId = 0;
+let reviewAbortController = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-  setupReviewHubEvents();
-  loadReviewSummary();
-  loadReviews();
+  setupReviewWallEvents();
+  showCachedReviews();
+  loadReviews({ isInitialLoad: true });
 });
 
-function setupReviewHubEvents() {
-  if (reviewThemeToggle) {
-    reviewThemeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('home-dark-mode');
-    });
-  }
-
+function setupReviewWallEvents() {
   if (reviewSearchInput) {
     reviewSearchInput.addEventListener('input', () => {
       clearTimeout(reviewSearchTimer);
 
       reviewSearchTimer = setTimeout(() => {
         loadReviews();
-      }, 300);
+      }, 250);
     });
   }
 
   if (reviewTagFilter) {
-    reviewTagFilter.addEventListener('change', loadReviews);
+    reviewTagFilter.addEventListener('change', () => {
+      selectedTagChip = reviewTagFilter.value;
+      updateTagChips();
+      loadReviews();
+    });
   }
 
   if (reviewFoodCourtFilter) {
     reviewFoodCourtFilter.addEventListener('change', loadReviews);
   }
 
-  if (reviewMinRatingFilter) {
-    reviewMinRatingFilter.addEventListener('change', loadReviews);
-  }
-
   if (reviewSortFilter) {
     reviewSortFilter.addEventListener('change', loadReviews);
   }
 
-  if (clearReviewFiltersBtn) {
-    clearReviewFiltersBtn.addEventListener('click', clearReviewFilters);
-  }
+  document.querySelectorAll('.review-rating-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      selectedMinRating = chip.dataset.rating || '';
+      updateRatingChips();
+      loadReviews();
+    });
+  });
+
+  document.querySelectorAll('.review-tag-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      selectedTagChip = chip.dataset.tag || 'all';
+
+      if (reviewTagFilter) {
+        reviewTagFilter.value = selectedTagChip;
+      }
+
+      updateTagChips();
+      loadReviews();
+    });
+  });
 
   if (reviewList) {
     reviewList.addEventListener('click', handleReviewCardClick);
+    reviewList.addEventListener('error', handleReviewImageError, true);
   }
 }
 
-function loadReviewSummary() {
-  fetch('/api/reviews/summary')
-    .then((response) => response.json())
-    .then((result) => {
-      const summary = result.data;
+function showCachedReviews() {
+  const cachedReviews = getCachedReviews();
 
-      if (!summary) {
+  if (!cachedReviews || cachedReviews.length === 0) {
+    return;
+  }
+
+  if (reviewResultCount) {
+    reviewResultCount.textContent = `${cachedReviews.length} reviews`;
+  }
+
+  populateFilterOptions(cachedReviews);
+  hasLoadedFilterOptions = true;
+  displayReviewCards(cachedReviews, false);
+}
+
+function loadReviews(options = {}) {
+  const queryString = buildReviewQueryString();
+  const requestId = latestRequestId + 1;
+
+  latestRequestId = requestId;
+
+  if (reviewAbortController) {
+    reviewAbortController.abort();
+  }
+
+  reviewAbortController = new AbortController();
+
+  const hasCardsAlready =
+    reviewList && reviewList.querySelector('.review-wall-card');
+
+  if (options.isInitialLoad && !hasCardsAlready) {
+    showReviewSkeleton();
+  } else {
+    setReviewUpdatingState(true);
+  }
+
+  fetch(`/api/reviews${queryString}`, {
+    signal: reviewAbortController.signal,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Review API request failed.');
+      }
+
+      return response.json();
+    })
+    .then((result) => {
+      if (requestId !== latestRequestId) {
         return;
       }
 
-      displayReviewSummary(summary);
-    })
-    .catch((error) => {
-      console.error('Error loading review summary:', error);
-    });
-}
-
-function loadReviews() {
-  const queryString = buildReviewQueryString();
-
-  fetch(`/api/reviews${queryString}`)
-    .then((response) => response.json())
-    .then((result) => {
       const reviews = result.data || [];
 
       if (!hasLoadedFilterOptions) {
@@ -102,12 +138,26 @@ function loadReviews() {
         hasLoadedFilterOptions = true;
       }
 
-      updateReviewResultText(result.count || reviews.length);
-      displayReviewCards(reviews);
+      saveCachedReviews(reviews);
+
+      if (reviewResultCount) {
+        reviewResultCount.textContent = `${reviews.length} reviews`;
+      }
+
+      displayReviewCards(reviews, true);
     })
     .catch((error) => {
+      if (error.name === 'AbortError') {
+        return;
+      }
+
       console.error('Error loading reviews:', error);
       showReviewError();
+    })
+    .finally(() => {
+      if (requestId === latestRequestId) {
+        setReviewUpdatingState(false);
+      }
     });
 }
 
@@ -117,7 +167,6 @@ function buildReviewQueryString() {
   const search = reviewSearchInput ? reviewSearchInput.value.trim() : '';
   const tag = reviewTagFilter ? reviewTagFilter.value : 'all';
   const foodCourt = reviewFoodCourtFilter ? reviewFoodCourtFilter.value : 'all';
-  const minRating = reviewMinRatingFilter ? reviewMinRatingFilter.value : '';
   const sort = reviewSortFilter ? reviewSortFilter.value : 'newest';
 
   if (search) {
@@ -132,8 +181,8 @@ function buildReviewQueryString() {
     params.append('foodCourt', foodCourt);
   }
 
-  if (minRating) {
-    params.append('minRating', minRating);
+  if (selectedMinRating) {
+    params.append('minRating', selectedMinRating);
   }
 
   if (sort && sort !== 'newest') {
@@ -145,44 +194,24 @@ function buildReviewQueryString() {
   return queryString ? `?${queryString}` : '';
 }
 
-function displayReviewSummary(summary) {
-  if (totalReviewCount) {
-    totalReviewCount.textContent = summary.total_reviews || 0;
-  }
-
-  if (averageReviewRating) {
-    averageReviewRating.textContent = formatRating(summary.average_rating);
-  }
-
-  if (topReviewTag) {
-    topReviewTag.textContent = summary.top_tag
-      ? summary.top_tag.review_tag
-      : 'None';
-  }
-
-  if (topRatedDish) {
-    topRatedDish.textContent = summary.top_dish
-      ? `${summary.top_dish.item_name} · ${summary.top_dish.stall_name}`
-      : 'None yet';
-  }
-}
-
 function populateFilterOptions(reviews) {
-  populateReviewTagOptions(reviews);
-  populateFoodCourtOptions(reviews);
+  populateTagSelect(reviews);
+  populateFoodCourtSelect(reviews);
 }
 
-function populateReviewTagOptions(reviews) {
+function populateTagSelect(reviews) {
   if (!reviewTagFilter) {
     return;
   }
+
+  const currentValue = reviewTagFilter.value || 'all';
 
   const tags = [...new Set(reviews.map((review) => {
     return review.review_tag || 'General';
   }))].sort();
 
   reviewTagFilter.innerHTML = `
-    <option value="all">All Tags</option>
+    <option value="all">All</option>
   `;
 
   tags.forEach((tag) => {
@@ -192,13 +221,16 @@ function populateReviewTagOptions(reviews) {
       </option>
     `;
   });
+
+  reviewTagFilter.value = currentValue;
 }
 
-function populateFoodCourtOptions(reviews) {
+function populateFoodCourtSelect(reviews) {
   if (!reviewFoodCourtFilter) {
     return;
   }
 
+  const currentValue = reviewFoodCourtFilter.value || 'all';
   const foodCourts = [];
   const addedFoodCourtIds = new Set();
 
@@ -218,127 +250,207 @@ function populateFoodCourtOptions(reviews) {
   });
 
   reviewFoodCourtFilter.innerHTML = `
-    <option value="all">All Food Courts</option>
+    <option value="all">All</option>
   `;
 
   foodCourts.forEach((foodCourt) => {
     reviewFoodCourtFilter.innerHTML += `
       <option value="FC${foodCourt.foodcourt_id}">
-        FC${foodCourt.foodcourt_id} - ${foodCourt.foodcourt_name}
+        FC${foodCourt.foodcourt_id}
       </option>
     `;
   });
+
+  reviewFoodCourtFilter.value = currentValue;
 }
 
-function updateReviewResultText(count) {
-  if (reviewResultCount) {
-    reviewResultCount.textContent = `${count} student reviews found`;
-  }
-
-  if (reviewActiveFilters) {
-    reviewActiveFilters.textContent = getActiveFilterText();
-  }
-}
-
-function getActiveFilterText() {
-  const activeFilters = [];
-
-  if (reviewSearchInput && reviewSearchInput.value.trim()) {
-    activeFilters.push(`Search: ${reviewSearchInput.value.trim()}`);
-  }
-
-  if (reviewTagFilter && reviewTagFilter.value !== 'all') {
-    activeFilters.push(`Tag: ${reviewTagFilter.value}`);
-  }
-
-  if (reviewFoodCourtFilter && reviewFoodCourtFilter.value !== 'all') {
-    activeFilters.push(`Food court: ${reviewFoodCourtFilter.value}`);
-  }
-
-  if (reviewMinRatingFilter && reviewMinRatingFilter.value) {
-    activeFilters.push(`Rating: ${reviewMinRatingFilter.value}+`);
-  }
-
-  if (reviewSortFilter && reviewSortFilter.value !== 'newest') {
-    activeFilters.push(`Sort: ${reviewSortFilter.value}`);
-  }
-
-  if (activeFilters.length === 0) {
-    return 'Showing latest reviews from the backend';
-  }
-
-  return activeFilters.join(' · ');
-}
-
-function displayReviewCards(reviews) {
+function displayReviewCards(reviews, shouldAnimate) {
   if (!reviewList) {
     return;
   }
 
   if (reviews.length === 0) {
     reviewList.innerHTML = `
-      <div class="review-empty-state">
-        <span>🔎</span>
+      <div class="review-wall-empty">
         <h3>No reviews found</h3>
-        <p>Try changing the backend filters or clearing your search.</p>
+        <p>Try another search or filter.</p>
       </div>
     `;
     return;
   }
 
-  reviewList.innerHTML = reviews
-    .map((review) => {
-      return `
-        <article class="student-review-card">
-          <div class="student-review-image-wrap">
-            ${
-              review.image_url
-                ? `<img
-                    src="${review.image_url}"
-                    alt="${review.item_name}"
-                    class="student-review-image"
-                  />`
-                : `<div class="student-review-placeholder">
-                    No image
-                  </div>`
-            }
-          </div>
+  reviewList.classList.add('review-wall-switching');
 
-          <div class="student-review-content">
-            <div class="student-review-top-row">
-              <span class="student-review-tag">
-                ${review.review_tag || 'General'}
-              </span>
+  window.requestAnimationFrame(() => {
+    reviewList.innerHTML = reviews
+      .map((review, index) => {
+        const animationClass = shouldAnimate ? 'animated-review-card' : '';
+        const animationDelay = shouldAnimate ? `style="animation-delay: ${index * 0.035}s"` : '';
 
-              <span class="student-review-rating">
-                ★ ${formatRating(review.rating)}
-              </span>
-            </div>
+        return `
+          <article class="review-wall-card ${animationClass}" ${animationDelay}>
+            <div class="review-wall-card-top">
+              <div class="review-wall-person">
+                <div class="review-wall-avatar">
+                  ${getInitials(review.reviewer_name)}
+                </div>
 
-            <h3>${review.item_name}</h3>
-
-            <p class="student-review-stall">
-              ${review.stall_name} · ${review.foodcourt_name}
-            </p>
-
-            <p class="student-review-text">
-              “${review.review_text}”
-            </p>
-
-            <div class="student-review-footer">
-              <div>
-                <strong>${review.reviewer_name}</strong>
-                <span>Best time: ${review.best_time_to_buy}</span>
+                <div>
+                  <h3>${review.reviewer_name}</h3>
+                  <p>${formatDate(review.created_at)}</p>
+                </div>
               </div>
 
+              <div class="review-wall-stars">
+                ${createStars(review.rating)}
+                <strong>${formatRating(review.rating)}</strong>
+              </div>
+            </div>
+
+            <h4>${review.item_name}</h4>
+
+            <p class="review-wall-location">
+              ${review.stall_name} · FC${review.foodcourt_id} — ${review.foodcourt_name}
+            </p>
+
+            <p class="review-wall-text">
+              ${review.review_text}
+            </p>
+
+            ${createReviewImage(review)}
+
+            <div class="review-wall-metrics">
+              <span>Taste ${getMetricValue(review.rating)}</span>
+              <span>Value ${getValueMetric(review.rating)}</span>
+              <span>Portion ${getPortionMetric(review.rating)}</span>
+              <span>Wait ${getWaitMetric(review.best_time_to_buy)}</span>
+            </div>
+
+            <div class="review-wall-tags">
+              <span>${review.review_tag || 'General'}</span>
+              <span>${getPriceTag(review.price)}</span>
+              <span>${getBestTimeTag(review.best_time_to_buy)}</span>
+            </div>
+
+            <div class="review-wall-actions">
               <button
-                class="student-review-view-btn"
+                class="review-wall-helpful"
+                type="button"
+                data-helpful-count="${getHelpfulCount(review.review_id)}"
+              >
+                ♡ Helpful · ${getHelpfulCount(review.review_id)}
+              </button>
+
+              <button
+                class="review-wall-view-menu"
                 type="button"
                 data-stall-id="${review.stall_id}"
               >
-                View Menu
+                View Menu →
               </button>
             </div>
+          </article>
+        `;
+      })
+      .join('');
+
+    reviewList.classList.remove('review-wall-switching');
+  });
+}
+
+function createReviewImage(review) {
+  if (!review.image_url) {
+    return `<div class="review-wall-image-space"></div>`;
+  }
+
+  return `
+    <div class="review-wall-image-wrap">
+      <img
+        src="${review.image_url}"
+        alt="${review.item_name}"
+        class="review-wall-food-image"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  `;
+}
+
+function handleReviewCardClick(event) {
+  const helpfulButton = event.target.closest('.review-wall-helpful');
+
+  if (helpfulButton) {
+    toggleHelpfulButton(helpfulButton);
+    return;
+  }
+
+  const viewMenuButton = event.target.closest('.review-wall-view-menu');
+
+  if (!viewMenuButton) {
+    return;
+  }
+
+  const stallId = viewMenuButton.dataset.stallId;
+
+  if (stallId) {
+    window.location.href = `./stall-detail.html?stall_id=${stallId}`;
+  }
+}
+
+function handleReviewImageError(event) {
+  const image = event.target;
+
+  if (!image.classList.contains('review-wall-food-image')) {
+    return;
+  }
+
+  const imageWrap = image.closest('.review-wall-image-wrap');
+
+  if (!imageWrap) {
+    return;
+  }
+
+  imageWrap.innerHTML = `
+    <div class="review-wall-image-fallback">
+      No image
+    </div>
+  `;
+}
+
+function showReviewSkeleton() {
+  if (!reviewList) {
+    return;
+  }
+
+  if (reviewResultCount) {
+    reviewResultCount.textContent = 'Loading reviews...';
+  }
+
+  reviewList.innerHTML = Array.from({ length: 9 })
+    .map((_, index) => {
+      const tallClass = index % 3 === 0 ? 'tall' : '';
+      const shortClass = index % 4 === 0 ? 'short-card' : '';
+
+      return `
+        <article class="review-wall-card review-skeleton-card ${tallClass} ${shortClass}">
+          <div class="review-skeleton-top">
+            <div class="review-skeleton-avatar"></div>
+
+            <div>
+              <div class="review-skeleton-line short"></div>
+              <div class="review-skeleton-line tiny"></div>
+            </div>
+          </div>
+
+          <div class="review-skeleton-line title"></div>
+          <div class="review-skeleton-line"></div>
+          <div class="review-skeleton-line"></div>
+          <div class="review-skeleton-image"></div>
+
+          <div class="review-skeleton-chip-row">
+            <span></span>
+            <span></span>
+            <span></span>
           </div>
         </article>
       `;
@@ -346,42 +458,45 @@ function displayReviewCards(reviews) {
     .join('');
 }
 
-function handleReviewCardClick(event) {
-  const viewButton = event.target.closest('.student-review-view-btn');
+function setReviewUpdatingState(isUpdating) {
+  document.body.classList.toggle('review-wall-loading', isUpdating);
 
-  if (!viewButton) {
-    return;
+  if (reviewList) {
+    reviewList.classList.toggle('is-updating', isUpdating);
   }
 
-  const stallId = viewButton.dataset.stallId;
-
-  if (stallId) {
-    window.location.href = `./stall-detail.html?stall_id=${stallId}`;
+  if (reviewResultCount && isUpdating) {
+    reviewResultCount.textContent = 'Updating reviews...';
   }
 }
 
-function clearReviewFilters() {
-  if (reviewSearchInput) {
-    reviewSearchInput.value = '';
-  }
+function toggleHelpfulButton(button) {
+  const isLiked = button.classList.contains('liked');
+  const originalCount = Number(button.dataset.helpfulCount || 0);
+  const nextCount = isLiked ? originalCount : originalCount + 1;
 
-  if (reviewTagFilter) {
-    reviewTagFilter.value = 'all';
-  }
+  button.classList.toggle('liked');
+  button.classList.remove('pop');
 
-  if (reviewFoodCourtFilter) {
-    reviewFoodCourtFilter.value = 'all';
-  }
+  window.requestAnimationFrame(() => {
+    button.classList.add('pop');
+  });
 
-  if (reviewMinRatingFilter) {
-    reviewMinRatingFilter.value = '';
-  }
+  button.textContent = isLiked
+    ? `♡ Helpful · ${originalCount}`
+    : `♥ Helpful · ${nextCount}`;
+}
 
-  if (reviewSortFilter) {
-    reviewSortFilter.value = 'newest';
-  }
+function updateRatingChips() {
+  document.querySelectorAll('.review-rating-chip').forEach((chip) => {
+    chip.classList.toggle('active', chip.dataset.rating === selectedMinRating);
+  });
+}
 
-  loadReviews();
+function updateTagChips() {
+  document.querySelectorAll('.review-tag-chip').forEach((chip) => {
+    chip.classList.toggle('active', chip.dataset.tag === selectedTagChip);
+  });
 }
 
 function showReviewError() {
@@ -389,21 +504,115 @@ function showReviewError() {
     reviewResultCount.textContent = 'Unable to load reviews.';
   }
 
-  if (reviewActiveFilters) {
-    reviewActiveFilters.textContent = 'Please check the Review Hub backend API.';
-  }
-
   if (reviewList) {
     reviewList.innerHTML = `
-      <div class="review-empty-state">
-        <span>⚠️</span>
+      <div class="review-wall-empty">
         <h3>Review Hub unavailable</h3>
-        <p>Please check the review API and try again.</p>
+        <p>Please check the review backend API.</p>
       </div>
     `;
   }
 }
 
+function saveCachedReviews(reviews) {
+  try {
+    sessionStorage.setItem(reviewCacheKey, JSON.stringify(reviews));
+  } catch (error) {
+    console.warn('Review cache was not saved:', error);
+  }
+}
+
+function getCachedReviews() {
+  try {
+    const cachedText = sessionStorage.getItem(reviewCacheKey);
+
+    if (!cachedText) {
+      return [];
+    }
+
+    return JSON.parse(cachedText);
+  } catch (error) {
+    console.warn('Review cache could not be loaded:', error);
+    return [];
+  }
+}
+
+function getInitials(name) {
+  return String(name || 'SP')
+    .split(' ')
+    .map((part) => {
+      return part[0];
+    })
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function createStars(rating) {
+  const roundedRating = Math.round(Number(rating || 0));
+  let stars = '';
+
+  for (let index = 1; index <= 5; index += 1) {
+    stars += index <= roundedRating ? '★' : '☆';
+  }
+
+  return stars;
+}
+
 function formatRating(rating) {
   return Number(rating || 0).toFixed(1);
+}
+
+function formatDate(dateValue) {
+  if (!dateValue) {
+    return '2026-07';
+  }
+
+  return String(dateValue).slice(0, 10);
+}
+
+function getMetricValue(rating) {
+  return Math.max(3, Math.round(Number(rating || 4)));
+}
+
+function getValueMetric(rating) {
+  return Math.max(3, Math.round(Number(rating || 4) - 0.2));
+}
+
+function getPortionMetric(rating) {
+  return Math.max(3, Math.round(Number(rating || 4)));
+}
+
+function getWaitMetric(bestTime) {
+  const text = String(bestTime || '').toLowerCase();
+
+  if (text.includes('before') || text.includes('break')) {
+    return 5;
+  }
+
+  if (text.includes('lunch')) {
+    return 3;
+  }
+
+  return 4;
+}
+
+function getPriceTag(price) {
+  if (Number(price || 0) <= 4) {
+    return 'Cheap';
+  }
+
+  return 'Worth it';
+}
+
+function getBestTimeTag(bestTime) {
+  if (!bestTime) {
+    return 'Good for lunch';
+  }
+
+  return bestTime;
+}
+
+function getHelpfulCount(reviewId) {
+  return Number(reviewId || 1) + 6;
 }
