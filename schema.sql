@@ -2,7 +2,6 @@
 --  Database Schema
 -- ─────────────────────────────────────────────────────────
 
-
 DO $$
 BEGIN
     IF EXISTS (
@@ -50,23 +49,15 @@ END $$;
 -- ─────────────────────────────────────────────────────────
 
 DROP TABLE IF EXISTS "HistoryItems" CASCADE;
-
 DROP TABLE IF EXISTS "CartItems" CASCADE;
-
 DROP TABLE IF EXISTS "Cart" CASCADE;
-
 DROP TABLE IF EXISTS "History" CASCADE;
-
+DROP TABLE IF EXISTS "Reviews" CASCADE;
 DROP TABLE IF EXISTS "Menu" CASCADE;
-
 DROP TABLE IF EXISTS "Stalls" CASCADE;
-
 DROP TABLE IF EXISTS "User" CASCADE;
-
 DROP TABLE IF EXISTS "FoodCourt" CASCADE;
-
 DROP TABLE IF EXISTS "Person" CASCADE;
-
 DROP TABLE IF EXISTS "Something" CASCADE;
 
 
@@ -129,7 +120,7 @@ CREATE TABLE "Stalls" (
     "estimated_wait_time" TEXT DEFAULT '5-10 min',
     "rating" DECIMAL(2,1) DEFAULT 4.0,
     "rating_count" INT DEFAULT 0,
-    "image_url" TEXT DEFAULT '/images/default-food.jpg',
+    "image_url" TEXT,
     "vegan" BOOLEAN DEFAULT FALSE,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -149,11 +140,11 @@ CREATE TABLE "Menu" (
     "foodcourt_id" INT NOT NULL,
 
     "category" TEXT DEFAULT 'General',
-    "image_url" TEXT DEFAULT '/images/default-food.jpg',
+    "image_url" TEXT,
     "is_available" BOOLEAN DEFAULT TRUE,
     "is_popular" BOOLEAN DEFAULT FALSE,
 
-   "calories" INT DEFAULT 500,
+    "calories" INT DEFAULT 500,
     "nutrition_level" TEXT DEFAULT 'Moderate',
     "carb_level" TEXT DEFAULT 'Medium carb',
     "protein_level" TEXT DEFAULT 'Medium protein',
@@ -162,6 +153,27 @@ CREATE TABLE "Menu" (
     "spice_level" TEXT DEFAULT 'Not spicy',
     "allergen_info" TEXT DEFAULT 'Check with stall before ordering.',
     "portion_size" TEXT DEFAULT 'Regular',
+
+    "item_rating" DECIMAL(2,1) DEFAULT 4.0,
+    "item_review_count" INT DEFAULT 0,
+    "taste_rating" DECIMAL(2,1) DEFAULT 4.0,
+    "value_rating" DECIMAL(2,1) DEFAULT 4.0,
+    "portion_rating" DECIMAL(2,1) DEFAULT 4.0,
+    "wait_time_rating" DECIMAL(2,1) DEFAULT 4.0,
+    "order_count" INT DEFAULT 0,
+
+    "prep_time_minutes" INT DEFAULT 10,
+    "meal_type" TEXT DEFAULT 'Main',
+    "dietary_tag" TEXT DEFAULT 'None',
+    "flavour_profile" TEXT DEFAULT 'Savoury',
+    "student_need" TEXT DEFAULT 'General',
+    "temperature_type" TEXT DEFAULT 'Hot',
+    "is_budget_friendly" BOOLEAN DEFAULT FALSE,
+    "is_quick_bite" BOOLEAN DEFAULT FALSE,
+    "is_student_favourite" BOOLEAN DEFAULT FALSE,
+    "is_customisable" BOOLEAN DEFAULT TRUE,
+    "customisation_options" TEXT DEFAULT 'Standard portion',
+    "menu_notes" TEXT DEFAULT 'Standard campus meal option.',
 
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -174,15 +186,22 @@ CREATE TABLE "Menu" (
         REFERENCES "FoodCourt" ("foodcourt_id")
 );
 
-CREATE TABLE IF NOT EXISTS "Reviews" (
-  "review_id" SERIAL PRIMARY KEY,
-  "food_id" INT NOT NULL REFERENCES "Menu"("food_id") ON DELETE CASCADE,
-  "reviewer_name" TEXT NOT NULL,
-  "rating" DECIMAL(2, 1) NOT NULL CHECK ("rating" >= 1 AND "rating" <= 5),
-  "review_text" TEXT NOT NULL,
-  "review_tag" TEXT DEFAULT 'General',
-  "best_time_to_buy" TEXT DEFAULT 'Anytime',
-  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE "Reviews" (
+    "review_id" SERIAL PRIMARY KEY,
+    "food_id" INT NOT NULL REFERENCES "Menu"("food_id") ON DELETE CASCADE,
+    "reviewer_name" TEXT NOT NULL,
+    "rating" DECIMAL(2, 1) NOT NULL CHECK ("rating" >= 1 AND "rating" <= 5),
+    "taste_rating" DECIMAL(2, 1) DEFAULT 4.0 CHECK ("taste_rating" >= 1 AND "taste_rating" <= 5),
+    "value_rating" DECIMAL(2, 1) DEFAULT 4.0 CHECK ("value_rating" >= 1 AND "value_rating" <= 5),
+    "portion_rating" DECIMAL(2, 1) DEFAULT 4.0 CHECK ("portion_rating" >= 1 AND "portion_rating" <= 5),
+    "wait_time_rating" DECIMAL(2, 1) DEFAULT 4.0 CHECK ("wait_time_rating" >= 1 AND "wait_time_rating" <= 5),
+    "review_text" TEXT NOT NULL,
+    "review_tag" TEXT DEFAULT 'General',
+    "review_tags" TEXT[] DEFAULT ARRAY['General'],
+    "best_time_to_buy" TEXT DEFAULT 'Anytime',
+    "review_photo_url" TEXT,
+    "helpful_count" INT DEFAULT 0,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE "Cart" (
@@ -284,6 +303,38 @@ SELECT
     M."image_url" AS "image_url",
     M."is_available" AS "is_available",
     M."is_popular" AS "is_popular",
+
+    M."calories" AS "calories",
+    M."nutrition_level" AS "nutrition_level",
+    M."carb_level" AS "carb_level",
+    M."protein_level" AS "protein_level",
+    M."fat_level" AS "fat_level",
+    M."sugar_level" AS "sugar_level",
+    M."spice_level" AS "spice_level",
+    M."allergen_info" AS "allergen_info",
+    M."portion_size" AS "portion_size",
+
+    M."item_rating" AS "item_rating",
+    M."item_review_count" AS "item_review_count",
+    M."taste_rating" AS "taste_rating",
+    M."value_rating" AS "value_rating",
+    M."portion_rating" AS "portion_rating",
+    M."wait_time_rating" AS "wait_time_rating",
+    M."order_count" AS "order_count",
+
+    M."prep_time_minutes" AS "prep_time_minutes",
+    M."meal_type" AS "meal_type",
+    M."dietary_tag" AS "dietary_tag",
+    M."flavour_profile" AS "flavour_profile",
+    M."student_need" AS "student_need",
+    M."temperature_type" AS "temperature_type",
+    M."is_budget_friendly" AS "is_budget_friendly",
+    M."is_quick_bite" AS "is_quick_bite",
+    M."is_student_favourite" AS "is_student_favourite",
+    M."is_customisable" AS "is_customisable",
+    M."customisation_options" AS "customisation_options",
+    M."menu_notes" AS "menu_notes",
+
     M."created_at" AS "created_at"
 FROM "Menu" M
 JOIN "Stalls" S
@@ -295,23 +346,35 @@ JOIN "Stalls" S
 -- ─────────────────────────────────────────────────────────
 
 CREATE UNIQUE INDEX "Person_email_key" ON "Person" ("email");
-
 CREATE UNIQUE INDEX "User_username_key" ON "User" ("username");
-
 CREATE UNIQUE INDEX "User_email_key" ON "User" ("email");
 
 CREATE INDEX "Stalls_foodcourt_id_idx" ON "Stalls" ("foodcourt_id");
-
 CREATE INDEX "Stalls_halal_idx" ON "Stalls" ("halal");
-
 CREATE INDEX "Stalls_vegetarian_idx" ON "Stalls" ("vegetarian");
-
 CREATE INDEX "Stalls_opening_status_idx" ON "Stalls" ("opening_status");
 
 CREATE INDEX "Menu_stall_id_idx" ON "Menu" ("stall_id");
-
 CREATE INDEX "Menu_foodcourt_id_idx" ON "Menu" ("foodcourt_id");
-
 CREATE INDEX "Menu_category_idx" ON "Menu" ("category");
-
 CREATE INDEX "Menu_is_popular_idx" ON "Menu" ("is_popular");
+CREATE INDEX "Menu_is_available_idx" ON "Menu" ("is_available");
+CREATE INDEX "Menu_item_rating_idx" ON "Menu" ("item_rating");
+CREATE INDEX "Menu_price_idx" ON "Menu" ("price");
+CREATE INDEX "Menu_prep_time_idx" ON "Menu" ("prep_time_minutes");
+CREATE INDEX "Menu_student_need_idx" ON "Menu" ("student_need");
+CREATE INDEX "Menu_meal_type_idx" ON "Menu" ("meal_type");
+CREATE INDEX "Menu_dietary_tag_idx" ON "Menu" ("dietary_tag");
+CREATE INDEX "Menu_spice_level_idx" ON "Menu" ("spice_level");
+CREATE INDEX "Menu_budget_idx" ON "Menu" ("is_budget_friendly");
+CREATE INDEX "Menu_quick_bite_idx" ON "Menu" ("is_quick_bite");
+CREATE INDEX "Menu_student_favourite_idx" ON "Menu" ("is_student_favourite");
+
+CREATE INDEX "Reviews_food_id_idx" ON "Reviews" ("food_id");
+CREATE INDEX "Reviews_rating_idx" ON "Reviews" ("rating");
+CREATE INDEX "Reviews_taste_rating_idx" ON "Reviews" ("taste_rating");
+CREATE INDEX "Reviews_value_rating_idx" ON "Reviews" ("value_rating");
+CREATE INDEX "Reviews_portion_rating_idx" ON "Reviews" ("portion_rating");
+CREATE INDEX "Reviews_wait_time_rating_idx" ON "Reviews" ("wait_time_rating");
+CREATE INDEX "Reviews_tag_idx" ON "Reviews" ("review_tag");
+CREATE INDEX "Reviews_helpful_count_idx" ON "Reviews" ("helpful_count");
