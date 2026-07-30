@@ -5,7 +5,7 @@ const controller = require('../controllers/Review_Controller');
 
 router.get('/', controller.readAllReviews);
 router.post('/', controller.createReview);
-
+ 
 router.get('/summary', controller.readReviewSummary);
 router.get('/filter-options', controller.readReviewFilterOptions);
 router.get('/menu-options', controller.readReviewMenuOptions);

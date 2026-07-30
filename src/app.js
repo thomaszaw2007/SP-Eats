@@ -9,6 +9,7 @@ const foodStallRouter = require('./routers/FoodStall_router');
 const menuItemRouter = require('./routers/MenuItem_router');
 const foodMapRouter = require('./routers/FoodMap_router');
 const reviewRouter = require('./routers/Review_router');
+const quizRouter = require('./routers/Quiz_router');
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/menu-items', menuItemRouter);
 app.use('/api/food-map', foodMapRouter);
 
 app.use('/api/reviews', reviewRouter);
+app.use('/api/quiz', quizRouter);
 
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
   res.status(204).end();
