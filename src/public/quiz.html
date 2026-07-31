@@ -3,12 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>What Should I Eat | SP QuickBite</title>
+
+    <title>What Should I Eat? | SP QuickBite</title>
+
     <link rel="stylesheet" href="./style.css" />
   </head>
 
-  <body class="home-page">
-    <nav class="home-navbar">
+  <body class="quiz-page">
+    <nav class="home-navbar quiz-navbar">
       <a href="./index.html" class="home-logo">
         <span class="home-logo-badge">SP</span>
         <span>QuickBite</span>
@@ -21,14 +23,202 @@
         <a href="./reviews.html">Reviews</a>
         <a href="./quiz.html" class="active">Quiz</a>
       </div>
-
-      <button class="home-theme-btn" type="button">◐</button>
     </nav>
 
-    <main class="home-main">
-      <section class="empty-message">
-        <h1>What Should I Eat?</h1>
-        <p>This smart food quiz will be built next.</p>
+    <main class="quiz-main">
+      <section class="quiz-hero">
+        <div>
+          <p class="quiz-kicker">Meal Finder</p>
+          <h1>What Should I Eat?</h1>
+          <p>
+            Answer a few quick questions and QuickBite will recommend meals based on your budget,
+            mood, waiting time, spice preference, dietary needs, and food court.
+          </p>
+        </div>
+
+        <div class="quiz-hero-card">
+          <span>Today’s goal</span>
+          <strong>Find food faster</strong>
+          <p>Using real menu ratings, price, prep time, popularity, and student needs.</p>
+        </div>
+      </section>
+
+      <section class="quiz-layout">
+        <form id="mealQuizForm" class="quiz-form-card">
+          <div class="quiz-form-header">
+            <div>
+              <p class="quiz-kicker">Step 1</p>
+              <h2>Tell us what you want</h2>
+            </div>
+
+            <button id="resetQuizBtn" class="quiz-reset-btn" type="button">
+              Reset
+            </button>
+          </div>
+
+          <div class="quiz-question-block">
+            <h3>Budget</h3>
+
+            <div class="quiz-option-grid">
+              <button class="quiz-choice active" type="button" data-field="budget" data-value="any">
+                Any Budget
+              </button>
+              <button class="quiz-choice" type="button" data-field="budget" data-value="low">
+                Budget Meal
+              </button>
+              <button class="quiz-choice" type="button" data-field="budget" data-value="medium">
+                Normal Budget
+              </button>
+              <button class="quiz-choice" type="button" data-field="budget" data-value="high">
+                Treat Myself
+              </button>
+            </div>
+          </div>
+
+          <div class="quiz-question-block">
+            <h3>Waiting Time</h3>
+
+            <div class="quiz-option-grid three">
+              <button class="quiz-choice active" type="button" data-field="time" data-value="any">
+                Any Time
+              </button>
+              <button class="quiz-choice" type="button" data-field="time" data-value="quick">
+                Quick Bite
+              </button>
+              <button class="quiz-choice" type="button" data-field="time" data-value="normal">
+                Normal Wait
+              </button>
+            </div>
+          </div>
+
+          <div class="quiz-question-block">
+            <h3>Mood</h3>
+
+            <div class="quiz-option-grid">
+              <button class="quiz-choice active" type="button" data-field="mood" data-value="any">
+                Anything
+              </button>
+              <button class="quiz-choice" type="button" data-field="mood" data-value="comfort">
+                Comfort Food
+              </button>
+              <button class="quiz-choice" type="button" data-field="mood" data-value="healthy">
+                Healthy Choice
+              </button>
+              <button class="quiz-choice" type="button" data-field="mood" data-value="filling">
+                Filling Meal
+              </button>
+              <button class="quiz-choice" type="button" data-field="mood" data-value="spicy">
+                Spicy Craving
+              </button>
+              <button class="quiz-choice" type="button" data-field="mood" data-value="study">
+                Study Break
+              </button>
+              <button class="quiz-choice" type="button" data-field="mood" data-value="safe">
+                Safe Choice
+              </button>
+            </div>
+          </div>
+
+          <div class="quiz-question-block">
+            <h3>Spice</h3>
+
+            <div class="quiz-option-grid">
+              <button class="quiz-choice active" type="button" data-field="spice" data-value="any">
+                Any Spice
+              </button>
+              <button class="quiz-choice" type="button" data-field="spice" data-value="not-spicy">
+                Not Spicy
+              </button>
+              <button class="quiz-choice" type="button" data-field="spice" data-value="mild">
+                Mild / Medium
+              </button>
+              <button class="quiz-choice" type="button" data-field="spice" data-value="spicy">
+                Spicy
+              </button>
+            </div>
+          </div>
+
+          <div class="quiz-select-row">
+            <label>
+              Food Court
+              <select id="quizFoodCourtSelect">
+                <option value="all">All Food Courts</option>
+              </select>
+            </label>
+
+            <label>
+              Category
+              <select id="quizCategorySelect">
+                <option value="all">All Categories</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="quiz-select-row">
+            <label>
+              Dietary
+              <select id="quizDietarySelect">
+                <option value="any">Any Dietary</option>
+                <option value="halal">Halal-friendly</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+              </select>
+            </label>
+
+            <label>
+              Temperature
+              <select id="quizTemperatureSelect">
+                <option value="any">Any Temperature</option>
+                <option value="hot">Hot Meal</option>
+                <option value="cold">Cold Drink / Cold Option</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="quiz-select-row">
+            <label>
+              Max Price Optional
+              <input id="quizMaxPriceInput" type="number" min="0" step="0.1" placeholder="Example: 5.50" />
+            </label>
+
+            <label>
+              Sort By
+              <select id="quizSortSelect">
+                <option value="best-match">Best Match</option>
+                <option value="rating">Highest Rating</option>
+                <option value="price-low">Lowest Price</option>
+                <option value="quick">Fastest Prep</option>
+                <option value="popular">Most Popular</option>
+              </select>
+            </label>
+          </div>
+
+          <button id="submitQuizBtn" class="quiz-submit-btn" type="submit">
+            Find My Meal
+          </button>
+        </form>
+
+        <section class="quiz-results-card">
+          <div class="quiz-results-header">
+            <div>
+              <p class="quiz-kicker">Step 2</p>
+              <h2>Your recommendations</h2>
+            </div>
+
+            <span id="quizResultCount">Waiting for quiz...</span>
+          </div>
+
+          <div id="quizSelectedSummary" class="quiz-selected-summary">
+            Choose your preferences, then click Find My Meal.
+          </div>
+
+          <div id="quizResultsList" class="quiz-results-list">
+            <div class="quiz-empty-state">
+              <h3>No recommendations yet</h3>
+              <p>Your matched meals will appear here.</p>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
 
