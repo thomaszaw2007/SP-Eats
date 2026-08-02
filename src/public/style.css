@@ -5317,3 +5317,356 @@ html {
     width: fit-content;
   }
 }
+
+/* =========================================================
+   STEP-BY-STEP MEAL QUIZ
+========================================================= */
+
+.quiz-decision-page {
+  min-height: 100vh;
+  background: #f7f7f8;
+  color: #111827;
+}
+
+.decision-hero {
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(120deg, #7c3aed, #ec4899, #f97316);
+  color: white;
+  text-align: center;
+}
+
+.decision-hero span {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 8px 18px;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.decision-hero h1 {
+  margin: 16px 0 0;
+  font-size: clamp(38px, 5vw, 62px);
+  font-weight: 1000;
+  letter-spacing: -2px;
+}
+
+.decision-main {
+  width: min(1060px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 42px 0 60px;
+}
+
+.decision-quiz-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.decision-progress-dots {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 34px;
+}
+
+.decision-progress-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.decision-progress-dots span.active,
+.decision-progress-dots span.done {
+  width: 34px;
+  background: #f97316;
+}
+
+.decision-question-card {
+  width: min(620px, 100%);
+  border-radius: 24px;
+  background: white;
+  padding: 34px 38px;
+  box-shadow: 0 24px 55px rgba(15, 23, 42, 0.11);
+}
+
+.decision-step-text {
+  margin: 0 0 6px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.decision-question-card h2 {
+  margin: 0 0 24px;
+  color: #111827;
+  font-size: 28px;
+  font-weight: 1000;
+  letter-spacing: -0.8px;
+}
+
+.decision-answer-list {
+  display: grid;
+  gap: 13px;
+}
+
+.decision-answer-option {
+  min-height: 58px;
+  border: 1px solid #e5e7eb;
+  border-radius: 17px;
+  background: #f8fafc;
+  color: #111827;
+  padding: 0 20px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 950;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.decision-answer-option:hover {
+  transform: translateY(-2px);
+  border-color: rgba(249, 115, 22, 0.45);
+  background: white;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+.decision-question-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.decision-question-actions button {
+  border: none;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 9px 15px;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.decision-pattern-section {
+  margin-top: 70px;
+}
+
+.decision-pattern-section h2,
+.decision-section-title h2 {
+  margin: 0 0 22px;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 1000;
+  letter-spacing: -0.8px;
+}
+
+.decision-pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.decision-pattern-card {
+  min-height: 112px;
+  border-radius: 20px;
+  background: white;
+  padding: 18px;
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.07);
+}
+
+.decision-pattern-card span {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #f97316;
+  font-size: 16px;
+  font-weight: 1000;
+}
+
+.decision-pattern-card p {
+  margin: 14px 0 0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.decision-recommendation-section {
+  margin-top: 34px;
+}
+
+.decision-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+#quizResultCount {
+  border-radius: 999px;
+  background: white;
+  color: #ef4444;
+  padding: 8px 13px;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.decision-recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.decision-food-card,
+.decision-empty-card {
+  overflow: hidden;
+  border-radius: 22px;
+  background: white;
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
+}
+
+.decision-empty-card {
+  grid-column: 1 / -1;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.decision-food-image,
+.decision-food-placeholder {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: #f1f5f9;
+}
+
+.decision-food-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.decision-food-info {
+  padding: 16px;
+}
+
+.decision-food-info h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 1000;
+}
+
+.decision-food-info p {
+  margin: 4px 0 0;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.decision-food-rating {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.decision-food-rating span {
+  color: #ef4444;
+  letter-spacing: 1px;
+  font-size: 13px;
+}
+
+.decision-food-rating strong {
+  color: #111827;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.decision-food-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.decision-food-bottom span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.decision-food-bottom strong {
+  color: #f97316;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.decision-food-reason {
+  min-height: 34px;
+  margin-top: 12px !important;
+  color: #64748b !important;
+  font-size: 11px !important;
+  line-height: 1.45;
+}
+
+.decision-view-menu-btn {
+  margin-top: 13px;
+  border: none;
+  border-radius: 999px;
+  background: #111827;
+  color: white;
+  padding: 9px 13px;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .decision-pattern-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .decision-recommendation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .decision-main {
+    width: min(100% - 22px, 1060px);
+  }
+
+  .decision-question-card {
+    padding: 26px 20px;
+  }
+
+  .decision-question-card h2 {
+    font-size: 24px;
+  }
+
+  .decision-pattern-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,135 +1,433 @@
-const mealQuizForm = document.getElementById('mealQuizForm');
-const resetQuizBtn = document.getElementById('resetQuizBtn');
-const submitQuizBtn = document.getElementById('submitQuizBtn');
+const quizProgressDots = document.getElementById('quizProgressDots');
+const quizStepText = document.getElementById('quizStepText');
+const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+const quizAnswerList = document.getElementById('quizAnswerList');
+const quizBackBtn = document.getElementById('quizBackBtn');
+const quizRestartBtn = document.getElementById('quizRestartBtn');
 
-const quizFoodCourtSelect = document.getElementById('quizFoodCourtSelect');
-const quizCategorySelect = document.getElementById('quizCategorySelect');
-const quizDietarySelect = document.getElementById('quizDietarySelect');
-const quizTemperatureSelect = document.getElementById('quizTemperatureSelect');
-const quizMaxPriceInput = document.getElementById('quizMaxPriceInput');
-const quizSortSelect = document.getElementById('quizSortSelect');
-
+const quizPatternCards = document.getElementById('quizPatternCards');
+const quizRecommendationsGrid = document.getElementById('quizRecommendationsGrid');
 const quizResultCount = document.getElementById('quizResultCount');
-const quizSelectedSummary = document.getElementById('quizSelectedSummary');
-const quizResultsList = document.getElementById('quizResultsList');
+
+let currentQuestionIndex = 0;
+let quizCompleted = false;
+let foodCourtOptions = [
+  {
+    label: 'Any Food Court',
+    value: 'all',
+  },
+];
 
 const quizState = {
   budget: 'any',
   time: 'any',
   mood: 'any',
   spice: 'any',
+  dietary: 'any',
+  foodCourt: 'all',
+  temperature: 'any',
+  maxPrice: null,
+};
+
+const selectedLabels = {
+  budget: 'Any Budget',
+  time: 'Any Time',
+  mood: 'Anything',
+  spice: 'Any Spice',
+  dietary: 'Any Dietary',
+  foodCourt: 'All Food Courts',
+  temperature: 'Any Temperature',
 };
 
 window.addEventListener('DOMContentLoaded', () => {
   setupQuizEvents();
+  renderQuestion();
+  renderPatternCards();
   loadQuizOptions();
+  loadRecommendations();
 });
 
 function setupQuizEvents() {
-  document.querySelectorAll('.quiz-choice').forEach((button) => {
-    button.addEventListener('click', handleQuizChoiceClick);
-  });
-
-  if (mealQuizForm) {
-    mealQuizForm.addEventListener('submit', handleQuizSubmit);
+  if (quizAnswerList) {
+    quizAnswerList.addEventListener('click', handleAnswerClick);
   }
 
-  if (resetQuizBtn) {
-    resetQuizBtn.addEventListener('click', resetQuiz);
+  if (quizBackBtn) {
+    quizBackBtn.addEventListener('click', goBackQuestion);
   }
 
-  if (quizResultsList) {
-    quizResultsList.addEventListener('click', handleResultClick);
+  if (quizRestartBtn) {
+    quizRestartBtn.addEventListener('click', restartQuiz);
+  }
+
+  if (quizRecommendationsGrid) {
+    quizRecommendationsGrid.addEventListener('click', handleRecommendationClick);
+    quizRecommendationsGrid.addEventListener('error', handleRecommendationImageError, true);
   }
 }
 
-function handleQuizChoiceClick(event) {
-  const button = event.target.closest('.quiz-choice');
-
-  if (!button) {
-    return;
-  }
-
-  const field = button.dataset.field;
-  const value = button.dataset.value;
-
-  quizState[field] = value;
-
-  document.querySelectorAll(`.quiz-choice[data-field="${field}"]`).forEach((choice) => {
-    choice.classList.toggle('active', choice === button);
-  });
+function getQuestions() {
+  return [
+    {
+      field: 'budget',
+      title: 'What is your budget?',
+      options: [
+        {
+          label: 'Under $5',
+          value: 'low',
+          maxPrice: 5,
+        },
+        {
+          label: '$5–$7',
+          value: 'medium',
+          maxPrice: 7,
+        },
+        {
+          label: 'Above $7',
+          value: 'high',
+          maxPrice: null,
+        },
+      ],
+    },
+    {
+      field: 'time',
+      title: 'How fast do you need your food?',
+      options: [
+        {
+          label: 'Quick bite',
+          value: 'quick',
+        },
+        {
+          label: 'Normal wait',
+          value: 'normal',
+        },
+        {
+          label: 'No rush',
+          value: 'any',
+        },
+      ],
+    },
+    {
+      field: 'mood',
+      title: 'What are you craving?',
+      options: [
+        {
+          label: 'Comfort food',
+          value: 'comfort',
+        },
+        {
+          label: 'Healthy choice',
+          value: 'healthy',
+        },
+        {
+          label: 'Filling meal',
+          value: 'filling',
+        },
+        {
+          label: 'Spicy craving',
+          value: 'spicy',
+        },
+        {
+          label: 'Study break',
+          value: 'study',
+        },
+        {
+          label: 'Safe choice',
+          value: 'safe',
+        },
+      ],
+    },
+    {
+      field: 'spice',
+      title: 'How spicy do you want it?',
+      options: [
+        {
+          label: 'Not spicy',
+          value: 'not-spicy',
+        },
+        {
+          label: 'Mild / medium',
+          value: 'mild',
+        },
+        {
+          label: 'Spicy',
+          value: 'spicy',
+        },
+        {
+          label: 'Anything',
+          value: 'any',
+        },
+      ],
+    },
+    {
+      field: 'dietary',
+      title: 'Any dietary preference?',
+      options: [
+        {
+          label: 'Any dietary',
+          value: 'any',
+        },
+        {
+          label: 'Halal-friendly',
+          value: 'halal',
+        },
+        {
+          label: 'Vegetarian',
+          value: 'vegetarian',
+        },
+        {
+          label: 'Vegan',
+          value: 'vegan',
+        },
+      ],
+    },
+    {
+      field: 'foodCourt',
+      title: 'Which food court are you near?',
+      options: foodCourtOptions,
+    },
+    {
+      field: 'temperature',
+      title: 'Hot meal or cold option?',
+      options: [
+        {
+          label: 'Hot meal',
+          value: 'hot',
+        },
+        {
+          label: 'Cold drink / cold option',
+          value: 'cold',
+        },
+        {
+          label: 'Anything',
+          value: 'any',
+        },
+      ],
+    },
+  ];
 }
 
 function loadQuizOptions() {
   fetch('/api/quiz/options')
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Quiz options API failed.');
-      }
-
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((result) => {
       const options = result.data || {};
+      const foodCourts = options.food_courts || [];
 
-      populateFoodCourtOptions(options.food_courts || []);
-      populateCategoryOptions(options.categories || []);
+      foodCourtOptions = [
+        {
+          label: 'Any Food Court',
+          value: 'all',
+        },
+        ...foodCourts.map((foodCourt) => {
+          return {
+            label: `FC${foodCourt.foodcourt_id} - ${foodCourt.foodcourt_name}`,
+            value: `FC${foodCourt.foodcourt_id}`,
+          };
+        }),
+      ];
+
+      renderQuestion();
     })
     .catch((error) => {
       console.error('Error loading quiz options:', error);
     });
 }
 
-function populateFoodCourtOptions(foodCourts) {
-  if (!quizFoodCourtSelect) {
+function renderQuestion() {
+  const questions = getQuestions();
+  const question = questions[currentQuestionIndex];
+
+  renderProgressDots();
+
+  if (quizCompleted) {
+    quizStepText.textContent = 'Done';
+    quizQuestionTitle.textContent = 'Your food matches are ready';
+
+    quizAnswerList.innerHTML = `
+      <button class="decision-answer-option" type="button" data-action="restart">
+        Retake Quiz
+      </button>
+    `;
+
+    quizBackBtn.style.display = 'inline-flex';
     return;
   }
 
-  quizFoodCourtSelect.innerHTML = `
-    <option value="all">All Food Courts</option>
-  `;
+  quizStepText.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+  quizQuestionTitle.textContent = question.title;
 
-  foodCourts.forEach((foodCourt) => {
-    quizFoodCourtSelect.innerHTML += `
-      <option value="FC${foodCourt.foodcourt_id}">
-        FC${foodCourt.foodcourt_id} - ${foodCourt.foodcourt_name}
-      </option>
-    `;
-  });
+  quizAnswerList.innerHTML = question.options
+    .map((option, index) => {
+      return `
+        <button
+          class="decision-answer-option"
+          type="button"
+          data-option-index="${index}"
+        >
+          ${escapeHtml(option.label)}
+        </button>
+      `;
+    })
+    .join('');
+
+  quizBackBtn.style.display = currentQuestionIndex === 0 ? 'none' : 'inline-flex';
 }
 
-function populateCategoryOptions(categories) {
-  if (!quizCategorySelect) {
+function renderProgressDots() {
+  const questions = getQuestions();
+
+  quizProgressDots.innerHTML = questions
+    .map((question, index) => {
+      let dotClass = '';
+
+      if (index === currentQuestionIndex && !quizCompleted) {
+        dotClass = 'active';
+      }
+
+      if (index < currentQuestionIndex || quizCompleted) {
+        dotClass = 'done';
+      }
+
+      return `<span class="${dotClass}"></span>`;
+    })
+    .join('');
+}
+
+function handleAnswerClick(event) {
+  const restartButton = event.target.closest('[data-action="restart"]');
+
+  if (restartButton) {
+    restartQuiz();
     return;
   }
 
-  quizCategorySelect.innerHTML = `
-    <option value="all">All Categories</option>
-  `;
+  const button = event.target.closest('.decision-answer-option');
 
-  categories.forEach((category) => {
-    quizCategorySelect.innerHTML += `
-      <option value="${category}">
-        ${category}
-      </option>
-    `;
-  });
+  if (!button) {
+    return;
+  }
+
+  const questions = getQuestions();
+  const question = questions[currentQuestionIndex];
+  const optionIndex = Number(button.dataset.optionIndex);
+  const selectedOption = question.options[optionIndex];
+
+  if (!selectedOption) {
+    return;
+  }
+
+  quizState[question.field] = selectedOption.value;
+  selectedLabels[question.field] = selectedOption.label;
+
+  if (question.field === 'budget') {
+    quizState.maxPrice = selectedOption.maxPrice;
+  }
+
+  if (currentQuestionIndex < questions.length - 1) {
+    currentQuestionIndex += 1;
+  } else {
+    quizCompleted = true;
+  }
+
+  renderQuestion();
+  renderPatternCards();
+  loadRecommendations();
 }
 
-function handleQuizSubmit(event) {
-  event.preventDefault();
+function goBackQuestion() {
+  if (quizCompleted) {
+    quizCompleted = false;
+    currentQuestionIndex = getQuestions().length - 1;
+    renderQuestion();
+    return;
+  }
 
-  const quizBody = buildQuizBody();
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex -= 1;
+    renderQuestion();
+  }
+}
 
-  setQuizLoading(true);
-  updateSelectedSummary(quizBody);
+function restartQuiz() {
+  currentQuestionIndex = 0;
+  quizCompleted = false;
+
+  quizState.budget = 'any';
+  quizState.time = 'any';
+  quizState.mood = 'any';
+  quizState.spice = 'any';
+  quizState.dietary = 'any';
+  quizState.foodCourt = 'all';
+  quizState.temperature = 'any';
+  quizState.maxPrice = null;
+
+  selectedLabels.budget = 'Any Budget';
+  selectedLabels.time = 'Any Time';
+  selectedLabels.mood = 'Anything';
+  selectedLabels.spice = 'Any Spice';
+  selectedLabels.dietary = 'Any Dietary';
+  selectedLabels.foodCourt = 'All Food Courts';
+  selectedLabels.temperature = 'Any Temperature';
+
+  renderQuestion();
+  renderPatternCards();
+  loadRecommendations();
+}
+
+function renderPatternCards() {
+  const patterns = [
+    {
+      icon: '↗',
+      text: `Budget choice: ${selectedLabels.budget}`,
+    },
+    {
+      icon: '$',
+      text: `Waiting time: ${selectedLabels.time}`,
+    },
+    {
+      icon: '◎',
+      text: `Mood: ${selectedLabels.mood}`,
+    },
+    {
+      icon: '♨',
+      text: `Spice level: ${selectedLabels.spice}`,
+    },
+    {
+      icon: '⌂',
+      text: `Location: ${selectedLabels.foodCourt}`,
+    },
+  ];
+
+  quizPatternCards.innerHTML = patterns
+    .map((pattern) => {
+      return `
+        <article class="decision-pattern-card">
+          <span>${pattern.icon}</span>
+          <p>${escapeHtml(pattern.text)}</p>
+        </article>
+      `;
+    })
+    .join('');
+}
+
+function loadRecommendations() {
+  const requestBody = buildRecommendationBody();
+
+  quizResultCount.textContent = 'Loading...';
+
+  quizRecommendationsGrid.innerHTML = `
+    <div class="decision-empty-card">
+      Finding food matches...
+    </div>
+  `;
 
   fetch('/api/quiz/recommendations', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(quizBody),
+    body: JSON.stringify(requestBody),
   })
     .then((response) => {
       if (!response.ok) {
@@ -144,129 +442,83 @@ function handleQuizSubmit(event) {
       displayRecommendations(recommendations);
     })
     .catch((error) => {
-      console.error('Error loading quiz recommendations:', error);
-      showQuizError();
-    })
-    .finally(() => {
-      setQuizLoading(false);
+      console.error('Error loading recommendations:', error);
+
+      quizResultCount.textContent = 'Unavailable';
+
+      quizRecommendationsGrid.innerHTML = `
+        <div class="decision-empty-card">
+          Unable to load recommendations. Check the quiz backend.
+        </div>
+      `;
     });
 }
 
-function buildQuizBody() {
-  const maxPriceValue = quizMaxPriceInput ? quizMaxPriceInput.value : '';
-
-  const quizBody = {
+function buildRecommendationBody() {
+  const requestBody = {
     budget: quizState.budget,
     time: quizState.time,
     mood: quizState.mood,
     spice: quizState.spice,
-    foodCourt: quizFoodCourtSelect ? quizFoodCourtSelect.value : 'all',
-    category: quizCategorySelect ? quizCategorySelect.value : 'all',
-    dietary: quizDietarySelect ? quizDietarySelect.value : 'any',
-    temperature: quizTemperatureSelect ? quizTemperatureSelect.value : 'any',
-    sort: quizSortSelect ? quizSortSelect.value : 'best-match',
-    limit: 6,
+    dietary: quizState.dietary,
+    foodCourt: quizState.foodCourt,
+    temperature: quizState.temperature,
+    category: 'all',
+    sort: 'best-match',
     availableOnly: true,
+    limit: 3,
   };
 
-  if (maxPriceValue) {
-    quizBody.maxPrice = Number(maxPriceValue);
+  if (quizState.maxPrice) {
+    requestBody.maxPrice = quizState.maxPrice;
   }
 
-  return quizBody;
-}
-
-function updateSelectedSummary(quizBody) {
-  if (!quizSelectedSummary) {
-    return;
-  }
-
-  const summaryItems = [
-    `Budget: ${formatOptionText(quizBody.budget)}`,
-    `Time: ${formatOptionText(quizBody.time)}`,
-    `Mood: ${formatOptionText(quizBody.mood)}`,
-    `Spice: ${formatOptionText(quizBody.spice)}`,
-    `Food Court: ${quizBody.foodCourt === 'all' ? 'All' : quizBody.foodCourt}`,
-    `Dietary: ${formatOptionText(quizBody.dietary)}`,
-  ];
-
-  if (quizBody.maxPrice) {
-    summaryItems.push(`Max Price: $${formatPrice(quizBody.maxPrice)}`);
-  }
-
-  quizSelectedSummary.innerHTML = summaryItems
-    .map((item) => {
-      return `<span>${item}</span>`;
-    })
-    .join('');
+  return requestBody;
 }
 
 function displayRecommendations(recommendations) {
-  if (!quizResultsList) {
-    return;
-  }
-
-  if (quizResultCount) {
-    quizResultCount.textContent = `${recommendations.length} matches`;
-  }
+  quizResultCount.textContent = `${recommendations.length} matches`;
 
   if (recommendations.length === 0) {
-    quizResultsList.innerHTML = `
-      <div class="quiz-empty-state">
-        <h3>No matching meals found</h3>
-        <p>Try using fewer filters or increasing your max price.</p>
+    quizRecommendationsGrid.innerHTML = `
+      <div class="decision-empty-card">
+        No meals found. Try restarting the quiz with fewer limits.
       </div>
     `;
     return;
   }
 
-  quizResultsList.innerHTML = recommendations
-    .map((item, index) => {
+  quizRecommendationsGrid.innerHTML = recommendations
+    .map((item) => {
       return `
-        <article class="quiz-result-card" style="animation-delay: ${index * 0.04}s">
-          <div class="quiz-result-rank">
-            #${index + 1}
-          </div>
+        <article class="decision-food-card">
+          ${createFoodImage(item)}
 
-          ${createResultImage(item)}
+          <div class="decision-food-info">
+            <h3>${escapeHtml(item.item_name)}</h3>
+            <p>${escapeHtml(item.stall_name)}</p>
 
-          <div class="quiz-result-content">
-            <div class="quiz-result-top">
-              <div>
-                <h3>${item.item_name}</h3>
-                <p>${item.stall_name} · FC${item.foodcourt_id}</p>
-              </div>
-
-              <div class="quiz-match-score">
-                ${item.match_score}
-                <span>match</span>
-              </div>
+            <div class="decision-food-rating">
+              <span>${createStars(item.item_rating)}</span>
+              <strong>${formatRating(item.item_rating)}</strong>
             </div>
 
-            <div class="quiz-result-meta">
-              <span>$${formatPrice(item.price)}</span>
-              <span>★ ${formatRating(item.item_rating)}</span>
-              <span>${item.prep_time_minutes || 10} min</span>
-              <span>${item.category}</span>
+            <div class="decision-food-bottom">
+              <span>${escapeHtml(item.category)}</span>
+              <strong>$${formatPrice(item.price)}</strong>
             </div>
 
-            <p class="quiz-result-description">
-              ${item.description || 'Campus meal option.'}
+            <p class="decision-food-reason">
+              ${escapeHtml(getMainReason(item))}
             </p>
 
-            <div class="quiz-match-reasons">
-              ${createMatchReasons(item.match_reasons)}
-            </div>
-
-            <div class="quiz-result-actions">
-              <button
-                class="quiz-view-menu-btn"
-                type="button"
-                data-stall-id="${item.stall_id}"
-              >
-                View Stall Menu →
-              </button>
-            </div>
+            <button
+              class="decision-view-menu-btn"
+              type="button"
+              data-stall-id="${item.stall_id}"
+            >
+              View Menu
+            </button>
           </div>
         </article>
       `;
@@ -274,39 +526,28 @@ function displayRecommendations(recommendations) {
     .join('');
 }
 
-function createResultImage(item) {
+function createFoodImage(item) {
   if (!item.image_url) {
     return `
-      <div class="quiz-result-image quiz-result-image-placeholder">
+      <div class="decision-food-image decision-food-placeholder">
         No image
       </div>
     `;
   }
 
   return `
-    <img
-      src="${item.image_url}"
-      alt="${item.item_name}"
-      class="quiz-result-image"
-    />
+    <div class="decision-food-image-wrap">
+      <img
+        src="${item.image_url}"
+        alt="${escapeHtml(item.item_name)}"
+        class="decision-food-image"
+      />
+    </div>
   `;
 }
 
-function createMatchReasons(reasons) {
-  const safeReasons = Array.isArray(reasons) && reasons.length > 0
-    ? reasons
-    : ['Recommended based on your quiz answers.'];
-
-  return safeReasons
-    .slice(0, 4)
-    .map((reason) => {
-      return `<span>${reason}</span>`;
-    })
-    .join('');
-}
-
-function handleResultClick(event) {
-  const button = event.target.closest('.quiz-view-menu-btn');
+function handleRecommendationClick(event) {
+  const button = event.target.closest('.decision-view-menu-btn');
 
   if (!button) {
     return;
@@ -319,98 +560,43 @@ function handleResultClick(event) {
   }
 }
 
-function resetQuiz() {
-  quizState.budget = 'any';
-  quizState.time = 'any';
-  quizState.mood = 'any';
-  quizState.spice = 'any';
+function handleRecommendationImageError(event) {
+  const image = event.target;
 
-  document.querySelectorAll('.quiz-choice').forEach((button) => {
-    const isDefault = button.dataset.value === 'any';
-
-    button.classList.toggle('active', isDefault);
-  });
-
-  if (quizFoodCourtSelect) {
-    quizFoodCourtSelect.value = 'all';
-  }
-
-  if (quizCategorySelect) {
-    quizCategorySelect.value = 'all';
-  }
-
-  if (quizDietarySelect) {
-    quizDietarySelect.value = 'any';
-  }
-
-  if (quizTemperatureSelect) {
-    quizTemperatureSelect.value = 'any';
-  }
-
-  if (quizMaxPriceInput) {
-    quizMaxPriceInput.value = '';
-  }
-
-  if (quizSortSelect) {
-    quizSortSelect.value = 'best-match';
-  }
-
-  if (quizResultCount) {
-    quizResultCount.textContent = 'Waiting for quiz...';
-  }
-
-  if (quizSelectedSummary) {
-    quizSelectedSummary.textContent = 'Choose your preferences, then click Find My Meal.';
-  }
-
-  if (quizResultsList) {
-    quizResultsList.innerHTML = `
-      <div class="quiz-empty-state">
-        <h3>No recommendations yet</h3>
-        <p>Your matched meals will appear here.</p>
-      </div>
-    `;
-  }
-}
-
-function setQuizLoading(isLoading) {
-  if (!submitQuizBtn) {
+  if (!image.classList.contains('decision-food-image')) {
     return;
   }
 
-  submitQuizBtn.disabled = isLoading;
-  submitQuizBtn.textContent = isLoading ? 'Finding...' : 'Find My Meal';
+  const imageWrap = image.closest('.decision-food-image-wrap');
 
-  if (quizResultsList && isLoading) {
-    quizResultsList.innerHTML = `
-      <div class="quiz-loading-state">
-        Finding your best meal matches...
-      </div>
-    `;
+  if (!imageWrap) {
+    return;
   }
+
+  imageWrap.innerHTML = `
+    <div class="decision-food-image decision-food-placeholder">
+      No image
+    </div>
+  `;
 }
 
-function showQuizError() {
-  if (quizResultCount) {
-    quizResultCount.textContent = 'Unable to load recommendations';
+function getMainReason(item) {
+  if (Array.isArray(item.match_reasons) && item.match_reasons.length > 0) {
+    return item.match_reasons[0];
   }
 
-  if (quizResultsList) {
-    quizResultsList.innerHTML = `
-      <div class="quiz-empty-state">
-        <h3>Quiz backend unavailable</h3>
-        <p>Please check that /api/quiz/recommendations is working.</p>
-      </div>
-    `;
-  }
+  return 'Matches your quiz preferences.';
 }
 
-function formatOptionText(value) {
-  return String(value || 'any')
-    .replace('-', ' ')
-    .replace(/\b\w/g, (letter) => {
-      return letter.toUpperCase();
-    });
+function createStars(rating) {
+  const roundedRating = Math.round(Number(rating || 0));
+  let stars = '';
+
+  for (let index = 1; index <= 5; index += 1) {
+    stars += index <= roundedRating ? '★' : '☆';
+  }
+
+  return stars;
 }
 
 function formatRating(rating) {
@@ -419,4 +605,13 @@ function formatRating(rating) {
 
 function formatPrice(price) {
   return Number(price || 0).toFixed(2);
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
