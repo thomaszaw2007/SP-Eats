@@ -3,14 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Review Hub | SP QuickBite</title>
-
     <link rel="stylesheet" href="./style.css" />
   </head>
 
-  <body class="review-wall-page">
-    <nav class="home-navbar review-wall-navbar">
+  <body class="home-page review-page">
+    <nav class="home-navbar">
       <a href="./index.html" class="home-logo">
         <span class="home-logo-badge">SP</span>
         <span>QuickBite</span>
@@ -23,262 +21,201 @@
         <a href="./reviews.html" class="active">Reviews</a>
         <a href="./quiz.html">Quiz</a>
       </div>
+
+      <button id="reviewsThemeToggle" class="home-theme-btn" type="button">◐</button>
     </nav>
 
-    <main class="review-wall-main">
-      <section class="review-wall-controls">
-        <div class="review-wall-top-controls full-review-filter-row">
-          <div class="review-wall-search">
-            <span>⌕</span>
+    <header class="review-hero">
+      <div class="review-hero-content">
+        <h1>Review Hub</h1>
+        <p>See what other students are saying</p>
 
-            <input
-              id="reviewSearchInput"
-              type="text"
-              placeholder="Search reviews, dishes, stalls..."
-            />
-          </div>
+        <button id="openWriteReviewBtn" class="review-hero-btn" type="button">
+          ✎ Write a Review
+        </button>
+      </div>
+    </header>
 
-          <select id="reviewTagFilter">
-            <option value="all">All Tags</option>
-          </select>
-
-          <select id="reviewFoodCourtFilter">
-            <option value="all">All Food Courts</option>
-          </select>
-
-          <select id="reviewMinRatingFilter">
-            <option value="">Any Rating</option>
-            <option value="4">4★+ Good</option>
-            <option value="3">3★+ Okay</option>
-            <option value="below3">Below 3★ Needs Improvement</option>
-          </select>
-
-          <select id="reviewSortFilter">
-            <option value="newest">Newest</option>
-            <option value="highest">Highest Rating</option>
-            <option value="lowest">Lowest Rating</option>
-            <option value="helpful">Most Helpful</option>
-            <option value="dish">Dish Name</option>
-          </select>
-
-          <button id="clearReviewFiltersBtn" class="review-wall-clear-btn" type="button">
-            Clear
-          </button>
-
-          <button id="openReviewComposerBtn" class="review-write-btn" type="button">
-            + Write Review
-          </button>
+    <main class="review-main">
+      <section class="review-toolbar">
+        <div class="review-search-wrap">
+          <input
+            type="text"
+            id="reviewSearchInput"
+            placeholder="Search reviews..."
+          />
         </div>
 
-        <div class="review-wall-chip-row dynamic-review-chip-row">
-          <span class="review-wall-chip-label">Quick Tags:</span>
+        <select id="reviewRatingFilter">
+          <option value="all">All Ratings</option>
+          <option value="4plus">4★ & up</option>
+          <option value="3plus">3★ & up</option>
+          <option value="under3">Below 3★</option>
+        </select>
 
-          <div id="dynamicReviewTagChips" class="dynamic-review-tags">
-            <button class="review-tag-chip active" data-tag="all" type="button">
-              All
-            </button>
-          </div>
-        </div>
+        <select id="reviewTagFilter">
+          <option value="all">All Tags</option>
+          <option value="Worth it">Worth it</option>
+          <option value="Large portion">Large portion</option>
+          <option value="Spicy">Spicy</option>
+          <option value="Cheap">Cheap</option>
+          <option value="Long queue">Long queue</option>
+          <option value="Good for lunch">Good for lunch</option>
+          <option value="Comfort food">Comfort food</option>
+          <option value="Healthy choice">Healthy choice</option>
+        </select>
+
+        <select id="reviewSortFilter">
+          <option value="newest">Newest</option>
+          <option value="highest">Highest Rated</option>
+          <option value="lowest">Lowest Rated</option>
+          <option value="helpful">Most Helpful</option>
+        </select>
       </section>
 
-      <p id="reviewResultCount" class="review-wall-count">
-        Loading reviews...
-      </p>
+      <div class="review-tag-chip-row">
+        <button class="review-filter-chip active" data-filter-tag="all" type="button">All</button>
+        <button class="review-filter-chip" data-filter-tag="Worth it" type="button">Worth it</button>
+        <button class="review-filter-chip" data-filter-tag="Large portion" type="button">Large portion</button>
+        <button class="review-filter-chip" data-filter-tag="Spicy" type="button">Spicy</button>
+        <button class="review-filter-chip" data-filter-tag="Cheap" type="button">Cheap</button>
+        <button class="review-filter-chip" data-filter-tag="Long queue" type="button">Long queue</button>
+        <button class="review-filter-chip" data-filter-tag="Good for lunch" type="button">Good for lunch</button>
+        <button class="review-filter-chip" data-filter-tag="Comfort food" type="button">Comfort food</button>
+        <button class="review-filter-chip" data-filter-tag="Healthy choice" type="button">Healthy choice</button>
+      </div>
 
-      <section id="reviewList" class="review-wall-grid">
+      <p id="reviewCountText" class="review-count-text">Loading reviews...</p>
+
+      <section id="reviewGrid" class="review-grid">
+        <!-- review cards load here -->
       </section>
     </main>
 
-    <div id="reviewComposerOverlay" class="review-modal-overlay">
-      <section class="review-composer-modal">
+    <!-- WRITE REVIEW MODAL -->
+    <div id="writeReviewModal" class="review-modal-overlay hidden">
+      <div class="write-review-modal">
         <div class="review-modal-header">
-          <div>
-            <p class="review-modal-kicker">Student Review</p>
-            <h2>Write a Review</h2>
-          </div>
-
-          <button id="closeReviewComposerBtn" class="review-modal-close" type="button">
-            ×
-          </button>
+          <h2>Write a Review</h2>
+          <button id="closeWriteReviewModalBtn" class="review-modal-close" type="button">×</button>
         </div>
 
-        <form id="reviewForm" class="review-form">
-          <input id="selectedReviewFoodId" type="hidden" />
+        <form id="writeReviewForm" class="write-review-form">
+          <button id="chooseFoodBtn" class="choose-food-trigger" type="button">
+            <span class="choose-food-icon">⌕</span>
+            <div id="selectedFoodSummary">
+              <strong>Choose Food Item</strong>
+            </div>
+          </button>
 
-          <div class="selected-food-box">
-            <div>
-              <p class="review-form-label">Food Item</p>
-              <h3 id="selectedFoodName">No food item selected</h3>
-              <span id="selectedFoodMeta">
-                Choose the dish you want to review.
-              </span>
+          <input type="hidden" id="selectedFoodId" />
+
+          <div class="rating-input-list">
+            <div class="rating-input-row">
+              <label>Overall</label>
+              <div class="star-rating" data-rating-name="overall"></div>
             </div>
 
-            <button id="openFoodPickerBtn" class="choose-food-btn" type="button">
-              Choose Food
-            </button>
-          </div>
-
-          <div class="review-rating-section">
-            <div class="review-star-row" data-rating-name="rating">
-              <span>Overall</span>
-
-              <div class="review-star-buttons">
-                <button type="button" data-value="1">☆</button>
-                <button type="button" data-value="2">☆</button>
-                <button type="button" data-value="3">☆</button>
-                <button type="button" data-value="4">☆</button>
-                <button type="button" data-value="5">☆</button>
-              </div>
+            <div class="rating-input-row">
+              <label>Taste</label>
+              <div class="star-rating" data-rating-name="taste"></div>
             </div>
 
-            <div class="review-star-row" data-rating-name="taste_rating">
-              <span>Taste</span>
-
-              <div class="review-star-buttons">
-                <button type="button" data-value="1">☆</button>
-                <button type="button" data-value="2">☆</button>
-                <button type="button" data-value="3">☆</button>
-                <button type="button" data-value="4">☆</button>
-                <button type="button" data-value="5">☆</button>
-              </div>
+            <div class="rating-input-row">
+              <label>Value</label>
+              <div class="star-rating" data-rating-name="value"></div>
             </div>
 
-            <div class="review-star-row" data-rating-name="value_rating">
-              <span>Value</span>
-
-              <div class="review-star-buttons">
-                <button type="button" data-value="1">☆</button>
-                <button type="button" data-value="2">☆</button>
-                <button type="button" data-value="3">☆</button>
-                <button type="button" data-value="4">☆</button>
-                <button type="button" data-value="5">☆</button>
-              </div>
+            <div class="rating-input-row">
+              <label>Portion</label>
+              <div class="star-rating" data-rating-name="portion"></div>
             </div>
 
-            <div class="review-star-row" data-rating-name="portion_rating">
-              <span>Portion</span>
-
-              <div class="review-star-buttons">
-                <button type="button" data-value="1">☆</button>
-                <button type="button" data-value="2">☆</button>
-                <button type="button" data-value="3">☆</button>
-                <button type="button" data-value="4">☆</button>
-                <button type="button" data-value="5">☆</button>
-              </div>
-            </div>
-
-            <div class="review-star-row" data-rating-name="wait_time_rating">
-              <span>Wait Time</span>
-
-              <div class="review-star-buttons">
-                <button type="button" data-value="1">☆</button>
-                <button type="button" data-value="2">☆</button>
-                <button type="button" data-value="3">☆</button>
-                <button type="button" data-value="4">☆</button>
-                <button type="button" data-value="5">☆</button>
-              </div>
+            <div class="rating-input-row">
+              <label>Wait Time</label>
+              <div class="star-rating" data-rating-name="wait_time"></div>
             </div>
           </div>
 
-          <div class="review-form-group">
-            <p class="review-form-label">Tags</p>
-
-            <div id="reviewComposerTags" class="review-composer-tags">
-              <button type="button" data-tag="Worth it">Worth it</button>
-              <button type="button" data-tag="Large portion">Large portion</button>
-              <button type="button" data-tag="Spicy">Spicy</button>
-              <button type="button" data-tag="Cheap">Cheap</button>
-              <button type="button" data-tag="Long queue">Long queue</button>
-              <button type="button" data-tag="Good for lunch">Good for lunch</button>
-              <button type="button" data-tag="Comfort food">Comfort food</button>
-              <button type="button" data-tag="Healthy choice">Healthy choice</button>
-              <button type="button" data-tag="Can improve">Can improve</button>
+          <div class="write-review-section">
+            <label>Tags</label>
+            <div id="reviewTagPicker" class="review-tag-picker">
+              <button type="button" class="review-tag-option" data-tag="Worth it">Worth it</button>
+              <button type="button" class="review-tag-option" data-tag="Large portion">Large portion</button>
+              <button type="button" class="review-tag-option" data-tag="Spicy">Spicy</button>
+              <button type="button" class="review-tag-option" data-tag="Cheap">Cheap</button>
+              <button type="button" class="review-tag-option" data-tag="Long queue">Long queue</button>
+              <button type="button" class="review-tag-option" data-tag="Good for lunch">Good for lunch</button>
+              <button type="button" class="review-tag-option" data-tag="Comfort food">Comfort food</button>
+              <button type="button" class="review-tag-option" data-tag="Healthy choice">Healthy choice</button>
             </div>
           </div>
 
-          <div class="review-form-group">
-            <label class="review-form-label" for="reviewTextInput">
-              Review
-            </label>
-
+          <div class="write-review-section">
+            <label for="reviewTextInput">Review</label>
             <textarea
               id="reviewTextInput"
-              maxlength="500"
               placeholder="Share your thoughts..."
+              maxlength="500"
             ></textarea>
-
-            <p id="reviewTextCount" class="review-text-count">
-              0/500
-            </p>
+            <p id="reviewTextCounter" class="review-text-counter">0/500</p>
           </div>
 
-          <div class="review-form-group">
-            <label class="review-form-label" for="reviewPhotoUrlInput">
-              Photo URL optional
-            </label>
-
+          <div class="write-review-section">
+            <label for="reviewPhotoUrlInput">Photo (optional)</label>
             <input
+              type="url"
               id="reviewPhotoUrlInput"
-              type="text"
-              placeholder="Paste image URL or leave empty"
+              class="review-photo-url-input"
+              placeholder="Paste image URL here..."
             />
           </div>
 
-          <p id="reviewFormMessage" class="review-form-message"></p>
-
-          <div class="review-form-actions">
-            <button id="cancelReviewBtn" class="review-cancel-btn" type="button">
-              Cancel
-            </button>
-
-            <button id="submitReviewBtn" class="review-submit-btn" type="submit">
-              Post Review
-            </button>
-          </div>
+          <button class="post-review-btn" type="submit">Post Review</button>
         </form>
-      </section>
+      </div>
     </div>
 
-    <div id="foodPickerOverlay" class="review-modal-overlay">
-      <section class="food-picker-modal">
+    <!-- CHOOSE FOOD MODAL -->
+    <div id="chooseFoodModal" class="review-modal-overlay hidden">
+      <div class="choose-food-modal">
         <div class="review-modal-header">
-          <div>
-            <p class="review-modal-kicker">Choose Food Item</p>
-            <h2>Pick a dish to review</h2>
-          </div>
-
-          <button id="closeFoodPickerBtn" class="review-modal-close" type="button">
-            ×
-          </button>
+          <h2>Choose Food Item</h2>
+          <button id="closeChooseFoodModalBtn" class="review-modal-close" type="button">×</button>
         </div>
 
-        <div class="food-picker-controls">
-          <div class="review-wall-search food-picker-search">
-            <span>⌕</span>
+        <div class="choose-food-toolbar">
+          <input
+            type="text"
+            id="foodPickerSearchInput"
+            placeholder="Search food..."
+          />
 
-            <input
-              id="foodPickerSearchInput"
-              type="text"
-              placeholder="Search food..."
-            />
-          </div>
+          <select id="foodPickerCategoryFilter">
+            <option value="all">All</option>
+            <option value="Rice">Rice</option>
+            <option value="Noodles">Noodles</option>
+            <option value="Drinks">Drinks</option>
+            <option value="Sides">Sides</option>
+            <option value="Snacks">Snacks</option>
+          </select>
 
           <select id="foodPickerFoodCourtFilter">
             <option value="all">All Food Courts</option>
-          </select>
-
-          <select id="foodPickerCategoryFilter">
-            <option value="all">All Categories</option>
+            <option value="FC1 — Central Hub">FC1 — Central Hub</option>
+            <option value="FC2 — East Wing">FC2 — East Wing</option>
+            <option value="FC3 — West Garden">FC3 — West Garden</option>
+            <option value="FC4 — North Plaza">FC4 — North Plaza</option>
+            <option value="FC5 — South Corner">FC5 — South Corner</option>
+            <option value="FC6 — Hill View">FC6 — Hill View</option>
           </select>
         </div>
 
-        <div id="foodPickerList" class="food-picker-list">
+        <div id="foodPickerGrid" class="food-picker-grid">
+          <!-- food cards load here -->
         </div>
-      </section>
+      </div>
     </div>
-
-    <div id="reviewToast" class="review-toast"></div>
 
     <script src="./reviews.js"></script>
   </body>

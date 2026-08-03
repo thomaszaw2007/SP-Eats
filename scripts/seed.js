@@ -1895,54 +1895,124 @@ function getReviewText(item, rating, meta, reviewIndex) {
 }
 
 function buildReviewRows(insertedMenuItems) {
-  const reviews = [];
-  let reviewerIndex = 0;
+  const maxReviewItems = 25;
 
-  insertedMenuItems.forEach((item, index) => {
-    const meta = getMenuMeta(item, index);
-    const baseRating = baseRatings[index];
-    const reviewCount = item.is_popular ? 3 : index % 5 === 0 ? 2 : 1;
-    const variationList = reviewCount === 3 ? [0.1, -0.2, 0.3] : [0, -0.3];
+  const uniqueMenuItems = Array.from(
+    new Map(
+      insertedMenuItems.map((item) => {
+        return [Number(item.food_id), item];
+      })
+    ).values()
+  ).slice(0, maxReviewItems);
 
-    for (let count = 0; count < reviewCount; count += 1) {
-      const rating = roundRating(baseRating + variationList[count]);
-      const tasteRating = roundRating(rating + (meta.flavour_profile === 'Spicy' ? 0.1 : 0));
-      const valueRating = roundRating(rating + (meta.is_budget_friendly ? 0.2 : -0.2));
-      const portionRating = roundRating(rating + (meta.student_need === 'Filling Meal' ? 0.2 : 0));
-      const waitTimeRating = roundRating(5.2 - meta.prep_time_minutes / 4 - (count === 2 ? 0.3 : 0));
-      const reviewTags = getReviewTags(item, rating, meta, count);
-      const reviewTag = getMainReviewTag(item, rating, meta);
-      const helpfulCount = Math.max(
-        1,
-        Math.round(rating * 2 + index + count * 3)
-      );
+  const reviewSamples = [
+    {
+      reviewer_name: 'Alex T.',
+      rating: 5,
+      taste_rating: 5,
+      value_rating: 4,
+      portion_rating: 5,
+      wait_time_rating: 4,
+      review_tags: ['Worth it', 'Large portion', 'Comfort food'],
+      review_text: 'The food was really satisfying and the portion was worth the price.',
+      best_time_to_buy: 'Lunch',
+      helpful_count: 12,
+    },
+    {
+      reviewer_name: 'Mei L.',
+      rating: 5,
+      taste_rating: 5,
+      value_rating: 5,
+      portion_rating: 4,
+      wait_time_rating: 5,
+      review_tags: ['Worth it', 'Cheap', 'Good for lunch'],
+      review_text: 'Good value for students and the taste is consistent. I would buy this again.',
+      best_time_to_buy: 'Lunch',
+      helpful_count: 9,
+    },
+    {
+      reviewer_name: 'Raj K.',
+      rating: 4,
+      taste_rating: 5,
+      value_rating: 4,
+      portion_rating: 4,
+      wait_time_rating: 3,
+      review_tags: ['Comfort food', 'Good for lunch'],
+      review_text: 'Tastes good and feels like a safe choice, but the queue can be longer during peak hours.',
+      best_time_to_buy: 'Before peak lunch',
+      helpful_count: 7,
+    },
+    {
+      reviewer_name: 'Sarah W.',
+      rating: 4,
+      taste_rating: 4,
+      value_rating: 5,
+      portion_rating: 3,
+      wait_time_rating: 5,
+      review_tags: ['Cheap', 'Good for lunch'],
+      review_text: 'Affordable and quick. It is a good option when I do not want to spend too much.',
+      best_time_to_buy: 'Anytime',
+      helpful_count: 6,
+    },
+    {
+      reviewer_name: 'Joon P.',
+      rating: 3,
+      taste_rating: 4,
+      value_rating: 3,
+      portion_rating: 3,
+      wait_time_rating: 3,
+      review_tags: ['Can improve'],
+      review_text: 'The food is okay, but I think the portion and value can be improved.',
+      best_time_to_buy: 'Off peak',
+      helpful_count: 4,
+    },
+    {
+      reviewer_name: 'David C.',
+      rating: 3,
+      taste_rating: 3,
+      value_rating: 3,
+      portion_rating: 4,
+      wait_time_rating: 2,
+      review_tags: ['Long queue', 'Can improve'],
+      review_text: 'The portion is decent, but the waiting time was too long when I bought it.',
+      best_time_to_buy: 'Avoid peak lunch',
+      helpful_count: 5,
+    },
+    {
+      reviewer_name: 'Priya N.',
+      rating: 2,
+      taste_rating: 3,
+      value_rating: 2,
+      portion_rating: 3,
+      wait_time_rating: 2,
+      review_tags: ['Can improve', 'Long queue'],
+      review_text: 'It was not bad, but I expected better taste and faster service.',
+      best_time_to_buy: 'Off peak',
+      helpful_count: 3,
+    },
+  ];
 
-      reviews.push({
-        food_id: item.food_id,
-        reviewer_name: studentNames[reviewerIndex % studentNames.length],
-        rating,
-        taste_rating: tasteRating,
-        value_rating: valueRating,
-        portion_rating: portionRating,
-        wait_time_rating: waitTimeRating,
-        review_text: getReviewText(item, rating, meta, count),
-        review_tag: reviewTag,
-        review_tags: reviewTags,
-        best_time_to_buy:
-          meta.is_quick_bite || meta.is_budget_friendly
-            ? 'Before peak lunch'
-            : 'Lunch',
-        review_photo_url:
-          item.image_url && (index + count) % 4 === 0 ? item.image_url : null,
-        helpful_count: helpfulCount,
-        created_at: `2026-07-${String((index % 24) + 1).padStart(2, '0')} 12:00:00`,
-      });
+  return uniqueMenuItems.map((item, index) => {
+    const sample = reviewSamples[index % reviewSamples.length];
+    const createdAt = new Date(2026, 6, 1 + index);
 
-      reviewerIndex += 1;
-    }
+    return {
+      food_id: item.food_id,
+      reviewer_name: sample.reviewer_name,
+      rating: sample.rating,
+      taste_rating: sample.taste_rating,
+      value_rating: sample.value_rating,
+      portion_rating: sample.portion_rating,
+      wait_time_rating: sample.wait_time_rating,
+      review_text: sample.review_text,
+      review_tag: sample.review_tags[0],
+      review_tags: sample.review_tags,
+      best_time_to_buy: sample.best_time_to_buy,
+      review_photo_url: null,
+      helpful_count: sample.helpful_count,
+      created_at: createdAt,
+    };
   });
-
-  return reviews;
 }
 
 async function ensureReviewSchema() {
