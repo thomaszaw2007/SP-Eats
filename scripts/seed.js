@@ -1875,144 +1875,151 @@ function getReviewTags(item, rating, meta, reviewIndex) {
 }
 
 function getReviewText(item, rating, meta, reviewIndex) {
-  if (rating >= 4.6) {
-    return `${item.name} is one of the better choices from this stall. It tastes good, feels satisfying, and I would get it again during lunch.`;
+  const itemName = item.name;
+  const itemType = item.category.toLowerCase();
+  const isQuick = meta.prep_time_minutes <= 7;
+  const isBudget = meta.is_budget_friendly;
+  const isHealthy = meta.student_need === 'Healthy Choice';
+  const isFilling = meta.student_need === 'Filling Meal';
+  const isSpicy = meta.flavour_profile === 'Spicy';
+
+  const highRatingTexts = [
+    `${itemName} was really worth it for a school meal. The flavour was strong enough, the portion felt fair, and I would order it again.`,
+    `${itemName} worked well for lunch because it was filling without feeling too heavy. The price also felt reasonable for what I got.`,
+    `${itemName} is one of the better choices from this stall. It tasted fresh, looked good, and the portion was satisfying.`,
+    `${itemName} felt like a safe choice when I did not want to overthink lunch. The taste was consistent and the meal was easy to finish.`,
+  ];
+
+  const goodRatingTexts = [
+    `${itemName} is a solid option. It is not perfect, but the taste and portion are good enough for a normal school day.`,
+    `${itemName} was decent and I would buy it again when the queue is not too long. The meal felt practical for lunch.`,
+    `${itemName} does the job well. The flavour is clear, the price is manageable, and it feels suitable for students.`,
+    `${itemName} was better than expected. I liked the balance of taste, price, and portion, even though it can still improve slightly.`,
+  ];
+
+  const okayRatingTexts = [
+    `${itemName} was okay overall. It is fine if you are craving this type of food, but I would not always choose it first.`,
+    `${itemName} was acceptable for a quick meal. The taste was alright, but the value depends on how hungry you are.`,
+    `${itemName} is not bad, but it feels more like a backup option when the popular stalls are crowded.`,
+    `${itemName} was average for me. It filled me up, but the flavour could be more memorable.`,
+  ];
+
+  const lowerRatingTexts = [
+    `${itemName} can improve. The meal was still edible, but the taste and value did not stand out compared with other choices.`,
+    `${itemName} was a bit disappointing for me. I think the portion, waiting time, or flavour could be better.`,
+    `${itemName} is usable as a quick backup, but I would probably try something else next time.`,
+    `${itemName} was not my favourite. It might suit some students, but the overall experience felt average to me.`,
+  ];
+
+  let textOptions = okayRatingTexts;
+
+  if (rating >= 4.5) {
+    textOptions = highRatingTexts;
+  } else if (rating >= 4.0) {
+    textOptions = goodRatingTexts;
+  } else if (rating < 3.5) {
+    textOptions = lowerRatingTexts;
   }
 
-  if (rating >= 4.0) {
-    return `${item.name} is a solid option. The flavour is decent and the portion works well for a normal school day.`;
+  let extraNote = '';
+
+  if (isHealthy) {
+    extraNote = ' I liked that it felt lighter than most campus meals.';
+  } else if (isFilling) {
+    extraNote = ' It is useful when you want something that can last through a long class day.';
+  } else if (isSpicy) {
+    extraNote = ' The spice gives it more kick, so it is better if you like stronger flavours.';
+  } else if (isQuick) {
+    extraNote = ' It is also convenient when you need to eat quickly between lessons.';
+  } else if (isBudget) {
+    extraNote = ' The price makes it easier to choose on a student budget.';
+  } else if (itemType.includes('drink')) {
+    extraNote = ' It is more of a simple add-on than a full meal.';
   }
 
-  if (rating >= 3.5) {
-    return `${item.name} is okay, but it depends on what you are craving. It is not bad, but there are better choices when the queue is long.`;
-  }
-
-  if (reviewIndex === 1) {
-    return `${item.name} was a bit disappointing for me. The taste was acceptable, but the value and waiting time could be better.`;
-  }
-
-  return `${item.name} can improve. It is still edible, but I would only buy it again if the queue is short or I really wanted this type of meal.`;
+  return textOptions[reviewIndex % textOptions.length] + extraNote;
 }
 
 function buildReviewRows(insertedMenuItems) {
-  const maxReviewItems = 25;
-
   const uniqueMenuItems = Array.from(
     new Map(
       insertedMenuItems.map((item) => {
         return [Number(item.food_id), item];
       })
     ).values()
-  ).slice(0, maxReviewItems);
+  );
 
-  const reviewSamples = [
-    {
-      reviewer_name: 'Alex T.',
-      rating: 5,
-      taste_rating: 5,
-      value_rating: 4,
-      portion_rating: 5,
-      wait_time_rating: 4,
-      review_tags: ['Worth it', 'Large portion', 'Comfort food'],
-      review_text: 'The food was really satisfying and the portion was worth the price.',
-      best_time_to_buy: 'Lunch',
-      helpful_count: 12,
-    },
-    {
-      reviewer_name: 'Mei L.',
-      rating: 5,
-      taste_rating: 5,
-      value_rating: 5,
-      portion_rating: 4,
-      wait_time_rating: 5,
-      review_tags: ['Worth it', 'Cheap', 'Good for lunch'],
-      review_text: 'Good value for students and the taste is consistent. I would buy this again.',
-      best_time_to_buy: 'Lunch',
-      helpful_count: 9,
-    },
-    {
-      reviewer_name: 'Raj K.',
-      rating: 4,
-      taste_rating: 5,
-      value_rating: 4,
-      portion_rating: 4,
-      wait_time_rating: 3,
-      review_tags: ['Comfort food', 'Good for lunch'],
-      review_text: 'Tastes good and feels like a safe choice, but the queue can be longer during peak hours.',
-      best_time_to_buy: 'Before peak lunch',
-      helpful_count: 7,
-    },
-    {
-      reviewer_name: 'Sarah W.',
-      rating: 4,
-      taste_rating: 4,
-      value_rating: 5,
-      portion_rating: 3,
-      wait_time_rating: 5,
-      review_tags: ['Cheap', 'Good for lunch'],
-      review_text: 'Affordable and quick. It is a good option when I do not want to spend too much.',
-      best_time_to_buy: 'Anytime',
-      helpful_count: 6,
-    },
-    {
-      reviewer_name: 'Joon P.',
-      rating: 3,
-      taste_rating: 4,
-      value_rating: 3,
-      portion_rating: 3,
-      wait_time_rating: 3,
-      review_tags: ['Can improve'],
-      review_text: 'The food is okay, but I think the portion and value can be improved.',
-      best_time_to_buy: 'Off peak',
-      helpful_count: 4,
-    },
-    {
-      reviewer_name: 'David C.',
-      rating: 3,
-      taste_rating: 3,
-      value_rating: 3,
-      portion_rating: 4,
-      wait_time_rating: 2,
-      review_tags: ['Long queue', 'Can improve'],
-      review_text: 'The portion is decent, but the waiting time was too long when I bought it.',
-      best_time_to_buy: 'Avoid peak lunch',
-      helpful_count: 5,
-    },
-    {
-      reviewer_name: 'Priya N.',
-      rating: 2,
-      taste_rating: 3,
-      value_rating: 2,
-      portion_rating: 3,
-      wait_time_rating: 2,
-      review_tags: ['Can improve', 'Long queue'],
-      review_text: 'It was not bad, but I expected better taste and faster service.',
-      best_time_to_buy: 'Off peak',
-      helpful_count: 3,
-    },
+  const realisticRatingCycle = [
+    4.6, 4.4, 4.7, 4.3, 3.8, 4.5, 4.2, 4.8,
+    3.7, 4.1, 4.9, 3.9, 4.4, 4.6, 4.2, 3.6,
+    4.5, 4.3, 4.7, 4.1, 3.8, 4.6, 4.4, 4.2,
   ];
 
-  return uniqueMenuItems.map((item, index) => {
-    const sample = reviewSamples[index % reviewSamples.length];
-    const createdAt = new Date(2026, 6, 1 + index);
+  const ratingAdjustments = [0.0, -0.1, 0.1, -0.2, 0.2, -0.3, 0.3];
+  const reviewRows = [];
 
-    return {
+  uniqueMenuItems.forEach((item, index) => {
+    const meta = getMenuMeta(item, index);
+    const baseRating = realisticRatingCycle[index % realisticRatingCycle.length];
+    const adjustment = ratingAdjustments[index % ratingAdjustments.length];
+    let reviewRating = roundRating(baseRating + adjustment);
+
+    const decimalDigit = Math.round((reviewRating % 1) * 10);
+
+    if (decimalDigit === 0) {
+      reviewRating = roundRating(reviewRating + (index % 2 === 0 ? 0.4 : -0.3));
+    }
+
+    if (reviewRating > 4.9) {
+      reviewRating = 4.8;
+    }
+
+    if (reviewRating < 3.2) {
+      reviewRating = 3.3;
+    }
+
+    const tasteRating = roundRating(
+      reviewRating + (meta.flavour_profile === 'Spicy' ? 0.1 : 0)
+    );
+    const valueRating = roundRating(
+      reviewRating + (meta.is_budget_friendly ? 0.1 : -0.1)
+    );
+    const portionRating = roundRating(
+      reviewRating + (meta.student_need === 'Filling Meal' ? 0.1 : 0)
+    );
+    const waitTimeRating = roundRating(
+      reviewRating - (meta.prep_time_minutes >= 11 ? 0.3 : 0)
+    );
+    const reviewTags = getReviewTags(item, reviewRating, meta, index);
+
+    const createdAt = new Date(
+      2026,
+      6,
+      31 - (index % 28),
+      9 + (index % 8),
+      (index * 11) % 60
+    );
+
+    reviewRows.push({
       food_id: item.food_id,
-      reviewer_name: sample.reviewer_name,
-      rating: sample.rating,
-      taste_rating: sample.taste_rating,
-      value_rating: sample.value_rating,
-      portion_rating: sample.portion_rating,
-      wait_time_rating: sample.wait_time_rating,
-      review_text: sample.review_text,
-      review_tag: sample.review_tags[0],
-      review_tags: sample.review_tags,
-      best_time_to_buy: sample.best_time_to_buy,
+      reviewer_name: studentNames[index % studentNames.length],
+      rating: reviewRating,
+      taste_rating: tasteRating,
+      value_rating: valueRating,
+      portion_rating: portionRating,
+      wait_time_rating: waitTimeRating,
+      review_text: getReviewText(item, reviewRating, meta, index),
+      review_tag: reviewTags[0],
+      review_tags: reviewTags,
+      best_time_to_buy:
+        meta.prep_time_minutes >= 11 ? 'Before peak lunch' : 'Lunch',
       review_photo_url: null,
-      helpful_count: sample.helpful_count,
+      helpful_count: Math.max(1, Math.round(reviewRating * 2) + (index % 4)),
       created_at: createdAt,
-    };
+    });
   });
+
+  return reviewRows;
 }
 
 async function ensureReviewSchema() {
@@ -2327,6 +2334,26 @@ async function updateMenuStatsFromReviews() {
   `);
 }
 
+async function updateStallStatsFromReviews() {
+  await pool.query(`
+    UPDATE "Stalls"
+    SET
+      "rating" = stall_stats.average_rating,
+      "rating_count" = stall_stats.review_count
+    FROM (
+      SELECT
+        m."stall_id",
+        ROUND(AVG(r."rating")::numeric, 1) AS average_rating,
+        COUNT(r."review_id")::INT AS review_count
+      FROM "Menu" m
+      INNER JOIN "Reviews" r
+        ON m."food_id" = r."food_id"
+      GROUP BY m."stall_id"
+    ) AS stall_stats
+    WHERE "Stalls"."stall_id" = stall_stats."stall_id";
+  `);
+}
+
 async function seed() {
   console.log('Running seed...');
 
@@ -2343,6 +2370,7 @@ async function seed() {
 
     await seedReviews(insertedMenuItems);
     await updateMenuStatsFromReviews();
+    await updateStallStatsFromReviews();
 
     await pool.query('COMMIT');
 

@@ -560,6 +560,46 @@ module.exports.incrementHelpfulCount = (reviewId, callback) => {
   });
 };
 
+
+module.exports.updateStallReviewStatsByFoodId = (foodId, callback) => {
+  const sql = `
+    UPDATE "Stalls"
+    SET
+      "rating" = stall_stats.average_rating,
+      "rating_count" = stall_stats.review_count
+    FROM (
+      SELECT
+        m."stall_id",
+        ROUND(AVG(r."rating")::numeric, 1) AS average_rating,
+        COUNT(r."review_id")::INT AS review_count
+      FROM "Menu" m
+      INNER JOIN "Reviews" r
+        ON m."food_id" = r."food_id"
+      WHERE m."stall_id" = (
+        SELECT "stall_id"
+        FROM "Menu"
+        WHERE "food_id" = $1
+        LIMIT 1
+      )
+      GROUP BY m."stall_id"
+    ) AS stall_stats
+    WHERE "Stalls"."stall_id" = stall_stats."stall_id"
+    RETURNING
+      "Stalls"."stall_id",
+      "Stalls"."rating",
+      "Stalls"."rating_count";
+  `;
+
+  pool.query(sql, [foodId], (error, result) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+
+    callback(null, result.rows[0] || null);
+  });
+};
+
 module.exports.selectReviewSummary = (callback) => {
   const summarySql = `
     SELECT

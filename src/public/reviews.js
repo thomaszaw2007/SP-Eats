@@ -41,8 +41,10 @@ let selectedFilterTag = 'all';
 let selectedMealPreview = null;
 let mealPreviewModal = null;
 const REVIEWS_PER_PAGE = 10;
+const MIN_REVIEW_TEXT_LENGTH = 20;
 
 let currentReviewPage = 1;
+let reviewTextHelper = null;
 let reviewPagination = null;
 let backToTopBtn = null;
 
@@ -288,8 +290,12 @@ function setupReviewTextCounter() {
     return;
   }
 
+  ensureReviewTextHelper();
+  updateReviewTextFeedback();
+
   reviewTextInput.addEventListener('input', () => {
     reviewTextCounter.textContent = `${reviewTextInput.value.length}/500`;
+    updateReviewTextFeedback();
     updatePostReviewButton();
   });
 }
@@ -303,6 +309,7 @@ function setupReviewForm() {
     event.preventDefault();
 
     if (!isReviewFormComplete()) {
+      updateReviewTextFeedback(true);
       return;
     }
 
@@ -344,6 +351,7 @@ function setupReviewForm() {
       resetReviewFilters();
       resetWriteReviewForm();
       await loadReviews();
+      await loadFoodItems();
     } catch (error) {
       console.error('Error submitting review:', error);
       alert(error.message || 'Unable to submit review.');
@@ -352,6 +360,62 @@ function setupReviewForm() {
       updatePostReviewButton();
     }
   });
+}
+
+function getReviewTextLength() {
+  if (!reviewTextInput) {
+    return 0;
+  }
+
+  return reviewTextInput.value.trim().length;
+}
+
+function ensureReviewTextHelper() {
+  if (reviewTextHelper || !reviewTextInput) {
+    return reviewTextHelper;
+  }
+
+  reviewTextHelper = document.getElementById('reviewTextHelper');
+
+  if (!reviewTextHelper) {
+    reviewTextHelper = document.createElement('p');
+    reviewTextHelper.id = 'reviewTextHelper';
+    reviewTextHelper.className = 'review-text-helper';
+    reviewTextHelper.style.margin = '6px 0 0';
+    reviewTextHelper.style.color = '#ef4444';
+    reviewTextHelper.style.fontSize = '12px';
+    reviewTextHelper.style.fontWeight = '800';
+
+    reviewTextInput.insertAdjacentElement('afterend', reviewTextHelper);
+  }
+
+  return reviewTextHelper;
+}
+
+function updateReviewTextFeedback(forceShow = false) {
+  const helper = ensureReviewTextHelper();
+
+  if (!helper) {
+    return;
+  }
+
+  const length = getReviewTextLength();
+  const remainingCharacters = MIN_REVIEW_TEXT_LENGTH - length;
+
+  if (length === 0) {
+    helper.textContent = `Please type at least ${MIN_REVIEW_TEXT_LENGTH} characters.`;
+    helper.style.opacity = forceShow ? '1' : '0.75';
+    return;
+  }
+
+  if (remainingCharacters > 0) {
+    helper.textContent = `Please type ${remainingCharacters} more character${remainingCharacters === 1 ? '' : 's'} before posting.`;
+    helper.style.opacity = '1';
+    return;
+  }
+
+  helper.textContent = 'Review length looks good.';
+  helper.style.color = '#16a34a';
 }
 
 function isReviewFormComplete() {
@@ -365,9 +429,7 @@ function isReviewFormComplete() {
     reviewFormState.wait_time > 0;
 
   const hasTag = reviewFormState.tags.length > 0;
-
-  const hasText =
-    Boolean(reviewTextInput) && reviewTextInput.value.trim().length >= 8;
+  const hasText = getReviewTextLength() >= MIN_REVIEW_TEXT_LENGTH;
 
   return hasFood && hasAllRatings && hasTag && hasText;
 }
@@ -857,6 +919,11 @@ function resetWriteReviewForm() {
     reviewTextCounter.textContent = '0/500';
   }
 
+  if (reviewTextHelper) {
+    reviewTextHelper.style.color = '#ef4444';
+  }
+
+  updateReviewTextFeedback();
   updatePostReviewButton();
 }
 

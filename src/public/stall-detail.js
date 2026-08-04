@@ -151,8 +151,8 @@ function getStallMenu() {
 function displayStallHeader(stall) {
   const stallName = stall.stall_name || stall.name || 'Selected Stall';
   const cuisine = stall.cuisine_type || stall.cuisine || 'Campus Food';
-  const rating = stall.rating || stall.stall_rating || '4.5';
-  const ratingCount = stall.rating_count || stall.review_count || 89;
+  const rating = Number(stall.rating || stall.stall_rating || 0);
+  const ratingCount = Number(stall.rating_count || stall.review_count || 0);
   const isClosed = stall.opening_status === 'closed';
 
   stallHeader.innerHTML = `
@@ -173,7 +173,7 @@ function displayStallHeader(stall) {
       <div class="teen-stall-right">
         <div class="teen-rating-pill">
           <span class="teen-stars">★★★★★</span>
-          <strong>${rating}</strong>
+          <strong>${formatRating(rating)}</strong>
           <span>(${ratingCount})</span>
         </div>
 
@@ -385,8 +385,8 @@ function createMenuCard(item) {
     card.classList.add('unavailable');
   }
 
-  const itemRating = item.item_rating || 4.0;
-  const reviewCount = item.item_review_count || 0;
+  const itemRating = Number(item.item_rating || 0);
+  const reviewCount = Number(item.item_review_count || 0);
   const itemCategory = item.category || 'Food';
   const selectedItemId = item.item_id || item.food_id;
 
@@ -560,8 +560,8 @@ const selectedModalItemId = item.item_id || item.food_id;
 
         <div class="qb-rating-row">
           <span class="qb-stars">★★★★★</span>
-          <strong>${formatRating(item.item_rating || item.stall_rating || 4.0)}</strong>
-          <span>(${item.item_review_count || item.rating_count || 0})</span>
+          <strong>${formatRating(item.item_rating || 0)}</strong>
+          <span>(${Number(item.item_review_count || 0)})</span>
         </div>
 
         <div class="qb-macro-row">
@@ -760,6 +760,7 @@ function saveRecentlyViewedStall(stall) {
     image_url: stall.image_url,
     opening_status: stall.opening_status,
     rating: stall.rating,
+    rating_count: stall.rating_count,
   });
 
   recentlyViewed = recentlyViewed.slice(0, 4);

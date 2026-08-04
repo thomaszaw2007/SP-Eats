@@ -130,7 +130,7 @@ function normalizeStalls(stalls) {
       '';
 
     const cuisine = stall.cuisine_type || stall.cuisine || 'Campus Food';
-    const rating = Number(stall.rating || stall.stall_rating || 4.0);
+    const rating = Number(stall.rating || stall.stall_rating || 0);
     const ratingCount = Number(stall.rating_count || stall.review_count || 0);
     const openingStatus = stall.opening_status || stall.status || 'open';
 
@@ -502,8 +502,6 @@ function createStallCard(stall) {
         <span class="${getWaitClass(stall.estimated_wait_time)}">
           ● ${stall.estimated_wait_time || '5-10 min'}
         </span>
-
-        <span>💬 ${stall.rating_count}</span>
       </div>
 
       <button class="sd-view-menu-btn" type="button">

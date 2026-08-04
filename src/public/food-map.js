@@ -238,7 +238,7 @@ function createPopularDishCards(dishes) {
 
             <div class="real-popular-dish-meta">
               <span>$${formatPrice(dish.price)}</span>
-              <span>★ ${formatRating(dish.rating)}</span>
+              <span>★ ${formatRating(dish.rating)} (${Number(dish.rating_count || 0)})</span>
               <span>View →</span>
             </div>
           </div>

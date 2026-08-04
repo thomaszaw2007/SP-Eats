@@ -46,16 +46,20 @@ module.exports.selectFoodMapMarkers = (callback) => {
       fc."name",
       fc."location",
       fc."description",
-      COUNT(s."stall_id") AS stall_count,
+      COUNT(DISTINCT s."stall_id") AS stall_count,
       COUNT(
-        CASE
-          WHEN s."opening_status" = 'open' THEN 1
+        DISTINCT CASE
+          WHEN s."opening_status" = 'open' THEN s."stall_id"
         END
       ) AS open_stall_count,
-      ROUND(AVG(s."rating")::numeric, 1) AS average_rating
+      ROUND(AVG(r."rating")::numeric, 1) AS average_rating
     FROM "FoodCourt" fc
     LEFT JOIN "Stalls" s
       ON fc."foodcourt_id" = s."foodcourt_id"
+    LEFT JOIN "Menu" m
+      ON s."stall_id" = m."stall_id"
+    LEFT JOIN "Reviews" r
+      ON m."food_id" = r."food_id"
     GROUP BY
       fc."foodcourt_id",
       fc."name",
@@ -73,21 +77,30 @@ module.exports.selectFoodMapMarkers = (callback) => {
       m."category",
       m."image_url",
       m."is_popular",
+      COALESCE(item_stats.item_rating, 0) AS item_rating,
+      COALESCE(item_stats.item_review_count, 0) AS item_review_count,
       s."stall_id",
-      s."name" AS stall_name,
-      s."rating" AS stall_rating,
-      s."rating_count"
+      s."name" AS stall_name
     FROM "FoodCourt" fc
     INNER JOIN "Stalls" s
       ON fc."foodcourt_id" = s."foodcourt_id"
     INNER JOIN "Menu" m
       ON s."stall_id" = m."stall_id"
+    LEFT JOIN (
+      SELECT
+        "food_id",
+        ROUND(AVG("rating")::numeric, 1) AS item_rating,
+        COUNT("review_id")::INT AS item_review_count
+      FROM "Reviews"
+      GROUP BY "food_id"
+    ) item_stats
+      ON m."food_id" = item_stats."food_id"
     WHERE m."is_available" = TRUE
     ORDER BY
       fc."foodcourt_id" ASC,
       m."is_popular" DESC,
-      s."rating" DESC,
-      s."rating_count" DESC,
+      COALESCE(item_stats.item_rating, 0) DESC,
+      COALESCE(item_stats.item_review_count, 0) DESC,
       m."price" ASC;
   `;
 
@@ -120,8 +133,8 @@ module.exports.selectFoodMapMarkers = (callback) => {
             is_popular: dish.is_popular,
             stall_id: dish.stall_id,
             stall_name: dish.stall_name,
-            rating: Number(dish.stall_rating || 0),
-            rating_count: Number(dish.rating_count || 0),
+            rating: Number(dish.item_rating || 0),
+            rating_count: Number(dish.item_review_count || 0),
           });
         }
       });
