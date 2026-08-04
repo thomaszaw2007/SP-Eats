@@ -10,6 +10,7 @@ const menuItemRouter = require('./routers/MenuItem_router');
 const foodMapRouter = require('./routers/FoodMap_router');
 const reviewRouter = require('./routers/Review_router');
 const quizRouter = require('./routers/Quiz_router');
+const reviewAdminRouter = require('./routers/ReviewAdmin_router');
 
 const app = express();
 
@@ -33,6 +34,9 @@ app.use('/api/food-map', foodMapRouter);
 
 app.use('/api/reviews', reviewRouter);
 app.use('/api/quiz', quizRouter);
+
+app.use('/api/admin/reviews', reviewAdminRouter);
+
 
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
   res.status(204).end();
