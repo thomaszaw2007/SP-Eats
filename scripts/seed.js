@@ -10,10 +10,7 @@ const pool = new Pool({
     process.env.POSTGRES_DB ||
     process.env.PGDATABASE,
   user: process.env.DB_USER || process.env.POSTGRES_USER || process.env.PGUSER,
-  password:
-    process.env.DB_PASSWORD ||
-    process.env.POSTGRES_PASSWORD ||
-    process.env.PGPASSWORD,
+  password: process.env.DB_PASSWORD || process.env.POSTGRES_PASSWORD || process.env.PGPASSWORD,
 });
 
 const foodCourts = [
@@ -61,8 +58,7 @@ const stalls = [
     foodcourt_id: 1,
     halal: false,
     vegetarian: false,
-    description:
-      'Korean rice bowls, soups, and warm comfort meals served hot for students.',
+    description: 'Korean rice bowls, soups, and warm comfort meals served hot for students.',
     cuisine_type: 'Korean',
     location_detail: 'Food Court 1, Level 2',
     opening_status: 'open',
@@ -79,8 +75,7 @@ const stalls = [
     foodcourt_id: 1,
     halal: false,
     vegetarian: false,
-    description:
-      'Japanese curry rice, don bowls, udon, and student-friendly bento meals.',
+    description: 'Japanese curry rice, don bowls, udon, and student-friendly bento meals.',
     cuisine_type: 'Japanese',
     location_detail: 'Food Court 1, Level 2',
     opening_status: 'open',
@@ -115,8 +110,7 @@ const stalls = [
     foodcourt_id: 2,
     halal: false,
     vegetarian: false,
-    description:
-      'Warm noodle bowls, dumpling noodles, ban mian, and light soup dishes.',
+    description: 'Warm noodle bowls, dumpling noodles, ban mian, and light soup dishes.',
     cuisine_type: 'Noodles',
     location_detail: 'Food Court 2, Level 1',
     opening_status: 'open',
@@ -133,8 +127,7 @@ const stalls = [
     foodcourt_id: 2,
     halal: false,
     vegetarian: false,
-    description:
-      'Simple Japanese rice bowls, miso soup, salmon don, and teriyaki meals.',
+    description: 'Simple Japanese rice bowls, miso soup, salmon don, and teriyaki meals.',
     cuisine_type: 'Japanese',
     location_detail: 'Food Court 2, Level 1',
     opening_status: 'closed',
@@ -187,8 +180,7 @@ const stalls = [
     foodcourt_id: 3,
     halal: false,
     vegetarian: false,
-    description:
-      'Korean bibimbap, fried rice, chicken cutlet rice, and spicy rice bowls.',
+    description: 'Korean bibimbap, fried rice, chicken cutlet rice, and spicy rice bowls.',
     cuisine_type: 'Korean',
     location_detail: 'Poly Centre',
     opening_status: 'open',
@@ -223,8 +215,7 @@ const stalls = [
     foodcourt_id: 4,
     halal: true,
     vegetarian: false,
-    description:
-      'Affordable chicken rice bowls and chicken cutlet meals for students on the go.',
+    description: 'Affordable chicken rice bowls and chicken cutlet meals for students on the go.',
     cuisine_type: 'Chicken Rice',
     location_detail: 'Food Court 4, Level 1',
     opening_status: 'open',
@@ -241,8 +232,7 @@ const stalls = [
     foodcourt_id: 4,
     halal: false,
     vegetarian: false,
-    description:
-      'Ban mian, dumpling noodles, seafood noodles, and spicy tom yum noodle bowls.',
+    description: 'Ban mian, dumpling noodles, seafood noodles, and spicy tom yum noodle bowls.',
     cuisine_type: 'Noodles',
     location_detail: 'Food Court 4, Level 1',
     opening_status: 'open',
@@ -277,8 +267,7 @@ const stalls = [
     foodcourt_id: 5,
     halal: true,
     vegetarian: false,
-    description:
-      'Fried chicken, burgers, wraps, sides, and quick fast food meals for students.',
+    description: 'Fried chicken, burgers, wraps, sides, and quick fast food meals for students.',
     cuisine_type: 'Fast Food / Chicken',
     location_detail: 'Food Court 5, #01-01',
     opening_status: 'open',
@@ -313,8 +302,7 @@ const stalls = [
     foodcourt_id: 5,
     halal: false,
     vegetarian: true,
-    description:
-      'Western breakfast plates, sandwiches, pasta, toast, and cafe drinks.',
+    description: 'Western breakfast plates, sandwiches, pasta, toast, and cafe drinks.',
     cuisine_type: 'Western / Cafe',
     location_detail: 'Food Court 5, #01-05',
     opening_status: 'open',
@@ -331,8 +319,7 @@ const stalls = [
     foodcourt_id: 6,
     halal: false,
     vegetarian: false,
-    description:
-      'Japanese noodles, BBQ rice, udon soup, and hot meals near the sports area.',
+    description: 'Japanese noodles, BBQ rice, udon soup, and hot meals near the sports area.',
     cuisine_type: 'Japanese',
     location_detail: 'Food Court 6, near Swimming Pool',
     opening_status: 'open',
@@ -349,8 +336,7 @@ const stalls = [
     foodcourt_id: 6,
     halal: true,
     vegetarian: false,
-    description:
-      'Halal-friendly chicken rice meals with steamed, roasted, and drumstick options.',
+    description: 'Halal-friendly chicken rice meals with steamed, roasted, and drumstick options.',
     cuisine_type: 'Chicken Rice',
     location_detail: 'Food Court 6, near W14',
     opening_status: 'open',
@@ -367,8 +353,7 @@ const stalls = [
     foodcourt_id: 6,
     halal: false,
     vegetarian: false,
-    description:
-      'Comforting noodle soups, fish soup, herbal chicken soup, and warm lunch bowls.',
+    description: 'Comforting noodle soups, fish soup, herbal chicken soup, and warm lunch bowls.',
     cuisine_type: 'Soup / Noodles',
     location_detail: 'Food Court 6, near W14',
     opening_status: 'closed',
@@ -478,8 +463,7 @@ const menuItems = [
   {
     name: 'Ebi Tempura Udon',
     variation: 'Prawn Tempura',
-    description:
-      'Thick udon noodles served in warm broth with crispy prawn tempura on the side.',
+    description: 'Thick udon noodles served in warm broth with crispy prawn tempura on the side.',
     price: 5.4,
     stall_id: 2,
     foodcourt_id: 1,
@@ -571,8 +555,7 @@ const menuItems = [
   {
     name: 'Fish Soup with Rice',
     variation: 'Rice',
-    description:
-      'Light sliced fish soup served with vegetables, clear broth, and white rice.',
+    description: 'Light sliced fish soup served with vegetables, clear broth, and white rice.',
     price: 4.5,
     stall_id: 4,
     foodcourt_id: 2,
@@ -598,8 +581,7 @@ const menuItems = [
   {
     name: 'Teriyaki Chicken Rice',
     variation: 'Teriyaki Sauce',
-    description:
-      'Chicken teriyaki served with rice, vegetables, and sweet savoury Japanese sauce.',
+    description: 'Chicken teriyaki served with rice, vegetables, and sweet savoury Japanese sauce.',
     price: 4.3,
     stall_id: 5,
     foodcourt_id: 2,
@@ -624,8 +606,7 @@ const menuItems = [
   {
     name: 'Miso Soup',
     variation: 'Tofu and Seaweed',
-    description:
-      'Simple warm miso soup with tofu, seaweed, and spring onions.',
+    description: 'Simple warm miso soup with tofu, seaweed, and spring onions.',
     price: 2.2,
     stall_id: 5,
     foodcourt_id: 2,
@@ -637,8 +618,7 @@ const menuItems = [
   {
     name: 'Beef Gyudon Bowl',
     variation: 'Sliced Beef',
-    description:
-      'Japanese beef rice bowl with sliced beef, onions, and sweet savoury sauce.',
+    description: 'Japanese beef rice bowl with sliced beef, onions, and sweet savoury sauce.',
     price: 5.5,
     stall_id: 5,
     foodcourt_id: 2,
@@ -665,8 +645,7 @@ const menuItems = [
   {
     name: 'Tofu Noodle Bowl',
     variation: 'Vegan',
-    description:
-      'Noodle bowl with tofu, greens, light sauce, and a cleaner plant-based profile.',
+    description: 'Noodle bowl with tofu, greens, light sauce, and a cleaner plant-based profile.',
     price: 4.5,
     stall_id: 6,
     foodcourt_id: 2,
@@ -678,8 +657,7 @@ const menuItems = [
   {
     name: 'Vegetable Tofu Soup',
     variation: 'Vegan',
-    description:
-      'Warm vegetable soup with tofu, greens, mushrooms, and a light broth.',
+    description: 'Warm vegetable soup with tofu, greens, mushrooms, and a light broth.',
     price: 3.8,
     stall_id: 6,
     foodcourt_id: 2,
@@ -705,8 +683,7 @@ const menuItems = [
   {
     name: 'Chicken Katsu Curry Bowl',
     variation: 'Chicken Katsu',
-    description:
-      'Japanese curry rice with crispy chicken katsu and mild curry sauce.',
+    description: 'Japanese curry rice with crispy chicken katsu and mild curry sauce.',
     price: 4.3,
     stall_id: 7,
     foodcourt_id: 3,
@@ -718,8 +695,7 @@ const menuItems = [
   {
     name: 'Vegetable Croquette Curry',
     variation: 'Vegetable Croquette',
-    description:
-      'Japanese curry rice with a crispy vegetable croquette and mild curry sauce.',
+    description: 'Japanese curry rice with a crispy vegetable croquette and mild curry sauce.',
     price: 4.1,
     stall_id: 7,
     foodcourt_id: 3,
@@ -731,21 +707,20 @@ const menuItems = [
   {
     name: 'Chicken Nuggets Curry Rice',
     variation: 'Chicken Nuggets',
-    description:
-      'Japanese curry rice served with chicken nuggets and warm curry sauce.',
+    description: 'Japanese curry rice served with chicken nuggets and warm curry sauce.',
     price: 4.3,
     stall_id: 7,
     foodcourt_id: 3,
     category: 'Rice',
-    image_url: '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-ChickenNuggets_CurryRice.webp',
+    image_url:
+      '/images/Menu/Japanese_Curry_House/Japanese_Curry_House-ChickenNuggets_CurryRice.webp',
     is_available: true,
     is_popular: false,
   },
   {
     name: 'Curry Udon',
     variation: 'Mild Curry Broth',
-    description:
-      'Thick udon noodles served in mild Japanese curry broth with simple toppings.',
+    description: 'Thick udon noodles served in mild Japanese curry broth with simple toppings.',
     price: 4.8,
     stall_id: 7,
     foodcourt_id: 3,
@@ -758,8 +733,7 @@ const menuItems = [
   {
     name: 'Spicy Chicken Bibimbap',
     variation: 'Spicy Chicken',
-    description:
-      'Korean bibimbap topped with spicy chicken, vegetables, egg, and gochujang sauce.',
+    description: 'Korean bibimbap topped with spicy chicken, vegetables, egg, and gochujang sauce.',
     price: 4.8,
     stall_id: 8,
     foodcourt_id: 3,
@@ -771,8 +745,7 @@ const menuItems = [
   {
     name: 'Korean Chicken Cutlet Rice',
     variation: 'Chicken Cutlet',
-    description:
-      'Chicken cutlet served with rice, vegetables, and Korean-style savoury sauce.',
+    description: 'Chicken cutlet served with rice, vegetables, and Korean-style savoury sauce.',
     price: 5.0,
     stall_id: 8,
     foodcourt_id: 3,
@@ -784,8 +757,7 @@ const menuItems = [
   {
     name: 'Kimchi Fried Rice',
     variation: 'Kimchi and Egg',
-    description:
-      'Fried rice cooked with kimchi, egg, vegetables, and Korean seasoning.',
+    description: 'Fried rice cooked with kimchi, egg, vegetables, and Korean seasoning.',
     price: 4.5,
     stall_id: 8,
     foodcourt_id: 3,
@@ -797,8 +769,7 @@ const menuItems = [
   {
     name: 'Japchae Glass Noodles',
     variation: 'Stir Fried',
-    description:
-      'Korean glass noodles stir-fried with vegetables and a light savoury sauce.',
+    description: 'Korean glass noodles stir-fried with vegetables and a light savoury sauce.',
     price: 4.7,
     stall_id: 8,
     foodcourt_id: 3,
@@ -824,8 +795,7 @@ const menuItems = [
   {
     name: 'Hainanese Roasted Chicken Rice',
     variation: 'Roasted',
-    description:
-      'Roasted chicken rice with fragrant rice, soup, cucumber, dark sauce, and chilli.',
+    description: 'Roasted chicken rice with fragrant rice, soup, cucumber, dark sauce, and chilli.',
     price: 3.3,
     stall_id: 9,
     foodcourt_id: 3,
@@ -843,15 +813,15 @@ const menuItems = [
     stall_id: 9,
     foodcourt_id: 3,
     category: 'Chicken',
-    image_url: '/images/Menu/Hainanese_Chicken_Rice/Hainanese_Chicken_Rice-CharSiew_ChickenRice.avif',
+    image_url:
+      '/images/Menu/Hainanese_Chicken_Rice/Hainanese_Chicken_Rice-CharSiew_ChickenRice.avif',
     is_available: true,
     is_popular: false,
   },
   {
     name: 'Roasted Drumstick Rice',
     variation: 'Drumstick',
-    description:
-      'Roasted chicken drumstick served with fragrant rice, soup, cucumber, and chilli.',
+    description: 'Roasted chicken drumstick served with fragrant rice, soup, cucumber, and chilli.',
     price: 4.8,
     stall_id: 9,
     foodcourt_id: 3,
@@ -864,8 +834,7 @@ const menuItems = [
   {
     name: 'Steamed Chicken Rice Bowl',
     variation: 'Classic',
-    description:
-      'Simple steamed chicken rice bowl with fragrant rice, soup, cucumber, and chilli.',
+    description: 'Simple steamed chicken rice bowl with fragrant rice, soup, cucumber, and chilli.',
     price: 3.3,
     stall_id: 10,
     foodcourt_id: 4,
@@ -877,8 +846,7 @@ const menuItems = [
   {
     name: 'Roasted Chicken Rice Bowl',
     variation: 'Roasted',
-    description:
-      'Roasted chicken rice bowl served with soup, cucumber, chilli, and dark sauce.',
+    description: 'Roasted chicken rice bowl served with soup, cucumber, chilli, and dark sauce.',
     price: 3.3,
     stall_id: 10,
     foodcourt_id: 4,
@@ -890,8 +858,7 @@ const menuItems = [
   {
     name: 'Chicken Cutlet Noodles',
     variation: 'Crispy Cutlet',
-    description:
-      'Noodles served with crispy chicken cutlet, vegetables, and savoury sauce.',
+    description: 'Noodles served with crispy chicken cutlet, vegetables, and savoury sauce.',
     price: 4.5,
     stall_id: 10,
     foodcourt_id: 4,
@@ -903,8 +870,7 @@ const menuItems = [
   {
     name: 'Lemon Chicken Rice',
     variation: 'Crispy Chicken',
-    description:
-      'Crispy lemon chicken served with rice and a tangy lemon sauce.',
+    description: 'Crispy lemon chicken served with rice and a tangy lemon sauce.',
     price: 4.4,
     stall_id: 10,
     foodcourt_id: 4,
@@ -917,8 +883,7 @@ const menuItems = [
   {
     name: 'Dumpling Noodles Soup',
     variation: 'Soup',
-    description:
-      'Warm soup noodles served with dumplings, vegetables, and light broth.',
+    description: 'Warm soup noodles served with dumplings, vegetables, and light broth.',
     price: 4.0,
     stall_id: 11,
     foodcourt_id: 4,
@@ -930,8 +895,7 @@ const menuItems = [
   {
     name: 'Dry Ban Mian',
     variation: 'Dry',
-    description:
-      'Dry ban mian served with minced meat, egg, vegetables, and savoury sauce.',
+    description: 'Dry ban mian served with minced meat, egg, vegetables, and savoury sauce.',
     price: 4.0,
     stall_id: 11,
     foodcourt_id: 4,
@@ -943,8 +907,7 @@ const menuItems = [
   {
     name: 'Seafood Noodle Soup',
     variation: 'Seafood',
-    description:
-      'Noodle soup served with seafood, vegetables, and warm savoury broth.',
+    description: 'Noodle soup served with seafood, vegetables, and warm savoury broth.',
     price: 4.5,
     stall_id: 11,
     foodcourt_id: 4,
@@ -962,7 +925,7 @@ const menuItems = [
     stall_id: 11,
     foodcourt_id: 4,
     category: 'Noodles',
-   image_url: '/images/Menu/Ban_Mian_House/Tom%20Yum%20Ban%20Mian.jfif',
+    image_url: '/images/Menu/Ban_Mian_House/Tom%20Yum%20Ban%20Mian.jfif',
     is_available: true,
     is_popular: true,
   },
@@ -970,8 +933,7 @@ const menuItems = [
   {
     name: 'Sweet Spicy Chicken Bowl',
     variation: 'Sweet and Spicy',
-    description:
-      'Korean chicken bowl with sweet spicy sauce, rice, and vegetables.',
+    description: 'Korean chicken bowl with sweet spicy sauce, rice, and vegetables.',
     price: 4.5,
     stall_id: 12,
     foodcourt_id: 4,
@@ -996,21 +958,20 @@ const menuItems = [
   {
     name: 'Honey Mustard Chicken Bowl',
     variation: 'Honey Mustard',
-    description:
-      'Korean chicken bowl with honey mustard sauce, rice, and vegetables.',
+    description: 'Korean chicken bowl with honey mustard sauce, rice, and vegetables.',
     price: 4.5,
     stall_id: 12,
     foodcourt_id: 4,
     category: 'Chicken',
-    image_url: '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken-HoneyMustard_ChickenBowl.jpg',
+    image_url:
+      '/images/Menu/Korean_Fried_Chicken/Korean_Fried_Chicken-HoneyMustard_ChickenBowl.jpg',
     is_available: false,
     is_popular: false,
   },
   {
     name: 'Yangnyeom Chicken Bites',
     variation: 'Spicy Sauce',
-    description:
-      'Crispy Korean chicken bites coated with spicy yangnyeom sauce.',
+    description: 'Crispy Korean chicken bites coated with spicy yangnyeom sauce.',
     price: 5.8,
     stall_id: 12,
     foodcourt_id: 4,
@@ -1023,8 +984,7 @@ const menuItems = [
   {
     name: 'Two Piece Fried Chicken Meal',
     variation: '2 Piece Meal',
-    description:
-      'Two pieces of fried chicken served with a side dish as a filling fast food meal.',
+    description: 'Two pieces of fried chicken served with a side dish as a filling fast food meal.',
     price: 5.5,
     stall_id: 13,
     foodcourt_id: 5,
@@ -1036,8 +996,7 @@ const menuItems = [
   {
     name: 'Mac N Cheese',
     variation: 'Regular',
-    description:
-      'Creamy mac and cheese side dish for students who want a warm comfort side.',
+    description: 'Creamy mac and cheese side dish for students who want a warm comfort side.',
     price: 5.5,
     stall_id: 13,
     foodcourt_id: 5,
@@ -1049,8 +1008,7 @@ const menuItems = [
   {
     name: 'Chicken Wrap',
     variation: 'Original',
-    description:
-      'Chicken wrap with vegetables and sauce, served as a portable quick meal.',
+    description: 'Chicken wrap with vegetables and sauce, served as a portable quick meal.',
     price: 6.0,
     stall_id: 13,
     foodcourt_id: 5,
@@ -1062,8 +1020,7 @@ const menuItems = [
   {
     name: 'Zinger Burger',
     variation: 'Spicy Chicken',
-    description:
-      'Spicy chicken burger with lettuce, sauce, and a crispy chicken fillet.',
+    description: 'Spicy chicken burger with lettuce, sauce, and a crispy chicken fillet.',
     price: 6.4,
     stall_id: 13,
     foodcourt_id: 5,
@@ -1076,8 +1033,7 @@ const menuItems = [
   {
     name: 'Chicken Delight Sub',
     variation: '6-inch',
-    description:
-      'Fresh six-inch sub with chicken, vegetables, sauce, and bread made to order.',
+    description: 'Fresh six-inch sub with chicken, vegetables, sauce, and bread made to order.',
     price: 6.8,
     stall_id: 14,
     foodcourt_id: 5,
@@ -1089,8 +1045,7 @@ const menuItems = [
   {
     name: 'Spicy Beef Taco Sub',
     variation: '6-inch',
-    description:
-      'Six-inch sub with spicy beef taco filling, fresh vegetables, and sauce.',
+    description: 'Six-inch sub with spicy beef taco filling, fresh vegetables, and sauce.',
     price: 6.8,
     stall_id: 14,
     foodcourt_id: 5,
@@ -1102,8 +1057,7 @@ const menuItems = [
   {
     name: 'Veggie Delight Sub',
     variation: '6-inch',
-    description:
-      'Vegetarian six-inch sub with fresh vegetables, sauce, and bread made to order.',
+    description: 'Vegetarian six-inch sub with fresh vegetables, sauce, and bread made to order.',
     price: 6.8,
     stall_id: 14,
     foodcourt_id: 5,
@@ -1115,13 +1069,12 @@ const menuItems = [
   {
     name: 'Tuna Mayo Sub',
     variation: '6-inch',
-    description:
-      'Six-inch tuna mayo sub with vegetables, sauce, and bread made to order.',
+    description: 'Six-inch tuna mayo sub with vegetables, sauce, and bread made to order.',
     price: 6.2,
     stall_id: 14,
     foodcourt_id: 5,
     category: 'Sandwich',
-   image_url: '/images/Menu/Subway/Tuna%20Mayo%20Sub.png',
+    image_url: '/images/Menu/Subway/Tuna%20Mayo%20Sub.png',
     is_available: true,
     is_popular: false,
   },
@@ -1142,8 +1095,7 @@ const menuItems = [
   {
     name: 'Mushroom Cream Pasta',
     variation: 'Cream Sauce',
-    description:
-      'Creamy pasta with mushrooms, sauce, and a western cafe-style flavour.',
+    description: 'Creamy pasta with mushrooms, sauce, and a western cafe-style flavour.',
     price: 5.2,
     stall_id: 15,
     foodcourt_id: 5,
@@ -1155,8 +1107,7 @@ const menuItems = [
   {
     name: 'Iced Latte',
     variation: 'Regular',
-    description:
-      'Chilled latte made with coffee, milk, and ice for a quick study drink.',
+    description: 'Chilled latte made with coffee, milk, and ice for a quick study drink.',
     price: 3.8,
     stall_id: 15,
     foodcourt_id: 5,
@@ -1168,8 +1119,7 @@ const menuItems = [
   {
     name: 'Scrambled Egg Toast',
     variation: 'Breakfast',
-    description:
-      'Cafe-style toast served with scrambled egg as a simple breakfast or light meal.',
+    description: 'Cafe-style toast served with scrambled egg as a simple breakfast or light meal.',
     price: 4.2,
     stall_id: 15,
     foodcourt_id: 5,
@@ -1182,8 +1132,7 @@ const menuItems = [
   {
     name: 'Chicken Udon Soup',
     variation: 'Chicken Slices',
-    description:
-      'Warm udon soup served with chicken slices, broth, and simple Japanese toppings.',
+    description: 'Warm udon soup served with chicken slices, broth, and simple Japanese toppings.',
     price: 4.5,
     stall_id: 16,
     foodcourt_id: 6,
@@ -1208,8 +1157,7 @@ const menuItems = [
   {
     name: 'Chicken BBQ Rice',
     variation: 'BBQ Chicken',
-    description:
-      'Japanese BBQ chicken served with rice, vegetables, and smoky savoury sauce.',
+    description: 'Japanese BBQ chicken served with rice, vegetables, and smoky savoury sauce.',
     price: 4.5,
     stall_id: 16,
     foodcourt_id: 6,
@@ -1221,8 +1169,7 @@ const menuItems = [
   {
     name: 'Beef Yakiniku Rice',
     variation: 'Grilled Beef',
-    description:
-      'Japanese grilled beef served with rice, onions, and savoury yakiniku sauce.',
+    description: 'Japanese grilled beef served with rice, onions, and savoury yakiniku sauce.',
     price: 5.6,
     stall_id: 16,
     foodcourt_id: 6,
@@ -1261,8 +1208,7 @@ const menuItems = [
   {
     name: 'Halal Chicken Rice Set',
     variation: 'Extra Vegetables',
-    description:
-      'Halal-friendly chicken rice set with vegetables, soup, cucumber, and chilli.',
+    description: 'Halal-friendly chicken rice set with vegetables, soup, cucumber, and chilli.',
     price: 4.2,
     stall_id: 17,
     foodcourt_id: 6,
@@ -1289,8 +1235,7 @@ const menuItems = [
   {
     name: 'Soup Stall Ban Mian',
     variation: 'Soup',
-    description:
-      'Warm ban mian soup with handmade noodles, vegetables, egg, and light broth.',
+    description: 'Warm ban mian soup with handmade noodles, vegetables, egg, and light broth.',
     price: 3.5,
     stall_id: 18,
     foodcourt_id: 6,
@@ -1302,8 +1247,7 @@ const menuItems = [
   {
     name: 'Beef Noodle Soup',
     variation: 'Soup',
-    description:
-      'Beef noodles served in warm broth with vegetables and savoury seasoning.',
+    description: 'Beef noodles served in warm broth with vegetables and savoury seasoning.',
     price: 4.5,
     stall_id: 18,
     foodcourt_id: 6,
@@ -1315,8 +1259,7 @@ const menuItems = [
   {
     name: 'Soup Stall Fish Soup with Rice',
     variation: 'Rice',
-    description:
-      'Light sliced fish soup served with rice, vegetables, and clear broth.',
+    description: 'Light sliced fish soup served with rice, vegetables, and clear broth.',
     price: 4.5,
     stall_id: 18,
     foodcourt_id: 6,
@@ -1328,8 +1271,7 @@ const menuItems = [
   {
     name: 'Herbal Chicken Soup',
     variation: 'Warm Bowl',
-    description:
-      'Herbal chicken soup served hot with a comforting broth and simple toppings.',
+    description: 'Herbal chicken soup served hot with a comforting broth and simple toppings.',
     price: 5.2,
     stall_id: 18,
     foodcourt_id: 6,
@@ -1341,24 +1283,10 @@ const menuItems = [
 ];
 
 const baseRatings = [
-  4.8, 4.2, 3.7, 2.9,
-  4.7, 4.1, 4.3, 3.4,
-  4.8, 4.5, 4.0, 3.6,
-  3.9, 4.4, 4.2, 4.6,
-  3.3, 3.1, 2.7, 3.5,
-  4.5, 4.1, 3.8, 4.6,
-  4.7, 3.9, 3.6, 4.0,
-  4.8, 4.2, 4.1, 3.4,
-  4.9, 4.6, 3.9, 4.5,
-  4.7, 4.2, 3.8, 4.4,
-  3.7, 4.5, 4.1, 4.6,
-  4.5, 3.1, 3.9, 4.2,
-  4.6, 2.8, 3.5, 4.4,
-  4.5, 3.8, 4.6, 3.3,
-  3.7, 4.2, 4.0, 4.1,
-  4.5, 3.6, 4.0, 4.6,
-  4.7, 4.4, 3.8, 4.5,
-  2.9, 3.6, 3.2, 3.9,
+  4.8, 4.2, 3.7, 2.9, 4.7, 4.1, 4.3, 3.4, 4.8, 4.5, 4.0, 3.6, 3.9, 4.4, 4.2, 4.6, 3.3, 3.1, 2.7,
+  3.5, 4.5, 4.1, 3.8, 4.6, 4.7, 3.9, 3.6, 4.0, 4.8, 4.2, 4.1, 3.4, 4.9, 4.6, 3.9, 4.5, 4.7, 4.2,
+  3.8, 4.4, 3.7, 4.5, 4.1, 4.6, 4.5, 3.1, 3.9, 4.2, 4.6, 2.8, 3.5, 4.4, 4.5, 3.8, 4.6, 3.3, 3.7,
+  4.2, 4.0, 4.1, 4.5, 3.6, 4.0, 4.6, 4.7, 4.4, 3.8, 4.5, 2.9, 3.6, 3.2, 3.9,
 ];
 
 const studentNames = [
@@ -1540,7 +1468,12 @@ function getNutritionLevel(item) {
   const name = item.name.toLowerCase();
   const category = item.category.toLowerCase();
 
-  if (name.includes('salad') || name.includes('fish soup') || category.includes('vegetarian') || category.includes('vegan')) {
+  if (
+    name.includes('salad') ||
+    name.includes('fish soup') ||
+    category.includes('vegetarian') ||
+    category.includes('vegan')
+  ) {
     return 'Light';
   }
 
@@ -1549,7 +1482,8 @@ function getNutritionLevel(item) {
   }
 
   if (category.includes('drink')) return 'Light';
-  if (category.includes('rice') || category.includes('noodle') || category.includes('chicken')) return 'Filling';
+  if (category.includes('rice') || category.includes('noodle') || category.includes('chicken'))
+    return 'Filling';
 
   return 'Moderate';
 }
@@ -1559,10 +1493,16 @@ function getCarbLevel(item) {
   const category = item.category.toLowerCase();
 
   if (category.includes('rice') || category.includes('noodle')) return 'High carb';
-  if (name.includes('burger') || name.includes('sandwich') || name.includes('wrap') || name.includes('sub')) {
+  if (
+    name.includes('burger') ||
+    name.includes('sandwich') ||
+    name.includes('wrap') ||
+    name.includes('sub')
+  ) {
     return 'Medium carb';
   }
-  if (category.includes('drink') || name.includes('salad') || name.includes('fish soup')) return 'Low carb';
+  if (category.includes('drink') || name.includes('salad') || name.includes('fish soup'))
+    return 'Low carb';
 
   return 'Medium carb';
 }
@@ -1609,7 +1549,12 @@ function getSugarLevel(item) {
   const name = item.name.toLowerCase();
   const category = item.category.toLowerCase();
 
-  if (category.includes('drink') || name.includes('latte') || name.includes('tea') || name.includes('coffee')) {
+  if (
+    category.includes('drink') ||
+    name.includes('latte') ||
+    name.includes('tea') ||
+    name.includes('coffee')
+  ) {
     return 'Medium';
   }
 
@@ -1623,7 +1568,12 @@ function getSugarLevel(item) {
 function getSpiceLevel(item) {
   const name = item.name.toLowerCase();
 
-  if (name.includes('mala') || name.includes('tom yum') || name.includes('spicy') || name.includes('laksa')) {
+  if (
+    name.includes('mala') ||
+    name.includes('tom yum') ||
+    name.includes('spicy') ||
+    name.includes('laksa')
+  ) {
     return 'Spicy';
   }
 
@@ -1652,7 +1602,12 @@ function getAllergenInfo(item) {
     return 'May contain gluten, egg, dairy, or soy.';
   }
 
-  if (name.includes('latte') || category.includes('drink') || name.includes('cheese') || name.includes('cream')) {
+  if (
+    name.includes('latte') ||
+    category.includes('drink') ||
+    name.includes('cheese') ||
+    name.includes('cream')
+  ) {
     return 'May contain dairy.';
   }
 
@@ -1674,7 +1629,8 @@ function getPortionSize(item) {
   if (category.includes('drink')) return 'Regular cup';
   if (category.includes('side')) return 'Small';
   if (name.includes('set') || name.includes('bento') || name.includes('drumstick')) return 'Large';
-  if (category.includes('rice') || category.includes('noodle') || category.includes('chicken')) return 'Regular bowl';
+  if (category.includes('rice') || category.includes('noodle') || category.includes('chicken'))
+    return 'Regular bowl';
 
   return 'Regular';
 }
@@ -1749,7 +1705,10 @@ function getMenuNotes(item, meta) {
     return 'Popular among students based on rating, orders, or popularity.';
   }
 
-  if (item.category.toLowerCase().includes('vegetarian') || item.category.toLowerCase().includes('vegan')) {
+  if (
+    item.category.toLowerCase().includes('vegetarian') ||
+    item.category.toLowerCase().includes('vegan')
+  ) {
     return 'Good option for students looking for a lighter or plant-based meal.';
   }
 
@@ -1815,19 +1774,6 @@ function getMenuMeta(item, index) {
   meta.menu_notes = getMenuNotes(item, meta);
 
   return meta;
-}
-
-function getMainReviewTag(item, rating, meta) {
-  if (rating < 3.0) return 'Can improve';
-  if (rating < 3.5) return 'Mixed experience';
-  if (meta.is_budget_friendly) return 'Budget';
-  if (meta.is_quick_bite) return 'Quick bite';
-  if (meta.student_need === 'Healthy Choice') return 'Healthy';
-  if (meta.student_need === 'Comfort Food') return 'Comfort food';
-  if (meta.student_need === 'Filling Meal') return 'Filling';
-  if (meta.flavour_profile === 'Spicy') return 'Spicy';
-
-  return 'Worth it';
 }
 
 function getReviewTags(item, rating, meta, reviewIndex) {
@@ -1947,14 +1893,13 @@ function buildReviewRows(insertedMenuItems) {
     new Map(
       insertedMenuItems.map((item) => {
         return [Number(item.food_id), item];
-      })
-    ).values()
+      }),
+    ).values(),
   );
 
   const realisticRatingCycle = [
-    4.6, 4.4, 4.7, 4.3, 3.8, 4.5, 4.2, 4.8,
-    3.7, 4.1, 4.9, 3.9, 4.4, 4.6, 4.2, 3.6,
-    4.5, 4.3, 4.7, 4.1, 3.8, 4.6, 4.4, 4.2,
+    4.6, 4.4, 4.7, 4.3, 3.8, 4.5, 4.2, 4.8, 3.7, 4.1, 4.9, 3.9, 4.4, 4.6, 4.2, 3.6, 4.5, 4.3, 4.7,
+    4.1, 3.8, 4.6, 4.4, 4.2,
   ];
 
   const ratingAdjustments = [0.0, -0.1, 0.1, -0.2, 0.2, -0.3, 0.3];
@@ -1980,27 +1925,15 @@ function buildReviewRows(insertedMenuItems) {
       reviewRating = 3.3;
     }
 
-    const tasteRating = roundRating(
-      reviewRating + (meta.flavour_profile === 'Spicy' ? 0.1 : 0)
-    );
-    const valueRating = roundRating(
-      reviewRating + (meta.is_budget_friendly ? 0.1 : -0.1)
-    );
+    const tasteRating = roundRating(reviewRating + (meta.flavour_profile === 'Spicy' ? 0.1 : 0));
+    const valueRating = roundRating(reviewRating + (meta.is_budget_friendly ? 0.1 : -0.1));
     const portionRating = roundRating(
-      reviewRating + (meta.student_need === 'Filling Meal' ? 0.1 : 0)
+      reviewRating + (meta.student_need === 'Filling Meal' ? 0.1 : 0),
     );
-    const waitTimeRating = roundRating(
-      reviewRating - (meta.prep_time_minutes >= 11 ? 0.3 : 0)
-    );
+    const waitTimeRating = roundRating(reviewRating - (meta.prep_time_minutes >= 11 ? 0.3 : 0));
     const reviewTags = getReviewTags(item, reviewRating, meta, index);
 
-    const createdAt = new Date(
-      2026,
-      6,
-      31 - (index % 28),
-      9 + (index % 8),
-      (index * 11) % 60
-    );
+    const createdAt = new Date(2026, 6, 31 - (index % 28), 9 + (index % 8), (index * 11) % 60);
 
     reviewRows.push({
       food_id: item.food_id,
@@ -2013,8 +1946,7 @@ function buildReviewRows(insertedMenuItems) {
       review_text: getReviewText(item, reviewRating, meta, index),
       review_tag: reviewTags[0],
       review_tags: reviewTags,
-      best_time_to_buy:
-        meta.prep_time_minutes >= 11 ? 'Before peak lunch' : 'Lunch',
+      best_time_to_buy: meta.prep_time_minutes >= 11 ? 'Before peak lunch' : 'Lunch',
       review_photo_url: null,
       helpful_count: Math.max(1, Math.round(reviewRating * 2) + (index % 4)),
       created_at: createdAt,
@@ -2098,11 +2030,7 @@ async function seedFoodCourts() {
   `;
 
   for (const foodCourt of foodCourts) {
-    await pool.query(sql, [
-      foodCourt.name,
-      foodCourt.location,
-      foodCourt.description,
-    ]);
+    await pool.query(sql, [foodCourt.name, foodCourt.location, foodCourt.description]);
   }
 }
 

@@ -54,7 +54,7 @@ function loadHypeNowMeals() {
               });
             })
             .catch(() => []);
-        })
+        }),
       );
     })
     .then((menuGroups) => {
@@ -115,7 +115,6 @@ function createHypeMealCard(meal) {
   const reviewCount = meal.item_review_count || meal.review_count || 0;
   const category = meal.category || 'Meal';
   const price = meal.price || 0;
-  const mealId = meal.item_id || meal.food_id;
   const stallId = meal.home_stall_id || meal.stall_id;
 
   card.innerHTML = `

@@ -51,40 +51,20 @@ function getQuizFilters(req) {
     search: cleanText(source.search),
     foodCourt: cleanText(source.foodCourt || source.food_court || 'all'),
     category: cleanText(source.category || 'all'),
-    budget: getAllowedValue(
-      source.budget,
-      ['any', 'low', 'medium', 'high'],
-      'any'
-    ),
-    time: getAllowedValue(
-      source.time,
-      ['any', 'quick', 'normal'],
-      'any'
-    ),
+    budget: getAllowedValue(source.budget, ['any', 'low', 'medium', 'high'], 'any'),
+    time: getAllowedValue(source.time, ['any', 'quick', 'normal'], 'any'),
     mood: getAllowedValue(
       source.mood,
       ['any', 'comfort', 'healthy', 'filling', 'spicy', 'study', 'safe'],
-      'any'
+      'any',
     ),
-    spice: getAllowedValue(
-      source.spice,
-      ['any', 'not-spicy', 'mild', 'spicy'],
-      'any'
-    ),
-    dietary: getAllowedValue(
-      source.dietary,
-      ['any', 'halal', 'vegetarian', 'vegan'],
-      'any'
-    ),
-    temperature: getAllowedValue(
-      source.temperature,
-      ['any', 'hot', 'cold'],
-      'any'
-    ),
+    spice: getAllowedValue(source.spice, ['any', 'not-spicy', 'mild', 'spicy'], 'any'),
+    dietary: getAllowedValue(source.dietary, ['any', 'halal', 'vegetarian', 'vegan'], 'any'),
+    temperature: getAllowedValue(source.temperature, ['any', 'hot', 'cold'], 'any'),
     sort: getAllowedValue(
       source.sort,
       ['best-match', 'rating', 'price-low', 'quick', 'popular'],
-      'best-match'
+      'best-match',
     ),
     maxPrice: getNumber(source.maxPrice || source.max_price),
     limit: Math.min(getNumber(source.limit) || 3, 20),
@@ -141,15 +121,15 @@ function matchesDietaryPreference(item, dietary) {
   }
 
   if (dietary === 'vegetarian') {
-    return Boolean(item.vegetarian) ||
+    return (
+      Boolean(item.vegetarian) ||
       dietaryTag.includes('vegetarian') ||
-      category.includes('vegetarian');
+      category.includes('vegetarian')
+    );
   }
 
   if (dietary === 'vegan') {
-    return Boolean(item.vegan) ||
-      dietaryTag.includes('vegan') ||
-      category.includes('vegan');
+    return Boolean(item.vegan) || dietaryTag.includes('vegan') || category.includes('vegan');
   }
 
   return true;
@@ -165,8 +145,7 @@ function matchesSpicePreference(item, spice) {
   const combinedText = `${spiceLevel} ${flavourProfile}`;
 
   if (spice === 'not-spicy') {
-    return !combinedText.includes('spicy') ||
-      combinedText.includes('not spicy');
+    return !combinedText.includes('spicy') || combinedText.includes('not spicy');
   }
 
   if (spice === 'mild') {
@@ -174,8 +153,7 @@ function matchesSpicePreference(item, spice) {
   }
 
   if (spice === 'spicy') {
-    return combinedText.includes('spicy') &&
-      !combinedText.includes('not spicy');
+    return combinedText.includes('spicy') && !combinedText.includes('not spicy');
   }
 
   return true;
@@ -330,14 +308,7 @@ function applyMoodScore(result, item, filters) {
 
   if (filters.mood === 'spicy') {
     if (
-      includesAny(foodText, [
-        'spicy',
-        'kimchi',
-        'curry',
-        'mala',
-        'chilli',
-        'sambal',
-      ]) &&
+      includesAny(foodText, ['spicy', 'kimchi', 'curry', 'mala', 'chilli', 'sambal']) &&
       !foodText.includes('not spicy')
     ) {
       addScore(result, 44, 'Matches your spicy craving.');

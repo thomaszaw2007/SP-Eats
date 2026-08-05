@@ -137,20 +137,17 @@ function refreshConnectedStats(foodId, next, callback) {
       return;
     }
 
-    ReviewAdminModel.recalculateStallStatsByFoodId(
-      foodId,
-      (stallError, stallStats) => {
-        if (stallError) {
-          next(stallError);
-          return;
-        }
-
-        callback({
-          menu_stats: menuStats,
-          stall_stats: stallStats,
-        });
+    ReviewAdminModel.recalculateStallStatsByFoodId(foodId, (stallError, stallStats) => {
+      if (stallError) {
+        next(stallError);
+        return;
       }
-    );
+
+      callback({
+        menu_stats: menuStats,
+        stall_stats: stallStats,
+      });
+    });
   });
 }
 
@@ -208,43 +205,36 @@ module.exports.updateAdminReview = (req, res, next) => {
     return;
   }
 
-  ReviewAdminModel.updateAdminReview(
-    reviewId,
-    validation.data,
-    (updateError, updatedReview) => {
-      if (updateError) {
-        next(updateError);
-        return;
-      }
-
-      if (!updatedReview) {
-        res.status(404).json({
-          message: 'Review not found.',
-        });
-        return;
-      }
-
-      refreshConnectedStats(updatedReview.food_id, next, (stats) => {
-        ReviewAdminModel.selectAdminReviewById(
-          reviewId,
-          (selectError, fullReview) => {
-            if (selectError) {
-              next(selectError);
-              return;
-            }
-
-            res.status(200).json({
-              message: 'Review updated successfully. Ratings recalculated.',
-              data: {
-                review: fullReview,
-                updated_stats: stats,
-              },
-            });
-          }
-        );
-      });
+  ReviewAdminModel.updateAdminReview(reviewId, validation.data, (updateError, updatedReview) => {
+    if (updateError) {
+      next(updateError);
+      return;
     }
-  );
+
+    if (!updatedReview) {
+      res.status(404).json({
+        message: 'Review not found.',
+      });
+      return;
+    }
+
+    refreshConnectedStats(updatedReview.food_id, next, (stats) => {
+      ReviewAdminModel.selectAdminReviewById(reviewId, (selectError, fullReview) => {
+        if (selectError) {
+          next(selectError);
+          return;
+        }
+
+        res.status(200).json({
+          message: 'Review updated successfully. Ratings recalculated.',
+          data: {
+            review: fullReview,
+            updated_stats: stats,
+          },
+        });
+      });
+    });
+  });
 };
 
 module.exports.deleteAdminReview = (req, res, next) => {
@@ -292,25 +282,22 @@ module.exports.markHelpfulAdminReview = (req, res, next) => {
     return;
   }
 
-  ReviewAdminModel.incrementAdminHelpfulCount(
-    reviewId,
-    (error, updatedReview) => {
-      if (error) {
-        next(error);
-        return;
-      }
-
-      if (!updatedReview) {
-        res.status(404).json({
-          message: 'Review not found.',
-        });
-        return;
-      }
-
-      res.status(200).json({
-        message: 'Review helpful count updated successfully.',
-        data: updatedReview,
-      });
+  ReviewAdminModel.incrementAdminHelpfulCount(reviewId, (error, updatedReview) => {
+    if (error) {
+      next(error);
+      return;
     }
-  );
+
+    if (!updatedReview) {
+      res.status(404).json({
+        message: 'Review not found.',
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: 'Review helpful count updated successfully.',
+      data: updatedReview,
+    });
+  });
 };

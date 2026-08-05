@@ -30,16 +30,14 @@ const reviewTextCounter = document.getElementById('reviewTextCounter');
 const reviewPhotoUrlInput = document.getElementById('reviewPhotoUrlInput');
 
 const reviewTagPicker = document.getElementById('reviewTagPicker');
-const postReviewBtn = writeReviewForm
-  ? writeReviewForm.querySelector('.post-review-btn')
-  : null;
+const postReviewBtn = writeReviewForm ? writeReviewForm.querySelector('.post-review-btn') : null;
 
 let reviews = [];
 let foodItems = [];
-let selectedFoodItem = null;
 let selectedFilterTag = 'all';
 let selectedMealPreview = null;
 let mealPreviewModal = null;
+
 const REVIEWS_PER_PAGE = 10;
 const MIN_REVIEW_TEXT_LENGTH = 20;
 
@@ -57,10 +55,10 @@ const reviewFormState = {
   tags: [],
 };
 
-
 window.addEventListener('DOMContentLoaded', () => {
   initialiseReviewPage();
 });
+
 function initialiseReviewPage() {
   setupThemeToggle();
   setupReviewFilters();
@@ -76,8 +74,6 @@ function initialiseReviewPage() {
   loadReviews();
   loadFoodItems();
 }
-
-
 
 function setupThemeToggle() {
   const reviewsThemeToggle = document.getElementById('reviewsThemeToggle');
@@ -208,23 +204,23 @@ function setupModals() {
     });
   });
 
-document.addEventListener('click', (event) => {
-  const saveButton = event.target.closest('[data-review-save]');
+  document.addEventListener('click', (event) => {
+    const saveButton = event.target.closest('[data-review-save]');
 
-  if (!saveButton) {
-    return;
-  }
+    if (!saveButton) {
+      return;
+    }
 
-  if (!selectedMealPreview) {
-    return;
-  }
+    if (!selectedMealPreview) {
+      return;
+    }
 
-  const saveType = saveButton.dataset.reviewSave;
+    const saveType = saveButton.dataset.reviewSave;
 
-  saveQuickBiteMeal(saveType, selectedMealPreview);
+    saveMealForSpEats(saveType, selectedMealPreview);
 
-  saveButton.textContent = 'Saved';
-});
+    saveButton.textContent = 'Saved';
+  });
 
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') {
@@ -421,6 +417,8 @@ function updateReviewTextFeedback(forceShow = false) {
   const length = getReviewTextLength();
   const remainingCharacters = MIN_REVIEW_TEXT_LENGTH - length;
 
+  helper.style.color = '#ef4444';
+
   if (length === 0) {
     helper.textContent = `Please type at least ${MIN_REVIEW_TEXT_LENGTH} characters.`;
     helper.style.opacity = forceShow ? '1' : '0.75';
@@ -428,7 +426,9 @@ function updateReviewTextFeedback(forceShow = false) {
   }
 
   if (remainingCharacters > 0) {
-    helper.textContent = `Please type ${remainingCharacters} more character${remainingCharacters === 1 ? '' : 's'} before posting.`;
+    helper.textContent = `Please type ${remainingCharacters} more character${
+      remainingCharacters === 1 ? '' : 's'
+    } before posting.`;
     helper.style.opacity = '1';
     return;
   }
@@ -536,9 +536,7 @@ function renderReviews() {
 
   let filtered = [...reviews];
 
-  const searchValue = reviewSearchInput
-    ? reviewSearchInput.value.trim().toLowerCase()
-    : '';
+  const searchValue = reviewSearchInput ? reviewSearchInput.value.trim().toLowerCase() : '';
 
   const ratingValue = reviewRatingFilter ? reviewRatingFilter.value : 'all';
   const sortValue = reviewSortFilter ? reviewSortFilter.value : 'newest';
@@ -547,10 +545,18 @@ function renderReviews() {
     filtered = filtered.filter((review) => {
       return (
         getReviewFoodName(review).toLowerCase().includes(searchValue) ||
-        String(review.reviewer_name || '').toLowerCase().includes(searchValue) ||
-        String(review.review_text || '').toLowerCase().includes(searchValue) ||
-        String(review.stall_name || '').toLowerCase().includes(searchValue) ||
-        String(review.foodcourt_name || '').toLowerCase().includes(searchValue)
+        String(review.reviewer_name || '')
+          .toLowerCase()
+          .includes(searchValue) ||
+        String(review.review_text || '')
+          .toLowerCase()
+          .includes(searchValue) ||
+        String(review.stall_name || '')
+          .toLowerCase()
+          .includes(searchValue) ||
+        String(review.foodcourt_name || '')
+          .toLowerCase()
+          .includes(searchValue)
       );
     });
   }
@@ -598,9 +604,10 @@ function renderReviews() {
     if (totalReviews === 0) {
       reviewCountText.textContent = 'Showing 0 reviews';
     } else {
-      reviewCountText.textContent = `Showing ${
-        startIndex + 1
-      }-${Math.min(endIndex, totalReviews)} of ${totalReviews} reviews`;
+      reviewCountText.textContent = `Showing ${startIndex + 1}-${Math.min(
+        endIndex,
+        totalReviews,
+      )} of ${totalReviews} reviews`;
     }
   }
 
@@ -672,7 +679,7 @@ function createReviewCardHTML(review) {
         <h3 class="review-food-title">${escapeHtml(foodName)}</h3>
         <p class="review-food-subtitle">
           ${escapeHtml(review.stall_name || 'Unknown Stall')} &middot; FC${escapeHtml(
-            review.foodcourt_id || ''
+            review.foodcourt_id || '',
           )} - ${escapeHtml(review.foodcourt_name || '')}
         </p>
       </div>
@@ -684,9 +691,7 @@ function createReviewCardHTML(review) {
       <div class="review-tag-pills">${tags}</div>
 
       <div class="review-card-actions">
-        <button class="review-helpful-btn" type="button" data-review-id="${
-          review.review_id
-        }">
+        <button class="review-helpful-btn" type="button" data-review-id="${review.review_id}">
           ${createHelpfulIcon()}
           <span>Helpful &middot; ${review.helpful_count || 0}</span>
         </button>
@@ -743,23 +748,19 @@ function renderFoodPickerItems() {
 
   let filtered = [...foodItems];
 
-  const searchValue = foodPickerSearchInput
-    ? foodPickerSearchInput.value.trim().toLowerCase()
-    : '';
+  const searchValue = foodPickerSearchInput ? foodPickerSearchInput.value.trim().toLowerCase() : '';
 
-  const categoryValue = foodPickerCategoryFilter
-    ? foodPickerCategoryFilter.value
-    : 'all';
+  const categoryValue = foodPickerCategoryFilter ? foodPickerCategoryFilter.value : 'all';
 
-  const foodCourtValue = foodPickerFoodCourtFilter
-    ? foodPickerFoodCourtFilter.value
-    : 'all';
+  const foodCourtValue = foodPickerFoodCourtFilter ? foodPickerFoodCourtFilter.value : 'all';
 
   if (searchValue) {
     filtered = filtered.filter((item) => {
       return (
         getFoodPickerName(item).toLowerCase().includes(searchValue) ||
-        String(item.stall_name || '').toLowerCase().includes(searchValue)
+        String(item.stall_name || '')
+          .toLowerCase()
+          .includes(searchValue)
       );
     });
   }
@@ -799,13 +800,12 @@ function selectFoodItem(card) {
     return;
   }
 
-  selectedFoodItem = selected;
   selectedFoodIdInput.value = selected.food_id;
 
   selectedFoodSummary.innerHTML = `
     <strong>${escapeHtml(getFoodPickerName(selected))}</strong>
     <span>${escapeHtml(selected.stall_name)} &middot; FC${escapeHtml(
-      selected.foodcourt_id
+      selected.foodcourt_id,
     )} - ${escapeHtml(selected.foodcourt_name)}</span>
   `;
 
@@ -907,7 +907,6 @@ function resetReviewFilters() {
 }
 
 function resetWriteReviewForm() {
-  selectedFoodItem = null;
   selectedFoodIdInput.value = '';
   selectedFoodSummary.innerHTML = '<strong>Choose Food Item</strong>';
 
@@ -952,9 +951,7 @@ function openMealPreview(review) {
 
   const foodName = getReviewFoodName(review);
   const imageUrl = review.review_photo_url || review.image_url;
-  const priceText = review.price
-    ? `$${Number(review.price || 0).toFixed(2)}`
-    : 'Price unavailable';
+  const priceText = review.price ? `$${Number(review.price || 0).toFixed(2)}` : 'Price unavailable';
 
   mealPreviewModal.innerHTML = `
     <div class="meal-preview-backdrop" data-meal-preview-action="close"></div>
@@ -968,7 +965,7 @@ function openMealPreview(review) {
             <p class="meal-preview-label">Selected Meal</p>
             <h2>${escapeHtml(foodName)}</h2>
             <p>${escapeHtml(review.stall_name || 'Unknown Stall')} &middot; FC${escapeHtml(
-              review.foodcourt_id || ''
+              review.foodcourt_id || '',
             )} - ${escapeHtml(review.foodcourt_name || '')}</p>
           </div>
 
@@ -998,13 +995,13 @@ function openMealPreview(review) {
         </div>
 
         <div class="meal-preview-actions">
-            <button type="button" data-review-save="favourite">
-                 Add to Favourite
-            </button>
+          <button type="button" data-review-save="favourite">
+            Add to Favourite
+          </button>
 
-            <button type="button" data-review-save="tryLater">
-                  Try Later
-            </button>
+          <button type="button" data-review-save="tryLater">
+            Try Later
+          </button>
 
           <button
             class="meal-preview-store"
@@ -1054,14 +1051,6 @@ function ensureMealPreviewModal() {
       closeMealPreview();
     }
 
-    if (action === 'favourite') {
-      saveMealToStorage('quickbiteFavouriteMeals', 'Added to Favourite Meals');
-    }
-
-    if (action === 'try-next') {
-      saveMealToStorage('quickbiteTryNextMeals', 'Added to Try Next Meals');
-    }
-
     if (action === 'store') {
       goToSelectedMealStore();
     }
@@ -1074,90 +1063,6 @@ function closeMealPreview() {
   if (mealPreviewModal) {
     mealPreviewModal.classList.remove('active');
   }
-}
-
-function saveMealToStorage(storageKey, successMessage) {
-  if (!selectedMealPreview) {
-    return;
-  }
-
-  const storedMeals = getStoredMeals(storageKey);
-  const mealToSave = createStoredMeal(selectedMealPreview);
-  const mealKey = createMealStorageKey(mealToSave);
-
-  const alreadySaved = storedMeals.some((meal) => {
-    return createMealStorageKey(meal) === mealKey;
-  });
-
-  if (!alreadySaved) {
-    storedMeals.unshift(mealToSave);
-    localStorage.setItem(storageKey, JSON.stringify(storedMeals));
-  }
-
-  showMealStorageMessage(alreadySaved ? 'Meal already saved' : successMessage);
-}
-
-function getStoredMeals(storageKey) {
-  try {
-    const storedValue = JSON.parse(localStorage.getItem(storageKey));
-    return Array.isArray(storedValue) ? storedValue : [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function createStoredMeal(review) {
-  return {
-    food_id: review.food_id || '',
-    review_id: review.review_id || '',
-    stall_id: review.stall_id || '',
-    item_name: getReviewFoodName(review),
-    stall_name: review.stall_name || 'Unknown Stall',
-    foodcourt_id: review.foodcourt_id || '',
-    foodcourt_name: review.foodcourt_name || '',
-    price: review.price || null,
-    rating: review.rating || 0,
-    image_url: review.review_photo_url || review.image_url || '',
-    saved_at: new Date().toISOString(),
-  };
-}
-
-function createMealStorageKey(meal) {
-  if (meal.food_id) {
-    return `food-${meal.food_id}`;
-  }
-
-  if (meal.review_id) {
-    return `review-${meal.review_id}`;
-  }
-
-  return `${meal.item_name}-${meal.stall_name}`.toLowerCase();
-}
-
-function showMealStorageMessage(message) {
-  const oldMessage = document.querySelector('.meal-storage-toast');
-
-  if (oldMessage) {
-    oldMessage.remove();
-  }
-
-  const toast = document.createElement('div');
-  toast.className = 'meal-storage-toast';
-  toast.textContent = message;
-
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.classList.add('show');
-  }, 10);
-
-  setTimeout(() => {
-    toast.classList.remove('show');
-
-    setTimeout(() => {
-      toast.remove();
-    }, 220);
-  }, 1800);
 }
 
 function goToSelectedMealStore() {
@@ -1356,42 +1261,57 @@ function escapeHtml(value) {
     .replaceAll("'", '&#039;');
 }
 
+const SP_EATS_FAVOURITE_MEALS_KEY = 'spEatsFavouriteMeals';
+const SP_EATS_TRY_LATER_MEALS_KEY = 'spEatsTryLaterMeals';
 const QUICKBITE_FAVOURITE_MEALS_KEY = 'quickbiteFavouriteMeals';
 const QUICKBITE_TRY_LATER_MEALS_KEY = 'quickbiteTryLaterMeals';
 
-function saveQuickBiteMeal(type, meal) {
-  const key = type === 'tryLater'
-    ? QUICKBITE_TRY_LATER_MEALS_KEY
-    : QUICKBITE_FAVOURITE_MEALS_KEY;
+function saveMealForSpEats(type, meal) {
+  const savedMeal = normaliseSavedMeal(meal);
+  const storageKeys = getSaveStorageKeys(type);
 
-  const currentList = getQuickBiteSavedList(key);
-  const savedMeal = normaliseQuickBiteMeal(meal);
+  storageKeys.forEach((key) => {
+    const currentList = getSavedMealList(key);
 
-  const exists = currentList.some((item) => {
-    return String(item.id) === String(savedMeal.id);
+    const exists = currentList.some((item) => {
+      const normalisedItem = normaliseSavedMeal(item);
+      return String(normalisedItem.id) === String(savedMeal.id);
+    });
+
+    if (!exists) {
+      currentList.unshift(savedMeal);
+    }
+
+    localStorage.setItem(key, JSON.stringify(currentList.slice(0, 24)));
   });
 
-  if (!exists) {
-    currentList.unshift(savedMeal);
-  }
-
-  localStorage.setItem(key, JSON.stringify(currentList.slice(0, 24)));
+  window.dispatchEvent(new Event('spEatsSavedMealsUpdated'));
   window.dispatchEvent(new Event('quickbiteSavedMealsUpdated'));
 }
 
-function getQuickBiteSavedList(key) {
+function getSaveStorageKeys(type) {
+  if (type === 'tryLater') {
+    return [SP_EATS_TRY_LATER_MEALS_KEY, QUICKBITE_TRY_LATER_MEALS_KEY];
+  }
+
+  return [SP_EATS_FAVOURITE_MEALS_KEY, QUICKBITE_FAVOURITE_MEALS_KEY];
+}
+
+function getSavedMealList(key) {
   try {
     const data = JSON.parse(localStorage.getItem(key) || '[]');
 
     return Array.isArray(data) ? data : [];
-  } catch (error) {
+  } catch {
     return [];
   }
 }
 
-function normaliseQuickBiteMeal(meal) {
+function normaliseSavedMeal(meal) {
   return {
-    id: String(meal.food_id || meal.foodId || meal.item_id || meal.id || meal.item_name || meal.name),
+    id: String(
+      meal.food_id || meal.foodId || meal.item_id || meal.id || meal.item_name || meal.name,
+    ),
     foodId: meal.food_id || meal.foodId || meal.item_id || meal.id || '',
     stallId: meal.stall_id || meal.stallId || '',
     foodCourtId: meal.foodcourt_id || meal.foodCourtId || '',

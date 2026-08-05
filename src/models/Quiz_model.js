@@ -246,8 +246,7 @@ module.exports.selectQuizMenuCandidates = (filters, callback) => {
     conditions.push(`m."price" <= $${values.length}`);
   }
 
-  const whereSql =
-    conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const whereSql = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const sql = `
     SELECT

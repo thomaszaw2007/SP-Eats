@@ -153,8 +153,7 @@ module.exports.selectReviews = (filters, callback) => {
     conditions.push(`r."rating" >= $${values.length}`);
   }
 
-  const whereSql =
-    conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const whereSql = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const sql = `
     ${getReviewBaseSelect()}
@@ -278,8 +277,7 @@ module.exports.selectReviewMenuOptions = (filters, callback) => {
     conditions.push('m."is_available" = TRUE');
   }
 
-  const whereSql =
-    conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const whereSql = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const sql = `
     SELECT
@@ -560,7 +558,6 @@ module.exports.incrementHelpfulCount = (reviewId, callback) => {
   });
 };
 
-
 module.exports.updateStallReviewStatsByFoodId = (foodId, callback) => {
   const sql = `
     UPDATE "Stalls"
@@ -700,18 +697,10 @@ module.exports.selectReviewSummary = (callback) => {
           callback(null, {
             total_reviews: summaryResult.rows[0].total_reviews,
             average_rating: Number(summaryResult.rows[0].average_rating || 0),
-            average_taste_rating: Number(
-              summaryResult.rows[0].average_taste_rating || 0
-            ),
-            average_value_rating: Number(
-              summaryResult.rows[0].average_value_rating || 0
-            ),
-            average_portion_rating: Number(
-              summaryResult.rows[0].average_portion_rating || 0
-            ),
-            average_wait_time_rating: Number(
-              summaryResult.rows[0].average_wait_time_rating || 0
-            ),
+            average_taste_rating: Number(summaryResult.rows[0].average_taste_rating || 0),
+            average_value_rating: Number(summaryResult.rows[0].average_value_rating || 0),
+            average_portion_rating: Number(summaryResult.rows[0].average_portion_rating || 0),
+            average_wait_time_rating: Number(summaryResult.rows[0].average_wait_time_rating || 0),
             total_helpful_count: summaryResult.rows[0].total_helpful_count,
             top_tag: tagResult.rows[0] || null,
             top_dish: dishResult.rows[0] || null,

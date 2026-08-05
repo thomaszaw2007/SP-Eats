@@ -1,5 +1,5 @@
 // =========================================================
-// SP QuickBite - Browse Stalls Page
+// SP Eats - Browse Stalls Page
 // Handles: stall loading, search, filters, recently viewed, navigation
 // =========================================================
 
@@ -123,11 +123,7 @@ function normalizeStalls(stalls) {
     const stallName = stall.stall_name || stall.name || 'Unnamed Stall';
 
     const foodCourt =
-      stall.food_court ||
-      stall.food_court_name ||
-      stall.foodcourt_name ||
-      stall.foodcourt ||
-      '';
+      stall.food_court || stall.food_court_name || stall.foodcourt_name || stall.foodcourt || '';
 
     const cuisine = stall.cuisine_type || stall.cuisine || 'Campus Food';
     const rating = Number(stall.rating || stall.stall_rating || 0);
@@ -234,11 +230,7 @@ function filterAndDisplayStalls() {
 }
 
 function stallMatchesDietFilter(stall, filter) {
-  const text = [
-    stall.stall_name,
-    stall.cuisine_type,
-    stall.stall_description,
-  ]
+  const text = [stall.stall_name, stall.cuisine_type, stall.stall_description]
     .join(' ')
     .toLowerCase();
 
@@ -489,7 +481,7 @@ function createStallCard(stall) {
       <p class="sd-cuisine-text">${stall.cuisine_type}</p>
 
       <div class="sd-rating-row">
-        <span class="sd-stars">★★★★★</span>
+        <span class="sd-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
         <strong>${formatRating(stall.rating)}</strong>
         <span>(${stall.rating_count})</span>
       </div>
@@ -500,7 +492,7 @@ function createStallCard(stall) {
 
       <div class="sd-card-meta-row">
         <span class="${getWaitClass(stall.estimated_wait_time)}">
-          ● ${stall.estimated_wait_time || '5-10 min'}
+          &#9679; ${stall.estimated_wait_time || '5-10 min'}
         </span>
       </div>
 
@@ -515,10 +507,13 @@ function createStallCard(stall) {
   });
 
   const viewMenuButton = card.querySelector('.sd-view-menu-btn');
-  viewMenuButton.addEventListener('click', (event) => {
-    event.stopPropagation();
-    goToMenu(stall.stall_id);
-  });
+
+  if (viewMenuButton) {
+    viewMenuButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      goToMenu(stall.stall_id);
+    });
+  }
 
   return card;
 }
@@ -554,17 +549,17 @@ function displayRecentlyViewedStalls() {
     return;
   }
 
-  let recentlyViewed = [];
+  let recentlyViewed;
 
   try {
     recentlyViewed = JSON.parse(savedData);
-  } catch (error) {
+  } catch {
     localStorage.removeItem(RECENTLY_VIEWED_KEY);
     recentlyViewedSection.classList.add('hidden');
     return;
   }
 
-  if (!recentlyViewed || recentlyViewed.length === 0) {
+  if (!Array.isArray(recentlyViewed) || recentlyViewed.length === 0) {
     recentlyViewedSection.classList.add('hidden');
     return;
   }
@@ -634,9 +629,7 @@ function formatFoodCourtLabel(stall) {
 }
 
 function getEstimatedBudget(stall) {
-  const text = [stall.stall_name, stall.cuisine_type]
-    .join(' ')
-    .toLowerCase();
+  const text = [stall.stall_name, stall.cuisine_type].join(' ').toLowerCase();
 
   if (text.includes('chicken rice')) {
     return 4.5;

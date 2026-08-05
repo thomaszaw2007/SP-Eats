@@ -360,14 +360,12 @@ async function loadMealsFromPublicApis() {
         console.error('Menu load failed:', stallId, error);
         return [];
       }
-    })
+    }),
   );
 
-  return menuGroups
-    .flat()
-    .filter((meal) => {
-      return meal.isAvailable;
-    });
+  return menuGroups.flat().filter((meal) => {
+    return meal.isAvailable;
+  });
 }
 
 function extractArray(result) {
@@ -415,7 +413,9 @@ function normaliseMeal(item, stall) {
     item.foodcourt_id ||
     item.food_court_id ||
     stall.foodcourt_id ||
-    parseFoodCourtId(item.foodcourt_name || item.food_court || stall.foodcourt_name || stall.food_court);
+    parseFoodCourtId(
+      item.foodcourt_name || item.food_court || stall.foodcourt_name || stall.food_court,
+    );
 
   const itemId =
     item.food_id ||
@@ -450,12 +450,7 @@ function normaliseMeal(item, stall) {
     mealType: item.meal_type || '',
     studentNeed: item.student_need || '',
     rating: Number(item.item_rating || item.rating || 0),
-    reviewCount: Number(
-      item.item_review_count ||
-      item.review_count ||
-      item.rating_count ||
-      0
-    ),
+    reviewCount: Number(item.item_review_count || item.review_count || item.rating_count || 0),
     orderCount: Number(item.order_count || 0),
     stallName: item.stall_name || stall.stall_name || stall.name || 'Campus Stall',
     cuisineType: item.cuisine_type || stall.cuisine_type || '',
@@ -703,11 +698,7 @@ function scoreMeal(meal) {
   }
 
   if (answers.spice === 'none') {
-    if (
-      text.includes('not spicy') ||
-      text.includes('mild') ||
-      !text.includes('spicy')
-    ) {
+    if (text.includes('not spicy') || text.includes('mild') || !text.includes('spicy')) {
       add(14, 'matches your low spice preference');
     } else {
       subtract(12);
@@ -715,21 +706,13 @@ function scoreMeal(meal) {
   }
 
   if (answers.spice === 'mild') {
-    if (
-      text.includes('mild') ||
-      text.includes('not spicy') ||
-      !text.includes('very spicy')
-    ) {
+    if (text.includes('mild') || text.includes('not spicy') || !text.includes('very spicy')) {
       add(12, 'keeps the spice level manageable');
     }
   }
 
   if (answers.spice === 'spicy') {
-    if (
-      text.includes('spicy') ||
-      text.includes('korean') ||
-      text.includes('curry')
-    ) {
+    if (text.includes('spicy') || text.includes('korean') || text.includes('curry')) {
       add(16, 'has the spice you want');
     }
   }
@@ -780,11 +763,7 @@ function scoreMeal(meal) {
   }
 
   if (answers.need === 'lowSugar') {
-    if (
-      !text.includes('sweet') &&
-      !text.includes('dessert') &&
-      !text.includes('sugar')
-    ) {
+    if (!text.includes('sweet') && !text.includes('dessert') && !text.includes('sugar')) {
       add(12, 'avoids sweet or dessert-heavy choices');
     } else {
       subtract(10);
@@ -879,9 +858,7 @@ function renderResult() {
 
 function renderMainRecommendation(meal) {
   const reasonText =
-    meal.reasons && meal.reasons.length > 0
-      ? meal.reasons.join(', ')
-      : 'matches your quiz choices';
+    meal.reasons && meal.reasons.length > 0 ? meal.reasons.join(', ') : 'matches your quiz choices';
 
   mainRecommendation.innerHTML = `
     <div class="qclean-main-image">
@@ -1182,12 +1159,7 @@ function loadMergedSavedMeals(mainKey, legacyKeys) {
 
 function isProbablyMealSave(meal) {
   return Boolean(
-    meal.foodId ||
-    meal.food_id ||
-    meal.item_id ||
-    meal.item_name ||
-    meal.food_name ||
-    meal.price
+    meal.foodId || meal.food_id || meal.item_id || meal.item_name || meal.food_name || meal.price,
   );
 }
 
@@ -1195,7 +1167,7 @@ function loadSavedArray(key) {
   try {
     const data = JSON.parse(localStorage.getItem(key) || '[]');
     return Array.isArray(data) ? data : [];
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -1273,9 +1245,7 @@ function renderMealImage(meal, size) {
   const imageUrl = meal.imageUrl || meal.image_url || '';
   const name = meal.name || meal.item_name || 'Meal';
   const placeholderClass =
-    size === 'large'
-      ? 'qclean-image-placeholder large'
-      : 'qclean-image-placeholder';
+    size === 'large' ? 'qclean-image-placeholder large' : 'qclean-image-placeholder';
 
   const placeholder = `
     <div class="${placeholderClass}">

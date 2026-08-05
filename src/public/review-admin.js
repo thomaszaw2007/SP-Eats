@@ -234,9 +234,7 @@ async function loadAdminReviews() {
     params.set('rating', ratingValue);
   }
 
-  const url = params.toString()
-    ? `/api/admin/reviews?${params.toString()}`
-    : '/api/admin/reviews';
+  const url = params.toString() ? `/api/admin/reviews?${params.toString()}` : '/api/admin/reviews';
 
   try {
     const response = await fetch(url);
@@ -300,12 +298,7 @@ function renderRatingPie(breakdown) {
 
   let currentPercent = 0;
 
-  const colors = [
-    '#ef4444',
-    '#f97316',
-    '#f59e0b',
-    '#94a3b8',
-  ];
+  const colors = ['#ef4444', '#f97316', '#f59e0b', '#94a3b8'];
 
   const gradientParts = breakdown.map((row, index) => {
     const value = Number(row.review_count || 0);
@@ -366,10 +359,7 @@ function renderStallBars(stalls) {
     return;
   }
 
-  const maxCount = Math.max(
-    ...stalls.map((stall) => Number(stall.review_count || 0)),
-    1
-  );
+  const maxCount = Math.max(...stalls.map((stall) => Number(stall.review_count || 0)), 1);
 
   adminStallBars.innerHTML = stalls
     .map((stall) => {

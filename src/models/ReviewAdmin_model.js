@@ -95,8 +95,7 @@ module.exports.selectAdminReviews = (filters, callback) => {
     conditions.push(ratingFilterSql);
   }
 
-  const whereSql =
-    conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const whereSql = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const sql = `
     ${getAdminReviewBaseSelect()}

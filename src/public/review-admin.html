@@ -1,309 +1,341 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>SP Eats | Review Admin</title>
+    <title>SP Eats | Review Admin</title>
 
-  <link rel="stylesheet" href="./style.css" />
-</head>
-<body class="review-admin-body">
-  <nav class="home-navbar review-admin-nav">
-    <a href="./index.html" class="home-logo">SP Eats</a>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="review-admin-body">
+    <nav class="home-navbar review-admin-nav">
+      <a href="./index.html" class="home-logo">SP Eats</a>
 
-    <div class="home-nav-links">
-      <a href="./stalls.html">Stalls</a>
-      <a href="./reviews.html">Reviews</a>
-      <a href="./food-map.html">Map</a>
-      <a href="./review-admin.html" class="active">Review Admin</a>
-    </div>
-  </nav>
-
-  <main class="review-admin-page">
-    <section class="review-admin-topbar">
-      <div>
-        <p class="review-admin-eyebrow">Admin Dashboard</p>
-        <h1>Review Management</h1>
-        <p>
-          Manage reviews with star ratings, quick tags, delete controls, and connected rating recalculation.
-        </p>
+      <div class="home-nav-links">
+        <a href="./stalls.html">Stalls</a>
+        <a href="./reviews.html">Reviews</a>
+        <a href="./food-map.html">Map</a>
+        <a href="./review-admin.html" class="active">Review Admin</a>
       </div>
+    </nav>
 
-      <div class="review-admin-top-actions">
-        <button id="toggleInsightsBtn" class="review-admin-secondary-btn" type="button">
-          Show Diagrams
-        </button>
-
-        <button id="adminRefreshBtn" class="review-admin-primary-btn" type="button">
-          Refresh
-        </button>
-      </div>
-    </section>
-
-    <section class="review-admin-metrics compact">
-      <article class="review-admin-metric-card">
-        <span>Total Reviews</span>
-        <strong id="adminTotalReviews">0</strong>
-      </article>
-
-      <article class="review-admin-metric-card">
-        <span>Average Rating</span>
-        <strong id="adminAverageRating">0.0</strong>
-      </article>
-
-      <article class="review-admin-metric-card">
-        <span>Helpful Clicks</span>
-        <strong id="adminHelpfulCount">0</strong>
-      </article>
-
-      <article class="review-admin-metric-card">
-        <span>Photo Reviews</span>
-        <strong id="adminPhotoCount">0</strong>
-      </article>
-    </section>
-
-    <section id="adminInsightsPanel" class="review-admin-insights hidden">
-      <article class="review-admin-panel">
-        <div class="review-admin-panel-title">
-          <div>
-            <h2>Rating Breakdown</h2>
-            <p>Pie chart grouped by review rating.</p>
-          </div>
+    <main class="review-admin-page">
+      <section class="review-admin-topbar">
+        <div>
+          <p class="review-admin-eyebrow">Admin Dashboard</p>
+          <h1>Review Management</h1>
+          <p>
+            Manage reviews with star ratings, quick tags, delete controls, and connected rating
+            recalculation.
+          </p>
         </div>
 
-        <div id="adminRatingPie" class="review-admin-pie-area">
-          Loading chart...
-        </div>
-      </article>
+        <div class="review-admin-top-actions">
+          <button id="toggleInsightsBtn" class="review-admin-secondary-btn" type="button">
+            Show Diagrams
+          </button>
 
-      <article class="review-admin-panel">
-        <div class="review-admin-panel-title">
-          <div>
-            <h2>Reviews by Stall</h2>
-            <p>Bar chart showing the busiest reviewed stalls.</p>
-          </div>
-        </div>
-
-        <div id="adminStallBars" class="review-admin-bar-area">
-          Loading chart...
-        </div>
-      </article>
-    </section>
-
-    <section class="review-admin-workspace">
-      <aside class="review-admin-list-shell">
-        <div class="review-admin-toolbar sticky">
-          <input
-            id="adminSearchInput"
-            type="text"
-            placeholder="Search food, stall, reviewer"
-          />
-
-          <select id="adminRatingFilter">
-            <option value="all">All ratings</option>
-            <option value="5">5 star group</option>
-            <option value="4">4 star group</option>
-            <option value="3">3 star group</option>
-            <option value="below3">Below 3</option>
-          </select>
-        </div>
-
-        <div class="review-admin-list-heading">
-          <h2>Reviews</h2>
-          <p id="adminStatusText">Loading reviews...</p>
-        </div>
-
-        <div id="adminReviewList" class="review-admin-list compact-list">
-          Loading reviews...
-        </div>
-      </aside>
-
-      <section class="review-admin-detail-shell">
-        <div id="selectedReviewEmpty" class="review-admin-empty-detail">
-          <h2>Select a review</h2>
-          <p>Choose a review from the left side to edit, delete, or mark it as helpful.</p>
-        </div>
-
-        <div id="selectedReviewEditor" class="review-admin-editor hidden">
-          <div class="review-admin-detail-top">
-            <div id="selectedReviewImage" class="review-admin-detail-image">
-              No image
-            </div>
-
-            <div class="review-admin-detail-title">
-              <p class="review-admin-eyebrow">Selected Review</p>
-              <h2 id="selectedReviewFoodName">Food item</h2>
-              <p id="selectedReviewMeta">Stall and food court</p>
-            </div>
-
-            <div class="review-admin-detail-actions">
-              <button id="adminHelpfulSelectedBtn" class="review-admin-secondary-btn" type="button">
-                Add Helpful
-              </button>
-
-              <button id="adminDeleteSelectedBtn" class="review-admin-danger-btn" type="button">
-                Delete Review
-              </button>
-            </div>
-          </div>
-
-          <form id="editReviewForm" class="review-admin-form no-scroll-form">
-            <input id="editReviewId" type="hidden" />
-
-            <input id="editRating" type="hidden" />
-            <input id="editTasteRating" type="hidden" />
-            <input id="editValueRating" type="hidden" />
-            <input id="editPortionRating" type="hidden" />
-            <input id="editWaitTimeRating" type="hidden" />
-            <input id="editReviewTags" type="hidden" />
-
-            <section class="admin-rating-list">
-              <div class="admin-rating-line overall">
-                <div class="admin-rating-label">
-                  <strong>Overall</strong>
-                  <span id="overallRatingPreview">0.0</span>
-                </div>
-
-                <div id="overallRatingStars" class="admin-star-display"></div>
-              </div>
-
-              <div class="admin-rating-line">
-                <div class="admin-rating-label">
-                  <strong>Taste</strong>
-                  <span id="tasteRatingText">0.0</span>
-                </div>
-
-                <div class="admin-star-buttons">
-                  <button type="button" data-star-field="taste" data-star-value="1">&#9733;</button>
-                  <button type="button" data-star-field="taste" data-star-value="2">&#9733;</button>
-                  <button type="button" data-star-field="taste" data-star-value="3">&#9733;</button>
-                  <button type="button" data-star-field="taste" data-star-value="4">&#9733;</button>
-                  <button type="button" data-star-field="taste" data-star-value="5">&#9733;</button>
-                </div>
-              </div>
-
-              <div class="admin-rating-line">
-                <div class="admin-rating-label">
-                  <strong>Value</strong>
-                  <span id="valueRatingText">0.0</span>
-                </div>
-
-                <div class="admin-star-buttons">
-                  <button type="button" data-star-field="value" data-star-value="1">&#9733;</button>
-                  <button type="button" data-star-field="value" data-star-value="2">&#9733;</button>
-                  <button type="button" data-star-field="value" data-star-value="3">&#9733;</button>
-                  <button type="button" data-star-field="value" data-star-value="4">&#9733;</button>
-                  <button type="button" data-star-field="value" data-star-value="5">&#9733;</button>
-                </div>
-              </div>
-
-              <div class="admin-rating-line">
-                <div class="admin-rating-label">
-                  <strong>Portion</strong>
-                  <span id="portionRatingText">0.0</span>
-                </div>
-
-                <div class="admin-star-buttons">
-                  <button type="button" data-star-field="portion" data-star-value="1">&#9733;</button>
-                  <button type="button" data-star-field="portion" data-star-value="2">&#9733;</button>
-                  <button type="button" data-star-field="portion" data-star-value="3">&#9733;</button>
-                  <button type="button" data-star-field="portion" data-star-value="4">&#9733;</button>
-                  <button type="button" data-star-field="portion" data-star-value="5">&#9733;</button>
-                </div>
-              </div>
-
-              <div class="admin-rating-line">
-                <div class="admin-rating-label">
-                  <strong>Wait Time</strong>
-                  <span id="waitRatingText">0.0</span>
-                </div>
-
-                <div class="admin-star-buttons">
-                  <button type="button" data-star-field="wait" data-star-value="1">&#9733;</button>
-                  <button type="button" data-star-field="wait" data-star-value="2">&#9733;</button>
-                  <button type="button" data-star-field="wait" data-star-value="3">&#9733;</button>
-                  <button type="button" data-star-field="wait" data-star-value="4">&#9733;</button>
-                  <button type="button" data-star-field="wait" data-star-value="5">&#9733;</button>
-                </div>
-              </div>
-            </section>
-
-            <div class="review-admin-form-grid two">
-              <label>
-                Best Time
-                <input id="editBestTime" type="text" maxlength="80" />
-              </label>
-
-              <label>
-                Photo URL
-                <input id="editPhotoUrl" type="text" maxlength="500" />
-              </label>
-            </div>
-
-            <section class="admin-tag-picker-section">
-              <div class="admin-tag-picker-title">
-                <h3>Review Tags</h3>
-                <p>Choose one or more tags.</p>
-              </div>
-
-              <div id="editTagChoices" class="admin-tag-picker"></div>
-            </section>
-
-            <label>
-              Review Text
-              <textarea id="editReviewText" rows="4" maxlength="500" required></textarea>
-            </label>
-
-            <p id="editReviewMessage" class="review-admin-form-message"></p>
-
-            <div class="review-admin-form-actions">
-              <button id="resetEditReviewBtn" type="button" class="review-admin-secondary-btn">
-                Reset
-              </button>
-
-              <button id="saveEditReviewBtn" type="submit" class="review-admin-primary-btn">
-                Save Changes
-              </button>
-            </div>
-          </form>
+          <button id="adminRefreshBtn" class="review-admin-primary-btn" type="button">
+            Refresh
+          </button>
         </div>
       </section>
-    </section>
-  </main>
 
-  <div id="deleteReviewModal" class="admin-delete-modal hidden">
-    <div class="admin-delete-backdrop"></div>
+      <section class="review-admin-metrics compact">
+        <article class="review-admin-metric-card">
+          <span>Total Reviews</span>
+          <strong id="adminTotalReviews">0</strong>
+        </article>
 
-    <section class="admin-delete-card">
-      <div class="admin-delete-preview">
-        <div id="deleteReviewImage" class="admin-delete-image">
-          No image
+        <article class="review-admin-metric-card">
+          <span>Average Rating</span>
+          <strong id="adminAverageRating">0.0</strong>
+        </article>
+
+        <article class="review-admin-metric-card">
+          <span>Helpful Clicks</span>
+          <strong id="adminHelpfulCount">0</strong>
+        </article>
+
+        <article class="review-admin-metric-card">
+          <span>Photo Reviews</span>
+          <strong id="adminPhotoCount">0</strong>
+        </article>
+      </section>
+
+      <section id="adminInsightsPanel" class="review-admin-insights hidden">
+        <article class="review-admin-panel">
+          <div class="review-admin-panel-title">
+            <div>
+              <h2>Rating Breakdown</h2>
+              <p>Pie chart grouped by review rating.</p>
+            </div>
+          </div>
+
+          <div id="adminRatingPie" class="review-admin-pie-area">Loading chart...</div>
+        </article>
+
+        <article class="review-admin-panel">
+          <div class="review-admin-panel-title">
+            <div>
+              <h2>Reviews by Stall</h2>
+              <p>Bar chart showing the busiest reviewed stalls.</p>
+            </div>
+          </div>
+
+          <div id="adminStallBars" class="review-admin-bar-area">Loading chart...</div>
+        </article>
+      </section>
+
+      <section class="review-admin-workspace">
+        <aside class="review-admin-list-shell">
+          <div class="review-admin-toolbar sticky">
+            <input id="adminSearchInput" type="text" placeholder="Search food, stall, reviewer" />
+
+            <select id="adminRatingFilter">
+              <option value="all">All ratings</option>
+              <option value="5">5 star group</option>
+              <option value="4">4 star group</option>
+              <option value="3">3 star group</option>
+              <option value="below3">Below 3</option>
+            </select>
+          </div>
+
+          <div class="review-admin-list-heading">
+            <h2>Reviews</h2>
+            <p id="adminStatusText">Loading reviews...</p>
+          </div>
+
+          <div id="adminReviewList" class="review-admin-list compact-list">Loading reviews...</div>
+        </aside>
+
+        <section class="review-admin-detail-shell">
+          <div id="selectedReviewEmpty" class="review-admin-empty-detail">
+            <h2>Select a review</h2>
+            <p>Choose a review from the left side to edit, delete, or mark it as helpful.</p>
+          </div>
+
+          <div id="selectedReviewEditor" class="review-admin-editor hidden">
+            <div class="review-admin-detail-top">
+              <div id="selectedReviewImage" class="review-admin-detail-image">No image</div>
+
+              <div class="review-admin-detail-title">
+                <p class="review-admin-eyebrow">Selected Review</p>
+                <h2 id="selectedReviewFoodName">Food item</h2>
+                <p id="selectedReviewMeta">Stall and food court</p>
+              </div>
+
+              <div class="review-admin-detail-actions">
+                <button
+                  id="adminHelpfulSelectedBtn"
+                  class="review-admin-secondary-btn"
+                  type="button"
+                >
+                  Add Helpful
+                </button>
+
+                <button id="adminDeleteSelectedBtn" class="review-admin-danger-btn" type="button">
+                  Delete Review
+                </button>
+              </div>
+            </div>
+
+            <form id="editReviewForm" class="review-admin-form no-scroll-form">
+              <input id="editReviewId" type="hidden" />
+
+              <input id="editRating" type="hidden" />
+              <input id="editTasteRating" type="hidden" />
+              <input id="editValueRating" type="hidden" />
+              <input id="editPortionRating" type="hidden" />
+              <input id="editWaitTimeRating" type="hidden" />
+              <input id="editReviewTags" type="hidden" />
+
+              <section class="admin-rating-list">
+                <div class="admin-rating-line overall">
+                  <div class="admin-rating-label">
+                    <strong>Overall</strong>
+                    <span id="overallRatingPreview">0.0</span>
+                  </div>
+
+                  <div id="overallRatingStars" class="admin-star-display"></div>
+                </div>
+
+                <div class="admin-rating-line">
+                  <div class="admin-rating-label">
+                    <strong>Taste</strong>
+                    <span id="tasteRatingText">0.0</span>
+                  </div>
+
+                  <div class="admin-star-buttons">
+                    <button type="button" data-star-field="taste" data-star-value="1">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="taste" data-star-value="2">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="taste" data-star-value="3">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="taste" data-star-value="4">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="taste" data-star-value="5">
+                      &#9733;
+                    </button>
+                  </div>
+                </div>
+
+                <div class="admin-rating-line">
+                  <div class="admin-rating-label">
+                    <strong>Value</strong>
+                    <span id="valueRatingText">0.0</span>
+                  </div>
+
+                  <div class="admin-star-buttons">
+                    <button type="button" data-star-field="value" data-star-value="1">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="value" data-star-value="2">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="value" data-star-value="3">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="value" data-star-value="4">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="value" data-star-value="5">
+                      &#9733;
+                    </button>
+                  </div>
+                </div>
+
+                <div class="admin-rating-line">
+                  <div class="admin-rating-label">
+                    <strong>Portion</strong>
+                    <span id="portionRatingText">0.0</span>
+                  </div>
+
+                  <div class="admin-star-buttons">
+                    <button type="button" data-star-field="portion" data-star-value="1">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="portion" data-star-value="2">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="portion" data-star-value="3">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="portion" data-star-value="4">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="portion" data-star-value="5">
+                      &#9733;
+                    </button>
+                  </div>
+                </div>
+
+                <div class="admin-rating-line">
+                  <div class="admin-rating-label">
+                    <strong>Wait Time</strong>
+                    <span id="waitRatingText">0.0</span>
+                  </div>
+
+                  <div class="admin-star-buttons">
+                    <button type="button" data-star-field="wait" data-star-value="1">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="wait" data-star-value="2">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="wait" data-star-value="3">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="wait" data-star-value="4">
+                      &#9733;
+                    </button>
+                    <button type="button" data-star-field="wait" data-star-value="5">
+                      &#9733;
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <div class="review-admin-form-grid two">
+                <label>
+                  Best Time
+                  <input id="editBestTime" type="text" maxlength="80" />
+                </label>
+
+                <label>
+                  Photo URL
+                  <input id="editPhotoUrl" type="text" maxlength="500" />
+                </label>
+              </div>
+
+              <section class="admin-tag-picker-section">
+                <div class="admin-tag-picker-title">
+                  <h3>Review Tags</h3>
+                  <p>Choose one or more tags.</p>
+                </div>
+
+                <div id="editTagChoices" class="admin-tag-picker"></div>
+              </section>
+
+              <label>
+                Review Text
+                <textarea id="editReviewText" rows="4" maxlength="500" required></textarea>
+              </label>
+
+              <p id="editReviewMessage" class="review-admin-form-message"></p>
+
+              <div class="review-admin-form-actions">
+                <button id="resetEditReviewBtn" type="button" class="review-admin-secondary-btn">
+                  Reset
+                </button>
+
+                <button id="saveEditReviewBtn" type="submit" class="review-admin-primary-btn">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="deleteReviewModal" class="admin-delete-modal hidden">
+      <div class="admin-delete-backdrop"></div>
+
+      <section class="admin-delete-card">
+        <div class="admin-delete-preview">
+          <div id="deleteReviewImage" class="admin-delete-image">No image</div>
+
+          <div>
+            <p class="review-admin-eyebrow">Delete Review</p>
+            <h2 id="deleteReviewTitle">Review title</h2>
+            <p id="deleteReviewMeta">Stall and food court</p>
+          </div>
         </div>
 
-        <div>
-          <p class="review-admin-eyebrow">Delete Review</p>
-          <h2 id="deleteReviewTitle">Review title</h2>
-          <p id="deleteReviewMeta">Stall and food court</p>
+        <p class="admin-delete-warning">
+          This action will remove the review and recalculate the connected menu item rating and
+          stall rating.
+        </p>
+
+        <div class="admin-delete-actions">
+          <button id="cancelDeleteReviewBtn" class="review-admin-secondary-btn" type="button">
+            Cancel
+          </button>
+
+          <button id="confirmDeleteReviewBtn" class="review-admin-danger-btn strong" type="button">
+            Delete Review
+          </button>
         </div>
-      </div>
+      </section>
+    </div>
 
-      <p class="admin-delete-warning">
-        This action will remove the review and recalculate the connected menu item rating and stall rating.
-      </p>
-
-      <div class="admin-delete-actions">
-        <button id="cancelDeleteReviewBtn" class="review-admin-secondary-btn" type="button">
-          Cancel
-        </button>
-
-        <button id="confirmDeleteReviewBtn" class="review-admin-danger-btn strong" type="button">
-          Delete Review
-        </button>
-      </div>
-    </section>
-  </div>
-
-  <script src="./review-admin.js"></script>
-</body>
+    <script src="./review-admin.js"></script>
+  </body>
 </html>
