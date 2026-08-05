@@ -103,7 +103,7 @@ const questions = [
       {
         label: 'Anything',
         value: 'any',
-        detail: 'Let QuickBite choose from all meals.',
+        detail: 'Let SP Eats choose from all meals.',
       },
     ],
   },
@@ -238,7 +238,7 @@ const questions = [
   {
     key: 'priority',
     title: 'What matters most?',
-    subtitle: 'Choose how QuickBite should rank your result.',
+    subtitle: 'Choose how SP Eats should rank your result.',
     options: [
       {
         label: 'Best match',

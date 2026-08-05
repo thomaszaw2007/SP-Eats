@@ -1,5 +1,5 @@
 // =========================================================
-// SP QuickBite - Welcome Page
+// SP Eats - Welcome Page
 // Handles: Hype Now popular meals, theme button placeholder
 // =========================================================
 

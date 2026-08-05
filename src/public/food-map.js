@@ -1,5 +1,5 @@
 // =========================================================
-// SP QuickBite - Food Court Map
+// SP Eats- Food Court Map
 // Handles: backend FC marker data + popular dishes preview
 // =========================================================
 
