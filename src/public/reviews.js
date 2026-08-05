@@ -57,6 +57,7 @@ const reviewFormState = {
   tags: [],
 };
 
+
 window.addEventListener('DOMContentLoaded', () => {
   initialiseReviewPage();
 });
@@ -206,6 +207,24 @@ function setupModals() {
       }
     });
   });
+
+document.addEventListener('click', (event) => {
+  const saveButton = event.target.closest('[data-review-save]');
+
+  if (!saveButton) {
+    return;
+  }
+
+  if (!selectedMealPreview) {
+    return;
+  }
+
+  const saveType = saveButton.dataset.reviewSave;
+
+  saveQuickBiteMeal(saveType, selectedMealPreview);
+
+  saveButton.textContent = 'Saved';
+});
 
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') {
@@ -979,21 +998,13 @@ function openMealPreview(review) {
         </div>
 
         <div class="meal-preview-actions">
-          <button
-            class="meal-preview-favourite"
-            type="button"
-            data-meal-preview-action="favourite"
-          >
-            Add to Favourite
-          </button>
+            <button type="button" data-review-save="favourite">
+                 Add to Favourite
+            </button>
 
-          <button
-            class="meal-preview-try-next"
-            type="button"
-            data-meal-preview-action="try-next"
-          >
-            Try Next
-          </button>
+            <button type="button" data-review-save="tryLater">
+                  Try Later
+            </button>
 
           <button
             class="meal-preview-store"
@@ -1343,4 +1354,54 @@ function escapeHtml(value) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
+}
+
+const QUICKBITE_FAVOURITE_MEALS_KEY = 'quickbiteFavouriteMeals';
+const QUICKBITE_TRY_LATER_MEALS_KEY = 'quickbiteTryLaterMeals';
+
+function saveQuickBiteMeal(type, meal) {
+  const key = type === 'tryLater'
+    ? QUICKBITE_TRY_LATER_MEALS_KEY
+    : QUICKBITE_FAVOURITE_MEALS_KEY;
+
+  const currentList = getQuickBiteSavedList(key);
+  const savedMeal = normaliseQuickBiteMeal(meal);
+
+  const exists = currentList.some((item) => {
+    return String(item.id) === String(savedMeal.id);
+  });
+
+  if (!exists) {
+    currentList.unshift(savedMeal);
+  }
+
+  localStorage.setItem(key, JSON.stringify(currentList.slice(0, 24)));
+  window.dispatchEvent(new Event('quickbiteSavedMealsUpdated'));
+}
+
+function getQuickBiteSavedList(key) {
+  try {
+    const data = JSON.parse(localStorage.getItem(key) || '[]');
+
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function normaliseQuickBiteMeal(meal) {
+  return {
+    id: String(meal.food_id || meal.foodId || meal.item_id || meal.id || meal.item_name || meal.name),
+    foodId: meal.food_id || meal.foodId || meal.item_id || meal.id || '',
+    stallId: meal.stall_id || meal.stallId || '',
+    foodCourtId: meal.foodcourt_id || meal.foodCourtId || '',
+    name: meal.item_name || meal.name || meal.food_name || 'Saved Meal',
+    stallName: meal.stall_name || meal.stallName || meal.stall || 'Campus Stall',
+    foodCourtName: meal.foodcourt_name || meal.foodCourtName || meal.food_court || 'SP Food Court',
+    imageUrl: meal.image_url || meal.imageUrl || meal.review_photo_url || '',
+    price: Number(meal.price || 0),
+    rating: Number(meal.item_rating || meal.rating || 0),
+    reviewCount: Number(meal.item_review_count || meal.review_count || meal.rating_count || 0),
+    category: meal.category || 'Meal',
+  };
 }

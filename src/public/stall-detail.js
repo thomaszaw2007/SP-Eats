@@ -1,6 +1,7 @@
 // =========================================================
-// SP QuickBite - Selected Stall Menu Page
-// Handles: compact stall hero, menu search/sort/category, dish modal, cart prep
+// SP Eats - Selected Stall Menu Page
+// Handles: stall hero, menu search/sort/category, dish modal, cart prep,
+// favourite meals, and try later meals.
 // =========================================================
 
 // ---------- HTML ELEMENTS ----------
@@ -22,23 +23,20 @@ const urlParams = new URLSearchParams(window.location.search);
 const stallId = urlParams.get('stall_id');
 const apiStallId = getApiStallId(stallId);
 
-function getApiStallId(id) {
-  if (!id) {
-    return null;
-  }
-
-  if (id.startsWith('stall_')) {
-    return String(Number(id.replace('stall_', '')));
-  }
-
-  return id;
-}
-
 let selectedStall = null;
 let menuItemsData = [];
 let selectedCategory = 'All';
 let selectedSearchQuery = '';
 let selectedSortOption = 'default';
+let latestModalItem = null;
+
+// ---------- STORAGE KEYS ----------
+const favouriteMealsKey = 'spEatsFavouriteMeals';
+const tryLaterMealsKey = 'spEatsTryLaterMeals';
+
+// These keep your old quiz/review saved data connected while moving to SP Eats.
+const oldFavouriteMealsKey = 'quickbiteFavouriteMeals';
+const oldTryLaterMealsKey = 'quickbiteTryLaterMeals';
 
 // =========================================================
 // PAGE LOAD
@@ -47,8 +45,9 @@ let selectedSortOption = 'default';
 window.addEventListener('DOMContentLoaded', () => {
   setupModalEvents();
   setupSearchAndSortEvents();
+  setupSaveMealEvents();
 
-if (!apiStallId) {
+  if (!apiStallId) {
     showNoStallSelected();
     return;
   }
@@ -105,12 +104,58 @@ function setupSearchAndSortEvents() {
   }
 }
 
+function setupSaveMealEvents() {
+  document.addEventListener(
+    'click',
+    (event) => {
+      const saveButton = event.target.closest('[data-save-meal]');
+
+      if (!saveButton) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const mealId = saveButton.dataset.foodId;
+      const saveType = saveButton.dataset.saveMeal;
+
+      const selectedMeal =
+        menuItemsData.find((item) => {
+          return String(getMenuItemId(item)) === String(mealId);
+        }) || latestModalItem;
+
+      if (!selectedMeal) {
+        return;
+      }
+
+      const isSaved = toggleMealForSpEats(saveType, selectedMeal);
+
+      saveButton.classList.toggle('saved', isSaved);
+      saveButton.setAttribute('aria-pressed', String(isSaved));
+
+      if (saveType === 'favourite') {
+        saveButton.setAttribute(
+          'title',
+          isSaved ? 'Remove from Favourite' : 'Save to Favourite'
+        );
+      } else {
+        saveButton.setAttribute(
+          'title',
+          isSaved ? 'Remove from Try Later' : 'Save to Try Later'
+        );
+      }
+    },
+    true
+  );
+}
+
 // =========================================================
 // API
 // =========================================================
 
 function getStallDetails() {
-    fetch('/api/stalls/' + apiStallId)
+  fetch('/api/stalls/' + apiStallId)
     .then((response) => response.json())
     .then((result) => {
       selectedStall = result.data;
@@ -158,15 +203,15 @@ function displayStallHeader(stall) {
   stallHeader.innerHTML = `
     <div class="teen-stall-hero">
       <div class="teen-stall-glow"></div>
-      <div class="teen-stall-bg-text">QUICKBITE</div>
+      <div class="teen-stall-bg-text">SP EATS</div>
 
       <div class="teen-stall-left">
-        <a href="./stalls.html" class="teen-back-link">← Back to Stalls</a>
+        <a href="./stalls.html" class="teen-back-link">Back to Stalls</a>
 
-        <h1>${stallName}</h1>
+        <h1>${escapeHtml(stallName)}</h1>
 
         <div class="teen-cuisine-line">
-          <span>${cuisine}</span>
+          <span>${escapeHtml(cuisine)}</span>
         </div>
       </div>
 
@@ -310,31 +355,33 @@ function sortMenuItems(menuItems) {
 
   if (selectedSortOption === 'name-asc') {
     sortedItems.sort((firstItem, secondItem) => {
-      return firstItem.item_name.localeCompare(secondItem.item_name);
+      return String(firstItem.item_name || '').localeCompare(
+        String(secondItem.item_name || '')
+      );
     });
   }
 
   if (selectedSortOption === 'price-asc') {
     sortedItems.sort((firstItem, secondItem) => {
-      return Number(firstItem.price) - Number(secondItem.price);
+      return Number(firstItem.price || 0) - Number(secondItem.price || 0);
     });
   }
 
   if (selectedSortOption === 'price-desc') {
     sortedItems.sort((firstItem, secondItem) => {
-      return Number(secondItem.price) - Number(firstItem.price);
+      return Number(secondItem.price || 0) - Number(firstItem.price || 0);
     });
   }
 
   if (selectedSortOption === 'popular-first') {
     sortedItems.sort((firstItem, secondItem) => {
-      return Number(secondItem.is_popular) - Number(firstItem.is_popular);
+      return Number(Boolean(secondItem.is_popular)) - Number(Boolean(firstItem.is_popular));
     });
   }
 
   if (selectedSortOption === 'available-first') {
     sortedItems.sort((firstItem, secondItem) => {
-      return Number(secondItem.is_available) - Number(firstItem.is_available);
+      return Number(Boolean(secondItem.is_available)) - Number(Boolean(firstItem.is_available));
     });
   }
 
@@ -377,9 +424,27 @@ function displayMenuItems(menuItems) {
   });
 }
 
+function getHeartIcon() {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true" class="menu-save-icon-svg">
+      <path d="M12 20.4 4.9 13.8C2.7 11.8 2 8.7 4 6.7c1.7-1.7 4.4-1.7 6.1 0L12 8.6l1.9-1.9c1.7-1.7 4.4-1.7 6.1 0 2 2 1.3 5.1-.9 7.1L12 20.4Z"
+        fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  `;
+}
+
+function getClockIcon() {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true" class="menu-save-icon-svg">
+      <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `;
+}
+
 function createMenuCard(item) {
   const card = document.createElement('article');
-  card.className = 'menu-card';
+  card.className = 'menu-card menu-card-modern';
 
   if (!item.is_available) {
     card.classList.add('unavailable');
@@ -388,45 +453,73 @@ function createMenuCard(item) {
   const itemRating = Number(item.item_rating || 0);
   const reviewCount = Number(item.item_review_count || 0);
   const itemCategory = item.category || 'Food';
-  const selectedItemId = item.item_id || item.food_id;
+  const selectedItemId = getMenuItemId(item);
+  const isFavouriteSaved = isMealSavedForSpEats('favourite', selectedItemId);
+const isTryLaterSaved = isMealSavedForSpEats('tryLater', selectedItemId);
 
   card.innerHTML = `
-    <div class="menu-image-wrap">
-      ${
-        item.image_url
-          ? `<img 
-              src="${item.image_url}" 
-              alt="${item.item_name}" 
-              class="menu-image"
-            />`
-          : `<div class="menu-image menu-image-placeholder">
-              <span>No image yet</span>
-            </div>`
-      }
+    <div class="menu-card-top">
+      <div class="menu-image-wrap modern">
+        ${
+          item.image_url
+            ? `<img
+                src="${escapeHtml(item.image_url)}"
+                alt="${escapeHtml(item.item_name || 'Menu item')}"
+                class="menu-image"
+              />`
+            : `<div class="menu-image menu-image-placeholder">
+                <span>No image yet</span>
+              </div>`
+        }
 
-      ${item.is_popular ? `<span class="popular-corner-badge">🔥 Popular</span>` : ''}
+        <div class="menu-save-actions">
+          <button
+  type="button"
+  class="menu-save-icon-btn favourite-btn ${isFavouriteSaved ? 'saved' : ''}"
+  data-save-meal="favourite"
+  data-food-id="${escapeHtml(String(selectedItemId))}"
+  title="${isFavouriteSaved ? 'Remove from Favourite' : 'Save to Favourite'}"
+  aria-label="Save to Favourite"
+  aria-pressed="${isFavouriteSaved ? 'true' : 'false'}"
+>
+  ${getHeartIcon()}
+</button>
 
-      <button class="menu-fav-btn" type="button" aria-label="Favourite food">
-        ♡
-      </button>
+<button
+  type="button"
+  class="menu-save-icon-btn trylater-btn ${isTryLaterSaved ? 'saved' : ''}"
+  data-save-meal="tryLater"
+  data-food-id="${escapeHtml(String(selectedItemId))}"
+  title="${isTryLaterSaved ? 'Remove from Try Later' : 'Save to Try Later'}"
+  aria-label="Save to Try Later"
+  aria-pressed="${isTryLaterSaved ? 'true' : 'false'}"
+>
+  ${getClockIcon()}
+</button>
+        </div>
+
+        ${item.is_popular ? `<span class="popular-corner-badge">Popular</span>` : ''}
+      </div>
     </div>
 
-    <div class="menu-card-body">
-      <div class="menu-card-title-row">
-        <h3>${item.item_name}</h3>
-        <span class="menu-category-pill">${itemCategory}</span>
+    <div class="menu-card-body modern">
+      <div class="menu-card-title-row modern">
+        <h3>${escapeHtml(item.item_name || 'Untitled Item')}</h3>
+        <span class="menu-category-pill">${escapeHtml(itemCategory)}</span>
       </div>
 
-      <div class="menu-card-rating-row">
+      <div class="menu-card-rating-row modern">
         <span class="menu-stars">★★★★★</span>
         <strong>${formatRating(itemRating)}</strong>
         <span>(${reviewCount})</span>
       </div>
 
-      <div class="menu-card-bottom-row">
-        <p class="menu-price">$${formatPrice(item.price)}</p>
+      <div class="menu-card-bottom-row modern">
+        <div class="menu-price-block">
+          <p class="menu-price">$${formatPrice(item.price)}</p>
+        </div>
 
-        <button class="menu-add-btn" type="button" aria-label="Add food">
+        <button class="menu-add-btn modern" type="button" aria-label="Add food">
           +
         </button>
       </div>
@@ -437,38 +530,20 @@ function createMenuCard(item) {
     openMenuItemDetails(selectedItemId);
   });
 
-  const favouriteButton = card.querySelector('.menu-fav-btn');
-  favouriteButton.addEventListener('click', (event) => {
-    event.stopPropagation();
-    favouriteButton.classList.toggle('active');
-    favouriteButton.textContent = favouriteButton.classList.contains('active') ? '♥' : '♡';
-  });
-
   const addButton = card.querySelector('.menu-add-btn');
-  addButton.addEventListener('click', (event) => {
-    event.stopPropagation();
-    prepareCartItem(selectedItemId);
-  });
+
+  if (addButton) {
+    addButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      prepareCartItem(selectedItemId);
+    });
+  }
 
   return card;
 }
 
-function createMenuChips(item) {
-  let chips = `<span class="menu-chip category-chip">${item.category}</span>`;
-
-  if (selectedStall && selectedStall.is_halal) {
-    chips += `<span class="menu-chip halal-chip">Halal</span>`;
-  }
-
-  if ((selectedStall && selectedStall.is_vegetarian) || item.category === 'Vegetarian') {
-    chips += `<span class="menu-chip veg-chip">Vegetarian</span>`;
-  }
-
-  if ((selectedStall && selectedStall.is_vegan) || item.category === 'Vegan') {
-    chips += `<span class="menu-chip veg-chip">Vegan</span>`;
-  }
-
-  return chips;
+function getMenuItemId(item) {
+  return item.item_id || item.food_id || item.id;
 }
 
 // =========================================================
@@ -496,6 +571,7 @@ function openMenuItemDetails(itemId) {
         return;
       }
 
+      latestModalItem = result.data;
       displayMenuItemDetails(result.data);
       saveRecentlyViewedMenuItem(result.data);
     })
@@ -506,27 +582,27 @@ function openMenuItemDetails(itemId) {
 }
 
 function displayMenuItemDetails(item) {
-const isUnavailable = item.is_available === false;
-const stallClosed = item.opening_status === 'closed';
-const disableAddButton = isUnavailable || stallClosed;
-const selectedModalItemId = item.item_id || item.food_id;
+  const isUnavailable = item.is_available === false;
+  const stallClosed = item.opening_status === 'closed';
+  const disableAddButton = isUnavailable || stallClosed;
+  const selectedModalItemId = getMenuItemId(item);
 
   menuItemModalContent.innerHTML = `
     <div class="qb-dish-modal">
       <div class="qb-dish-image-panel">
-      ${
-        item.image_url
-          ? `<img
-              src="${item.image_url}"
-              alt="${item.item_name}"
-              class="qb-dish-image"
-            />`
-          : `<div class="qb-dish-image qb-dish-image-placeholder">
-              <span>No image yet</span>
-            </div>`
-      }
+        ${
+          item.image_url
+            ? `<img
+                src="${escapeHtml(item.image_url)}"
+                alt="${escapeHtml(item.item_name || 'Menu item')}"
+                class="qb-dish-image"
+              />`
+            : `<div class="qb-dish-image qb-dish-image-placeholder">
+                <span>No image yet</span>
+              </div>`
+        }
 
-        ${item.is_popular ? `<span class="qb-popular-badge">🔥 Popular</span>` : ''}
+        ${item.is_popular ? `<span class="qb-popular-badge">Popular</span>` : ''}
       </div>
 
       <div class="qb-dish-details-panel">
@@ -534,7 +610,7 @@ const selectedModalItemId = item.item_id || item.food_id;
 
         <div class="qb-dish-title-row">
           <div>
-            <h2>${item.item_name}</h2>
+            <h2>${escapeHtml(item.item_name || 'Untitled Item')}</h2>
 
             <div class="qb-status-line">
               ${
@@ -543,19 +619,19 @@ const selectedModalItemId = item.item_id || item.food_id;
                   : `<span class="qb-status-badge open">Available</span>`
               }
 
-              <span>${item.category}</span>
+              <span>${escapeHtml(item.category || 'Food')}</span>
             </div>
           </div>
         </div>
 
         ${
           item.variation && item.variation !== 'None'
-            ? `<p class="qb-variation">Variation: ${item.variation}</p>`
+            ? `<p class="qb-variation">Variation: ${escapeHtml(item.variation)}</p>`
             : ''
         }
 
         <p class="qb-dish-description">
-          ${item.item_description}
+          ${escapeHtml(item.item_description || item.description || 'No description available.')}
         </p>
 
         <div class="qb-rating-row">
@@ -565,41 +641,41 @@ const selectedModalItemId = item.item_id || item.food_id;
         </div>
 
         <div class="qb-macro-row">
-          <span class="qb-macro ${getLevelClass(item.carb_level)}">${item.carb_level}</span>
-          <span class="qb-macro ${getLevelClass(item.protein_level)}">${item.protein_level}</span>
-          <span class="qb-macro ${getLevelClass(item.fat_level)}">${item.fat_level}</span>
-          <span class="qb-macro ${getLevelClass(item.sugar_level)}">${item.sugar_level} Sugar</span>
+          <span class="qb-macro ${getLevelClass(item.carb_level)}">${escapeHtml(item.carb_level || 'Medium carb')}</span>
+          <span class="qb-macro ${getLevelClass(item.protein_level)}">${escapeHtml(item.protein_level || 'Medium protein')}</span>
+          <span class="qb-macro ${getLevelClass(item.fat_level)}">${escapeHtml(item.fat_level || 'Medium fat')}</span>
+          <span class="qb-macro ${getLevelClass(item.sugar_level)}">${escapeHtml(item.sugar_level || 'Normal')} Sugar</span>
         </div>
 
         <div class="qb-meta-grid">
           <div class="qb-meta-card">
             <p>Calories</p>
-            <strong>${item.calories} kcal</strong>
+            <strong>${Number(item.calories || 0)} kcal</strong>
           </div>
 
           <div class="qb-meta-card">
             <p>Carb Level</p>
-            <strong>${item.carb_level}</strong>
+            <strong>${escapeHtml(item.carb_level || 'Medium')}</strong>
           </div>
 
           <div class="qb-meta-card">
             <p>Protein</p>
-            <strong>${item.protein_level}</strong>
+            <strong>${escapeHtml(item.protein_level || 'Medium')}</strong>
           </div>
 
           <div class="qb-meta-card">
             <p>Sugar</p>
-            <strong>${item.sugar_level}</strong>
+            <strong>${escapeHtml(item.sugar_level || 'Normal')}</strong>
           </div>
 
           <div class="qb-meta-card">
             <p>Spice</p>
-            <strong>${item.spice_level}</strong>
+            <strong>${escapeHtml(item.spice_level || 'Not spicy')}</strong>
           </div>
 
           <div class="qb-meta-card">
             <p>Portion</p>
-            <strong>${item.portion_size}</strong>
+            <strong>${escapeHtml(item.portion_size || 'Regular')}</strong>
           </div>
         </div>
 
@@ -607,7 +683,7 @@ const selectedModalItemId = item.item_id || item.food_id;
           <p>Allergens</p>
 
           <div class="qb-allergen-tags">
-            <span>${item.allergen_info}</span>
+            <span>${escapeHtml(item.allergen_info || 'Check with stall before ordering.')}</span>
           </div>
         </div>
 
@@ -615,8 +691,8 @@ const selectedModalItemId = item.item_id || item.food_id;
           <p>Available at</p>
 
           <div>
-            <span>${item.stall_name}</span>
-            <span>${item.food_court}</span>
+            <span>${escapeHtml(item.stall_name || selectedStall?.stall_name || 'Selected Stall')}</span>
+            <span>${escapeHtml(item.food_court || item.foodcourt_name || selectedStall?.food_court || 'SP Food Court')}</span>
           </div>
         </div>
 
@@ -626,13 +702,33 @@ const selectedModalItemId = item.item_id || item.food_id;
             <strong>$${formatPrice(item.price)}</strong>
           </div>
 
-          ${
-            disableAddButton
-              ? `<button class="qb-add-cart disabled" disabled>Unavailable</button>`
-              : `<button class="qb-add-cart" onclick="prepareCartItem('${selectedModalItemId}')">
-                  Add to Cart
-                </button>`
-          }
+          <div class="sp-eats-modal-actions">
+            <button
+              type="button"
+              class="sp-eats-save-btn"
+              data-save-meal="favourite"
+              data-food-id="${escapeHtml(String(selectedModalItemId))}"
+            >
+              Add Favourite
+            </button>
+
+            <button
+              type="button"
+              class="sp-eats-save-btn"
+              data-save-meal="tryLater"
+              data-food-id="${escapeHtml(String(selectedModalItemId))}"
+            >
+              Try Later
+            </button>
+
+            ${
+              disableAddButton
+                ? `<button class="qb-add-cart disabled" disabled>Unavailable</button>`
+                : `<button class="qb-add-cart" onclick="prepareCartItem('${escapeHtml(String(selectedModalItemId))}')">
+                    Add to Cart
+                  </button>`
+            }
+          </div>
         </div>
       </div>
     </div>
@@ -675,12 +771,130 @@ function getLevelClass(value) {
 }
 
 // =========================================================
+// SAVED MEALS
+// =========================================================
+
+function saveMealForSpEats(type, meal) {
+  const saveKeys = getMealSaveKeys(type);
+  const savedMeal = normaliseSavedMeal(meal);
+
+  saveKeys.forEach((key) => {
+    const currentList = getSavedMealList(key);
+
+    const exists = currentList.some((item) => {
+      return String(item.id) === String(savedMeal.id);
+    });
+
+    if (!exists) {
+      currentList.unshift(savedMeal);
+    }
+
+    localStorage.setItem(key, JSON.stringify(currentList.slice(0, 24)));
+  });
+
+  window.dispatchEvent(new Event('spEatsSavedMealsUpdated'));
+  window.dispatchEvent(new Event('quickbiteSavedMealsUpdated'));
+}
+
+function toggleMealForSpEats(type, meal) {
+  const savedMeal = normaliseSavedMeal(meal);
+  const alreadySaved = isMealSavedForSpEats(type, savedMeal.id);
+
+  if (alreadySaved) {
+    removeMealForSpEats(type, savedMeal.id);
+    return false;
+  }
+
+  saveMealForSpEats(type, meal);
+  return true;
+}
+
+function isMealSavedForSpEats(type, mealId) {
+  const saveKeys = getMealSaveKeys(type);
+
+  return saveKeys.some((key) => {
+    const currentList = getSavedMealList(key);
+
+    return currentList.some((meal) => {
+      const savedMeal = normaliseSavedMeal(meal);
+      return String(savedMeal.id) === String(mealId);
+    });
+  });
+}
+
+function removeMealForSpEats(type, mealId) {
+  const saveKeys = getMealSaveKeys(type);
+
+  saveKeys.forEach((key) => {
+    const currentList = getSavedMealList(key);
+
+    const updatedList = currentList.filter((meal) => {
+      const savedMeal = normaliseSavedMeal(meal);
+      return String(savedMeal.id) !== String(mealId);
+    });
+
+    localStorage.setItem(key, JSON.stringify(updatedList.slice(0, 24)));
+  });
+
+  window.dispatchEvent(new Event('spEatsSavedMealsUpdated'));
+  window.dispatchEvent(new Event('quickbiteSavedMealsUpdated'));
+}
+
+function getMealSaveKeys(type) {
+  if (type === 'tryLater') {
+    return [tryLaterMealsKey, oldTryLaterMealsKey];
+  }
+
+  return [favouriteMealsKey, oldFavouriteMealsKey];
+}
+
+function getSavedMealList(key) {
+  try {
+    const data = JSON.parse(localStorage.getItem(key) || '[]');
+
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function normaliseSavedMeal(meal) {
+  const stallName =
+    meal.stall_name ||
+    meal.stallName ||
+    selectedStall?.stall_name ||
+    'SP Eats Stall';
+
+  const foodCourtName =
+    meal.foodcourt_name ||
+    meal.foodCourtName ||
+    meal.food_court ||
+    selectedStall?.food_court ||
+    'SP Food Court';
+
+  return {
+    id: String(meal.food_id || meal.foodId || meal.item_id || meal.id || meal.item_name || meal.name),
+    foodId: meal.food_id || meal.foodId || meal.item_id || meal.id || '',
+    stallId: meal.stall_id || meal.stallId || apiStallId || '',
+    foodCourtId: meal.foodcourt_id || meal.foodCourtId || selectedStall?.foodcourt_id || '',
+    name: meal.item_name || meal.name || meal.food_name || 'Saved Meal',
+    stallName,
+    foodCourtName,
+    imageUrl: meal.image_url || meal.imageUrl || '',
+    price: Number(meal.price || 0),
+    rating: Number(meal.item_rating || meal.rating || 0),
+    reviewCount: Number(meal.item_review_count || meal.review_count || meal.rating_count || 0),
+    category: meal.category || 'Meal',
+  };
+}
+
+// =========================================================
 // CART PREPARATION
 // =========================================================
 
 function prepareCartItem(itemId) {
   const selectedItem = menuItemsData.find((item) => {
-    return String(item.item_id || item.food_id) === String(itemId);
+    return String(getMenuItemId(item)) === String(itemId);
   });
 
   if (!selectedItem) {
@@ -690,8 +904,8 @@ function prepareCartItem(itemId) {
 
   const cartItem = {
     item_id: selectedItem.item_id || selectedItem.food_id,
-    stall_id: selectedItem.stall_id,
-    stall_name: selectedItem.stall_name,
+    stall_id: selectedItem.stall_id || apiStallId,
+    stall_name: selectedItem.stall_name || selectedStall?.stall_name,
     item_name: selectedItem.item_name,
     variation: selectedItem.variation,
     price: selectedItem.price,
@@ -702,6 +916,7 @@ function prepareCartItem(itemId) {
   console.log('Cart item prepared:', cartItem);
   alert(`${selectedItem.item_name} added to cart.`);
 }
+
 // =========================================================
 // RECENTLY VIEWED
 // =========================================================
@@ -710,18 +925,18 @@ function saveRecentlyViewedMenuItem(item) {
   let recentlyViewedItems = getRecentlyViewedMenuItems();
 
   recentlyViewedItems = recentlyViewedItems.filter((recentItem) => {
-    return recentItem.item_id !== item.item_id;
+    return String(recentItem.item_id) !== String(item.item_id || item.food_id);
   });
 
   recentlyViewedItems.unshift({
-    item_id: item.item_id,
+    item_id: item.item_id || item.food_id,
     item_name: item.item_name,
-    item_description: item.item_description,
+    item_description: item.item_description || item.description,
     price: item.price,
     category: item.category,
     image_url: item.image_url,
     stall_name: item.stall_name,
-    food_court: item.food_court,
+    food_court: item.food_court || item.foodcourt_name,
     is_available: item.is_available,
   });
 
@@ -749,7 +964,7 @@ function saveRecentlyViewedStall(stall) {
   let recentlyViewed = getRecentlyViewedStalls();
 
   recentlyViewed = recentlyViewed.filter((recentStall) => {
-    return recentStall.stall_id !== stall.stall_id;
+    return String(recentStall.stall_id) !== String(stall.stall_id);
   });
 
   recentlyViewed.unshift({
@@ -787,14 +1002,35 @@ function getRecentlyViewedStalls() {
 // HELPERS
 // =========================================================
 
+function getApiStallId(id) {
+  if (!id) {
+    return null;
+  }
+
+  if (String(id).startsWith('stall_')) {
+    return String(Number(String(id).replace('stall_', '')));
+  }
+
+  return String(id);
+}
+
 function formatPrice(price) {
-  return Number(price).toFixed(2);
+  return Number(price || 0).toFixed(2);
 }
 
 function formatRating(rating) {
   return Number(rating || 0).toFixed(1);
 }
 
-// Allow inline onclick handlers to work
+function escapeHtml(value) {
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+// Allow inline onclick handlers to work.
 window.prepareCartItem = prepareCartItem;
 window.closeMenuItemModal = closeMenuItemModal;

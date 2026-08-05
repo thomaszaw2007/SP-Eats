@@ -1,70 +1,125 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>What Should I Eat | SP QuickBite</title>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <body class="quiz-decision-page">
-    <nav class="home-navbar quiz-decision-navbar">
-      <a href="./index.html" class="home-logo">
-        <span class="home-logo-badge">SP</span>
-        <span>QuickBite</span>
-      </a>
+  <title>What Should I Eat | SP QuickBite</title>
 
-      <div class="home-nav-links">
-        <a href="./index.html">Home</a>
-        <a href="./stalls.html">Stalls</a>
-        <a href="./food-map.html">Map</a>
-        <a href="./reviews.html">Reviews</a>
-        <a href="./quiz.html" class="active">Quiz</a>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="qclean-body">
+  <nav class="home-navbar">
+    <a href="./index.html" class="home-logo">SP QuickBite</a>
+
+    <div class="home-nav-links">
+      <a href="./index.html">Home</a>
+      <a href="./stalls.html">Stalls</a>
+      <a href="./food-map.html">Map</a>
+      <a href="./reviews.html">Reviews</a>
+      <a href="./quiz.html" class="active">Quiz</a>
+    </div>
+  </nav>
+
+  <header class="qclean-hero">
+    <span>Smart Food Decision Helper</span>
+    <h1>What Should I Eat?</h1>
+    <p>
+      Answer a quick student food quiz. QuickBite will match you with real dishes from your stalls,
+      ratings, review points, prices, and food preferences.
+    </p>
+  </header>
+
+  <main class="qclean-page">
+    <section id="quizSection" class="qclean-quiz-section">
+      <div id="progressDots" class="qclean-progress-dots"></div>
+
+      <article class="qclean-question-card">
+        <p class="qclean-question-number">
+          Question <span id="currentQuestionNumber">1</span> of 7
+        </p>
+
+        <h2 id="questionTitle">Loading question</h2>
+        <p id="questionSubtitle">Choose the option that fits you best today.</p>
+
+        <div id="questionOptions" class="qclean-option-list"></div>
+
+        <div class="qclean-question-actions">
+          <button id="backQuestionBtn" class="qclean-soft-btn" type="button">
+            Back
+          </button>
+
+          <button id="nextQuestionBtn" class="qclean-dark-btn" type="button">
+            Next
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <section id="resultSection" class="qclean-result-section hidden">
+      <div class="qclean-personality-pill">
+        <span>Your food personality</span>
+        <strong id="foodPersonalityText">The Adventurer</strong>
       </div>
-    </nav>
 
-    <header class="decision-hero">
-      <span>Smart Food Decision Helper</span>
-      <h1>What Should I Eat</h1>
-    </header>
+      <p id="resultSubline" class="qclean-subline">
+        Your match is based on real dish data and review points.
+      </p>
 
-    <main class="decision-main">
-      <section class="decision-quiz-area">
-        <div id="quizProgressDots" class="decision-progress-dots"></div>
+      <h2 class="qclean-result-title">Your Perfect Match</h2>
 
-        <article class="decision-question-card">
-          <p id="quizStepText" class="decision-step-text">Question 1 of 7</p>
-          <h2 id="quizQuestionTitle">What is your budget?</h2>
+      <article id="mainRecommendation" class="qclean-main-card">
+        <div class="qclean-empty-state">
+          Loading your best match...
+        </div>
+      </article>
 
-          <div id="quizAnswerList" class="decision-answer-list"></div>
+      <div class="qclean-other-heading">
+        <h3>Close Matches</h3>
+       <span id="loadedMealCount" class="qclean-hidden-count"></span>
+      </div>
 
-          <div class="decision-question-actions">
-            <button id="quizBackBtn" type="button">Back</button>
-            <button id="quizRestartBtn" type="button">Restart</button>
-          </div>
-        </article>
-      </section>
+      <div id="otherOptions" class="qclean-other-grid"></div>
 
-      <section class="decision-pattern-section">
-        <h2>Your Food Patterns</h2>
+      <div class="qclean-result-actions">
+        <button id="tryAgainBtn" class="qclean-dark-btn" type="button">
+          Try Again
+        </button>
+      </div>
+    </section>
 
-        <div id="quizPatternCards" class="decision-pattern-grid"></div>
-      </section>
+    <section class="qclean-pattern-section">
+      <h2>Your Food Patterns</h2>
+      <div id="patternCards" class="qclean-pattern-grid"></div>
+    </section>
 
-      <section class="decision-recommendation-section">
-        <div class="decision-section-title">
-          <h2>Based on Your Pattern</h2>
-          <span id="quizResultCount">Loading...</span>
+    <section class="qclean-saved-section">
+      <div class="qclean-saved-heading">
+        <div>
+          <p>Saved Meals</p>
+          <h2>Favourite</h2>
         </div>
 
-        <div id="quizRecommendationsGrid" class="decision-recommendation-grid">
-          <div class="decision-empty-card">
-            Loading recommendations...
-          </div>
-        </div>
-      </section>
-    </main>
+        <span id="favouriteCount">0 saved</span>
+      </div>
 
-    <script src="./quiz.js"></script>
-  </body>
+      <div id="favouriteSlider" class="qclean-saved-grid"></div>
+    </section>
+
+    <section class="qclean-saved-section">
+      <div class="qclean-saved-heading">
+        <div>
+          <p>Saved Meals</p>
+          <h2>Try Later</h2>
+        </div>
+
+        <span id="tryLaterCount">0 saved</span>
+      </div>
+
+      <div id="tryLaterSlider" class="qclean-saved-grid"></div>
+    </section>
+  </main>
+
+  <script src="./quiz.js"></script>
+</body>
 </html>

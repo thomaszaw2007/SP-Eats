@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Stall Menu | SP QuickBite</title>
+    <title>Stall Menu | SP Eats</title>
 
     <link rel="stylesheet" href="./style.css" />
   </head>
@@ -13,22 +13,22 @@
     <nav class="navbar">
       <div class="logo">
         <span class="sp-badge">SP</span>
-        <span>QuickBite</span>
+        <span>Eats</span>
       </div>
 
       <div class="nav-links">
         <a href="./index.html">Home</a>
         <a href="./stalls.html" class="active">Browse Stalls</a>
+        <a href="./reviews.html">Reviews</a>
+        <a href="./quiz.html">Quiz</a>
       </div>
     </nav>
 
     <main class="page-container">
-      <!-- Stall information loads here -->
       <section id="stallHeader" class="stall-detail-header">
         <p>Loading stall details...</p>
       </section>
 
-      <!-- Menu section -->
       <section class="stall-menu-section">
         <div class="stall-menu-tools">
           <div class="stall-menu-search-box">
@@ -38,7 +38,7 @@
               <input
                 type="text"
                 id="stallMenuSearch"
-                placeholder="Search food name, category, description..."
+                placeholder="Search food name..."
               />
 
               <button id="clearStallMenuSearchBtn" type="button">
@@ -73,16 +73,13 @@
       </section>
     </main>
 
-    <!-- Menu item details modal -->
     <div id="menuItemModal" class="menu-modal-overlay hidden">
       <div class="menu-modal">
         <button id="closeMenuModalBtn" class="menu-modal-close" type="button">
           ×
         </button>
 
-        <div id="menuItemModalContent">
-          <!-- Menu item details load here -->
-        </div>
+        <div id="menuItemModalContent"></div>
       </div>
     </div>
 
