@@ -653,23 +653,26 @@ module.exports.selectReviewSummary = (callback) => {
   `;
 
   const ratingBreakdownSql = `
-    SELECT
-      CASE
-        WHEN "rating" >= 4 THEN '4★+ Good'
-        WHEN "rating" >= 3 THEN '3★+ Okay'
-        ELSE 'Below 3★ Needs Improvement'
-      END AS rating_group,
-      COUNT(*)::INT AS review_count
-    FROM "Reviews"
-    GROUP BY rating_group
-    ORDER BY
-      CASE
-        WHEN rating_group = '4★+ Good' THEN 1
-        WHEN rating_group = '3★+ Okay' THEN 2
-        ELSE 3
-      END;
-  `;
-
+        SELECT
+          rating_group,
+          COUNT(*)::INT AS review_count
+        FROM (
+          SELECT
+            CASE
+              WHEN "rating" >= 4 THEN '4★+ Good'
+              WHEN "rating" >= 3 THEN '3★+ Okay'
+              ELSE 'Below 3★ Needs Improvement'
+            END AS rating_group
+          FROM "Reviews"
+        ) AS grouped_reviews
+        GROUP BY rating_group
+        ORDER BY
+          CASE
+            WHEN rating_group = '4★+ Good' THEN 1
+            WHEN rating_group = '3★+ Okay' THEN 2
+            ELSE 3
+          END;
+      `;
   pool.query(summarySql, (summaryError, summaryResult) => {
     if (summaryError) {
       callback(summaryError, null);

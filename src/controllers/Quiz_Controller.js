@@ -44,18 +44,33 @@ function getBooleanValue(value, fallback) {
   return fallback;
 }
 
+function getFoodCourtValue(value) {
+  const foodCourt = cleanText(value || 'all');
+
+  if (['all', 'any'].includes(getLowerText(foodCourt))) {
+    return 'all';
+  }
+
+  return foodCourt;
+}
+
 function getQuizFilters(req) {
   const source = req.method === 'POST' ? req.body : req.query;
 
   return {
     search: cleanText(source.search),
-    foodCourt: cleanText(source.foodCourt || source.food_court || 'all'),
+    foodCourt: getFoodCourtValue(source.foodCourt || source.food_court),
     category: cleanText(source.category || 'all'),
     budget: getAllowedValue(source.budget, ['any', 'low', 'medium', 'high'], 'any'),
     time: getAllowedValue(source.time, ['any', 'quick', 'normal'], 'any'),
     mood: getAllowedValue(
       source.mood,
       ['any', 'comfort', 'healthy', 'filling', 'spicy', 'study', 'safe'],
+      'any',
+    ),
+    craving: getAllowedValue(
+      source.craving,
+      ['any', 'rice', 'noodles', 'chicken', 'asian', 'western', 'drink'],
       'any',
     ),
     spice: getAllowedValue(source.spice, ['any', 'not-spicy', 'mild', 'spicy'], 'any'),
@@ -344,6 +359,28 @@ function applyMoodScore(result, item, filters) {
   }
 }
 
+function applyCravingScore(result, item, filters) {
+  if (filters.craving === 'any') {
+    return;
+  }
+
+  const foodText = getCombinedFoodText(item);
+  const cravingKeywords = {
+    rice: ['rice', 'don', 'bowl', 'porridge'],
+    noodles: ['noodle', 'noodles', 'ban mian', 'ramen', 'mee', 'udon', 'laksa'],
+    chicken: ['chicken', 'katsu', 'cutlet', 'poultry'],
+    asian: ['korean', 'japanese', 'hainanese', 'bento', 'bibimbap', 'curry', 'asian'],
+    western: ['western', 'sandwich', 'toast', 'pasta', 'burger', 'wrap', 'cafe'],
+    drink: ['drink', 'latte', 'tea', 'coffee', 'juice', 'smoothie', 'beverage'],
+  };
+
+  if (includesAny(foodText, cravingKeywords[filters.craving] || [])) {
+    addScore(result, 36, `Matches your ${filters.craving} craving.`);
+  } else {
+    addScore(result, -8, `Does not strongly match your ${filters.craving} craving.`);
+  }
+}
+
 function applySpiceScore(result, item, filters) {
   if (filters.spice === 'any') {
     return;
@@ -399,7 +436,9 @@ function applyQualityScore(result, item) {
   const reviewCount = Number(item.item_review_count || 0);
   const orderCount = Number(item.order_count || 0);
 
-  addScore(result, rating * 5, 'Uses real menu rating data.');
+  if (rating > 0) {
+    addScore(result, rating * 5, 'Uses real menu rating data.');
+  }
 
   if (reviewCount >= 40) {
     addScore(result, 6, 'Has enough student review data.');
@@ -423,6 +462,7 @@ function scoreMenuItem(item, filters) {
 
   applyBudgetScore(result, item, filters);
   applyTimeScore(result, item, filters);
+  applyCravingScore(result, item, filters);
   applyMoodScore(result, item, filters);
   applySpiceScore(result, item, filters);
   applyDietaryScore(result, item, filters);

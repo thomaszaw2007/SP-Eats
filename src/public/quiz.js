@@ -23,10 +23,11 @@ const tryLaterSlider = document.getElementById('tryLaterSlider');
 const favouriteCount = document.getElementById('favouriteCount');
 const tryLaterCount = document.getElementById('tryLaterCount');
 
-const FAVOURITE_KEY = 'quickbiteFavouriteMeals';
-const TRY_LATER_KEY = 'quickbiteTryLaterMeals';
+const FAVOURITE_KEY = 'spEatsFavouriteMeals';
+const TRY_LATER_KEY = 'spEatsTryLaterMeals';
 
 const LEGACY_FAVOURITE_KEYS = [
+  'quickbiteFavouriteMeals',
   'qbqFavouriteMeals',
   'sqFavouriteMeals',
   'reviewFavouriteMeals',
@@ -34,6 +35,7 @@ const LEGACY_FAVOURITE_KEYS = [
 ];
 
 const LEGACY_TRY_LATER_KEYS = [
+  'quickbiteTryLaterMeals',
   'qbqTryLaterMeals',
   'sqTryLaterMeals',
   'reviewTryLaterMeals',
@@ -288,7 +290,7 @@ function initialiseQuiz() {
   renderQuestion();
   renderSavedMeals();
   renderDefaultPatternCards();
-  loadMealsFromMenu();
+  loadedMealCount.textContent = 'Quiz ready';
 }
 
 function setupEvents() {
@@ -541,19 +543,28 @@ async function showResult() {
   nextQuestionBtn.disabled = true;
   nextQuestionBtn.textContent = 'Matching...';
 
-  if (allMeals.length === 0) {
-    await loadMealsFromMenu();
+  try {
+    const recommendationResult = await loadQuizRecommendations();
+    currentRecommendations = recommendationResult.recommendations;
+    allMeals = currentRecommendations;
+    loadedMealCount.textContent = `${recommendationResult.totalCandidates} meals checked`;
+  } catch (error) {
+    console.error('Quiz recommendation API failed, using the local fallback:', error);
+
+    if (allMeals.length === 0) {
+      await loadMealsFromMenu();
+    }
+
+    currentRecommendations = buildQuizRecommendations(allMeals);
   }
 
   nextQuestionBtn.disabled = false;
   nextQuestionBtn.textContent = 'Show Result';
 
-  if (allMeals.length === 0) {
+  if (currentRecommendations.length === 0) {
     renderNoMealsFound();
     return;
   }
-
-  currentRecommendations = buildQuizRecommendations(allMeals);
 
   quizSection.classList.add('hidden');
   resultSection.classList.remove('hidden');
@@ -565,6 +576,82 @@ async function showResult() {
     behavior: 'smooth',
     block: 'start',
   });
+}
+
+async function loadQuizRecommendations() {
+  const response = await fetch('/api/quiz/recommendations', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(buildQuizApiPayload()),
+  });
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Unable to load quiz recommendations.');
+  }
+
+  const recommendations = extractArray(result).map((item) => {
+    const meal = normaliseMeal(item, item);
+
+    return {
+      ...meal,
+      matchPercent: Math.max(12, Math.min(98, Number(item.match_score || 0))),
+      reasons: Array.isArray(item.match_reasons) ? item.match_reasons : [],
+      studentTip: buildStudentTip(meal, Number(item.match_score || 0)),
+    };
+  });
+
+  return {
+    recommendations,
+    totalCandidates: Number(result.total_candidates || recommendations.length),
+  };
+}
+
+function buildQuizApiPayload() {
+  const budgetMap = {
+    budget: 'low',
+    standard: 'medium',
+    flexible: 'high',
+  };
+  const timeMap = {
+    rush: 'quick',
+    normal: 'normal',
+    relaxed: 'any',
+  };
+  const spiceMap = {
+    none: 'not-spicy',
+    mild: 'mild',
+    spicy: 'spicy',
+    any: 'any',
+  };
+  const moodMap = {
+    filling: 'filling',
+    light: 'healthy',
+    protein: 'filling',
+    comfort: 'comfort',
+    lowSugar: 'healthy',
+    any: 'any',
+  };
+  const sortMap = {
+    match: 'best-match',
+    rating: 'rating',
+    price: 'price-low',
+    popular: 'popular',
+  };
+
+  return {
+    budget: budgetMap[answers.budget] || 'any',
+    craving: answers.craving || 'any',
+    time: timeMap[answers.time] || 'any',
+    mood: moodMap[answers.need] || 'any',
+    spice: spiceMap[answers.spice] || 'any',
+    foodCourt: answers.foodCourt === 'any' ? 'all' : answers.foodCourt || 'all',
+    sort: sortMap[answers.priority] || 'best-match',
+    availableOnly: true,
+    limit: 8,
+  };
 }
 
 function buildQuizRecommendations(meals) {

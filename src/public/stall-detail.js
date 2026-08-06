@@ -1,6 +1,6 @@
 // =========================================================
 // SP Eats - Selected Stall Menu Page
-// Handles: stall hero, menu search/sort/category, dish modal, cart prep,
+// Handles: stall hero, menu search/sort/category, dish modal, cart storage,
 // favourite meals, and try later meals.
 // =========================================================
 
@@ -33,6 +33,7 @@ let latestModalItem = null;
 // ---------- STORAGE KEYS ----------
 const favouriteMealsKey = 'spEatsFavouriteMeals';
 const tryLaterMealsKey = 'spEatsTryLaterMeals';
+const cartItemsKey = 'spEatsCartItems';
 
 // These keep your old quiz/review saved data connected while moving to SP Eats.
 const oldFavouriteMealsKey = 'quickbiteFavouriteMeals';
@@ -978,7 +979,7 @@ function normaliseSavedMeal(meal) {
 }
 
 // =========================================================
-// CART PREPARATION
+// CART STORAGE
 // =========================================================
 
 function prepareCartItem(itemId) {
@@ -1002,8 +1003,46 @@ function prepareCartItem(itemId) {
     quantity: 1,
   };
 
-  console.log('Cart item prepared:', cartItem);
-  alert(`${selectedItem.item_name} added to cart.`);
+  const cartItems = getStoredCartItems();
+  const existingItem = cartItems.find((item) => {
+    return (
+      String(item.item_id) === String(cartItem.item_id) &&
+      String(item.stall_id) === String(cartItem.stall_id) &&
+      String(item.variation || '') === String(cartItem.variation || '')
+    );
+  });
+
+  if (existingItem) {
+    existingItem.quantity = Number(existingItem.quantity || 0) + 1;
+  } else {
+    cartItems.push(cartItem);
+  }
+
+  localStorage.setItem(cartItemsKey, JSON.stringify(cartItems));
+  window.dispatchEvent(
+    new CustomEvent('spEatsCartUpdated', {
+      detail: {
+        items: cartItems,
+      },
+    }),
+  );
+  showSavedMealToast(`${selectedItem.item_name} added to cart.`);
+}
+
+function getStoredCartItems() {
+  const storedCart = localStorage.getItem(cartItemsKey);
+
+  if (!storedCart) {
+    return [];
+  }
+
+  try {
+    const parsedCart = JSON.parse(storedCart);
+    return Array.isArray(parsedCart) ? parsedCart : [];
+  } catch {
+    localStorage.removeItem(cartItemsKey);
+    return [];
+  }
 }
 
 // =========================================================

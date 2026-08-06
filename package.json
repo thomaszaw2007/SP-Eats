@@ -32,7 +32,10 @@
     "lint:report": "eslint -c configs/eslint.config.mjs . --format html --output-file reports/eslint-report.html || true",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "report": "node scripts/qa-report.js"
+    "report": "node scripts/qa-report.js",
+    "start:prod": "node ./src/server.js",
+    "test:coverage": "dotenv -e .env.test -- jest --testPathPatterns=__tests__/integration --globalSetup=./configs/jest-integration-setup.js --runInBand --coverage",
+    "validate": "npm run lint && npm run format:check && npm run test:unit"
   },
   "jest": {
     "testMatch": [

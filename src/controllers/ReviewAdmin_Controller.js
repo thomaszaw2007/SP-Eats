@@ -1,5 +1,7 @@
 const ReviewAdminModel = require('../models/ReviewAdmin_model');
 
+const MIN_REVIEW_TEXT_LENGTH = 20;
+
 function cleanText(value) {
   return String(value || '').trim();
 }
@@ -96,9 +98,9 @@ function validateUpdateReviewBody(body) {
   const reviewTags = getReviewTags(body);
   const mainReviewTag = reviewTags[0] || 'General';
 
-  if (reviewText.length < 8) {
+  if (reviewText.length < MIN_REVIEW_TEXT_LENGTH) {
     return {
-      error: 'review_text must be at least 8 characters.',
+      error: `review_text must be at least ${MIN_REVIEW_TEXT_LENGTH} characters.`,
     };
   }
 

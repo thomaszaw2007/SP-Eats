@@ -13,7 +13,7 @@
   <h1>QA Report</h1>
   <pre>============================================================
   QA REPORT
-  Generated: 2026-03-31T17:29:26.831Z
+  Generated: 2026-08-06T10:20:56.310Z
 ============================================================
 
 ────────────────────────────────────────────────────────────
@@ -39,25 +39,45 @@ Running database reset for integration tests...
 Resetting database schema...
 Schema applied.
 Running seed...
-Seeding data...
-Inserted 20 persons.
-Inserted 2 somethings.
+Running seed...
 Seed data inserted successfully.
+6 food courts inserted.
+18 stalls inserted.
+72 menu items inserted.
 Database reset completed successfully.
-----------------------|---------|----------|---------|---------|-------------------
-File                  | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
-----------------------|---------|----------|---------|---------|-------------------
-All files             |   97.22 |    83.33 |   89.47 |   98.59 |                   
- src                  |   94.73 |       50 |   66.66 |     100 |                   
-  app.js              |   94.73 |       50 |   66.66 |     100 | 37                
- src/models           |   95.45 |      100 |   83.33 |   95.45 |                   
-  Person.model.js     |     100 |      100 |     100 |     100 |                   
-  Something.model.js  |     100 |      100 |     100 |     100 |                   
-  db.js               |      80 |      100 |       0 |      80 | 8                 
- src/routers          |     100 |      100 |     100 |     100 |                   
-  Person.router.js    |     100 |      100 |     100 |     100 |                   
-  Something.router.js |     100 |      100 |     100 |     100 |                   
-----------------------|---------|----------|---------|---------|-------------------
+----------------------------|---------|----------|---------|---------|-----------------------------------------------------------------
+File                        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                               
+----------------------------|---------|----------|---------|---------|-----------------------------------------------------------------
+All files                   |   97.56 |    94.06 |    99.1 |   97.56 |                                                                 
+ src                        |   96.96 |      100 |      75 |   96.87 |                                                                 
+  app.js                    |   96.96 |      100 |      75 |   96.87 | 35                                                              
+ src/controllers            |   98.48 |    94.06 |     100 |   98.48 |                                                                 
+  FoodMap_Controller.js     |     100 |      100 |     100 |     100 |                                                                 
+  FoodStall_Controller.js   |     100 |      100 |     100 |     100 |                                                                 
+  MenuItem_Controller.js    |     100 |      100 |     100 |     100 |                                                                 
+  Quiz_Controller.js        |   95.67 |    88.63 |     100 |   95.67 | 37,150,174,182-184,193,197,357,426                              
+  ReviewAdmin_Controller.js |     100 |    98.55 |     100 |     100 | 99                                                              
+  Review_Controller.js      |     100 |     99.1 |     100 |     100 | 179                                                             
+ src/models                 |   95.82 |    93.87 |   98.96 |   95.82 |                                                                 
+  FoodMap_model.js          |     100 |    95.83 |     100 |     100 | 162                                                             
+  FoodStall_model.js        |     100 |      100 |     100 |     100 |                                                                 
+  MenuItem_model.js         |     100 |      100 |     100 |     100 |                                                                 
+  Person.model.js           |     100 |      100 |     100 |     100 |                                                                 
+  Quiz_model.js             |     100 |      100 |     100 |     100 |                                                                 
+  ReviewAdmin_model.js      |     100 |       98 |     100 |     100 | 260                                                             
+  Review_model.js           |   89.74 |    88.37 |     100 |   89.74 | 182-183,202-203,237-238,342-343,489-490,533-534,553-554,592-593 
+  Something.model.js        |     100 |      100 |     100 |     100 |                                                                 
+  db.js                     |      80 |      100 |       0 |      80 | 8                                                               
+ src/routers                |     100 |      100 |     100 |     100 |                                                                 
+  FoodMap_router.js         |     100 |      100 |     100 |     100 |                                                                 
+  FoodStall_router.js       |     100 |      100 |     100 |     100 |                                                                 
+  MenuItem_router.js        |     100 |      100 |     100 |     100 |                                                                 
+  Person.router.js          |     100 |      100 |     100 |     100 |                                                                 
+  Quiz_router.js            |     100 |      100 |     100 |     100 |                                                                 
+  ReviewAdmin_router.js     |     100 |      100 |     100 |     100 |                                                                 
+  Review_router.js          |     100 |      100 |     100 |     100 |                                                                 
+  Something.router.js       |     100 |      100 |     100 |     100 |                                                                 
+----------------------------|---------|----------|---------|---------|-----------------------------------------------------------------
 
 
 4. E2E TESTS (playwright)
@@ -71,29 +91,32 @@ Running migrations for test environment...
 Resetting database schema...
 Schema applied.
 Running seed...
-Seeding data...
-Inserted 20 persons.
-Inserted 2 somethings.
+Running seed...
 Seed data inserted successfully.
+6 food courts inserted.
+18 stalls inserted.
+72 menu items inserted.
 Database reset completed successfully.
 
-Running 13 tests using 1 worker
+Running 15 tests using 1 worker
 
-  ✓   1 [chromium] › e2e-tests\something-management.spec.js:24:3 › Page load › should display the page heading (162ms)
-  ✓   2 [chromium] › e2e-tests\something-management.spec.js:29:3 › Page load › should display the form with a Name label and Enter button (103ms)
-  ✓   3 [chromium] › e2e-tests\something-management.spec.js:35:3 › Page load › should display the table headers (Id, Name, Action) (110ms)
-  ✓   4 [chromium] › e2e-tests\something-management.spec.js:46:3 › Load Somethings › should show seeded rows in the table on page load (111ms)
-  ✓   5 [chromium] › e2e-tests\something-management.spec.js:54:3 › Load Somethings › each row should have an Id, Name, and Delete button (140ms)
-  ✓   6 [chromium] › e2e-tests\something-management.spec.js:66:3 › New Something › should allow me to add a something (291ms)
-  ✓   7 [chromium] › e2e-tests\something-management.spec.js:71:3 › New Something › should allow me to add multiple somethings (346ms)
-  ✓   8 [chromium] › e2e-tests\something-management.spec.js:81:3 › New Something › should clear the input field after adding (274ms)
-  ✓   9 [chromium] › e2e-tests\something-management.spec.js:87:3 › New Something › should not submit when name is empty (HTML5 required validation) (170ms)
-  ✓  10 [chromium] › e2e-tests\something-management.spec.js:101:3 › New Something › should handle special characters in the name (XSS boundary) (278ms)
-  ✓  11 [chromium] › e2e-tests\something-management.spec.js:114:3 › Delete Something › should allow me to remove a something (405ms)
-  ✓  12 [chromium] › e2e-tests\something-management.spec.js:130:3 › Delete Something › other rows should remain after deleting one (601ms)
-  ✓  13 [chromium] › e2e-tests\something-management.spec.js:148:3 › Delete Something › table should be empty after deleting all items (boundary – zero rows) (1.2s)
+  ✓   1 [chromium] › e2e-tests\food-features.spec.js:57:3 › Browse stalls and menus - 3 key journeys › loads connected stall cards with status, rating and menu actions (278ms)
+  ✓   2 [chromium] › e2e-tests\food-features.spec.js:66:3 › Browse stalls and menus - 3 key journeys › searches a menu-item name through the stall API and clears it (564ms)
+  ✓   3 [chromium] › e2e-tests\food-features.spec.js:85:3 › Browse stalls and menus - 3 key journeys › opens a stall, searches its menu and stores cart quantity (1.4s)
+  ✓   4 [chromium] › e2e-tests\food-features.spec.js:116:3 › Campus food map - 3 key journeys › loads six map markers and selects the first food court (198ms)
+  ✓   5 [chromium] › e2e-tests\food-features.spec.js:124:3 › Campus food map - 3 key journeys › selects another marker and shows database-connected dishes (559ms)
+  ✓   6 [chromium] › e2e-tests\food-features.spec.js:135:3 › Campus food map - 3 key journeys › zooms the campus map and resets it to the initial scale (1.0s)
+  ✓   7 [chromium] › e2e-tests\food-features.spec.js:152:3 › Food preference quiz - 3 key journeys › shows seven steps, records a choice and supports back navigation (601ms)
+  ✓   8 [chromium] › e2e-tests\food-features.spec.js:163:3 › Food preference quiz - 3 key journeys › submits mapped answers to the recommendation API and renders matches (3.0s)
+  ✓   9 [chromium] › e2e-tests\food-features.spec.js:180:3 › Food preference quiz - 3 key journeys › saves a recommended meal and restarts with clean quiz defaults (3.3s)
+  ✓  10 [chromium] › e2e-tests\food-features.spec.js:205:3 › Student review hub - 3 key journeys › loads review cards and filters them using a real meal title (359ms)
+  ✓  11 [chromium] › e2e-tests\food-features.spec.js:215:3 › Student review hub - 3 key journeys › persists a helpful vote through the review API (1.7s)
+  ✓  12 [chromium] › e2e-tests\food-features.spec.js:226:3 › Student review hub - 3 key journeys › creates a complete review through the modal workflow (2.2s)
+  ✓  13 [chromium] › e2e-tests\food-features.spec.js:251:3 › Admin review management - 3 key journeys › loads metrics, selectable reviews and visual insights (549ms)
+  ✓  14 [chromium] › e2e-tests\food-features.spec.js:264:3 › Admin review management - 3 key journeys › finds an owned review and saves a valid edit (643ms)
+  ✓  15 [chromium] › e2e-tests\food-features.spec.js:289:3 › Admin review management - 3 key journeys › increments helpful count and deletes an owned review with confirmation (758ms)
 
-  13 passed (7.3s)
+  15 passed (19.4s)
 
 
 ============================================================

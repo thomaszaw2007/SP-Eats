@@ -24,6 +24,8 @@ const stallsThemeToggle = document.getElementById('stallsThemeToggle');
 // ---------- PAGE STATE ----------
 let allStallsData = [];
 let selectedDietFilters = [];
+let stallSearchTimer = null;
+let latestStallRequest = 0;
 
 const RECENTLY_VIEWED_KEY = 'recentlyViewedStalls';
 
@@ -43,13 +45,14 @@ window.addEventListener('DOMContentLoaded', () => {
 // =========================================================
 
 function setupStallPageEvents() {
-  const filterInputs = [
-    stallSearchInput,
-    foodCourtFilter,
-    cuisineFilter,
-    statusFilter,
-    budgetRange,
-  ];
+  const filterInputs = [foodCourtFilter, cuisineFilter, statusFilter, budgetRange];
+
+  if (stallSearchInput) {
+    stallSearchInput.addEventListener('input', () => {
+      updateFilterUrl();
+      loadStallsDebounced();
+    });
+  }
 
   filterInputs.forEach((input) => {
     if (!input) {
@@ -105,16 +108,47 @@ function setupStallPageEvents() {
 // =========================================================
 
 function loadStalls() {
-  fetch('/api/stalls')
-    .then((response) => response.json())
+  const requestNumber = ++latestStallRequest;
+  const searchValue = stallSearchInput ? getInputValue(stallSearchInput) : '';
+  const query = new URLSearchParams();
+
+  if (searchValue) {
+    query.set('search', searchValue);
+  }
+
+  const endpoint = query.toString() ? `/api/stalls?${query.toString()}` : '/api/stalls';
+
+  fetch(endpoint)
+    .then(async (response) => {
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Unable to load stalls.');
+      }
+
+      return result;
+    })
     .then((result) => {
+      if (requestNumber !== latestStallRequest) {
+        return;
+      }
+
       allStallsData = normalizeStalls(result.data || []);
       filterAndDisplayStalls();
     })
     .catch((error) => {
+      if (requestNumber !== latestStallRequest) {
+        return;
+      }
+
       console.error('Error loading stalls:', error);
       showStallLoadError();
     });
+}
+
+function loadStallsDebounced() {
+  window.clearTimeout(stallSearchTimer);
+  stallSearchTimer = window.setTimeout(loadStalls, 250);
 }
 
 function normalizeStalls(stalls) {
@@ -165,36 +199,10 @@ function normalizeStalls(stalls) {
 function filterAndDisplayStalls() {
   let filteredStalls = [...allStallsData];
 
-  const searchValue = getInputValue(stallSearchInput).toLowerCase();
   const selectedFoodCourt = getInputValue(foodCourtFilter);
   const selectedCuisine = getInputValue(cuisineFilter);
   const selectedStatus = getInputValue(statusFilter);
   const selectedBudget = Number(getInputValue(budgetRange) || 10);
-
-  if (searchValue) {
-    const searchWords = searchValue
-      .split(' ')
-      .map((word) => word.trim())
-      .filter((word) => word.length > 0);
-
-    filteredStalls = filteredStalls.filter((stall) => {
-      const searchableText = [
-        stall.stall_name,
-        stall.cuisine_type,
-        stall.food_court,
-        stall.location_detail,
-        stall.stall_description,
-        stall.is_halal ? 'halal' : '',
-        stall.is_vegetarian ? 'vegetarian' : '',
-        stall.is_vegan ? 'vegan' : '',
-        stall.opening_status,
-      ]
-        .join(' ')
-        .toLowerCase();
-
-      return searchWords.every((word) => searchableText.includes(word));
-    });
-  }
 
   if (selectedFoodCourt !== 'all') {
     filteredStalls = filteredStalls.filter((stall) => {
@@ -313,8 +321,8 @@ function clearStallFilters() {
 
   updateBudgetText();
   updateDietButtons();
-  filterAndDisplayStalls();
   updateFilterUrl();
+  loadStalls();
 }
 
 function updateFilterUrl() {

@@ -53,6 +53,8 @@ const deleteReviewModal = document.getElementById('deleteReviewModal');
 const deleteReviewImage = document.getElementById('deleteReviewImage');
 const deleteReviewTitle = document.getElementById('deleteReviewTitle');
 const deleteReviewMeta = document.getElementById('deleteReviewMeta');
+
+const MIN_REVIEW_TEXT_LENGTH = 20;
 const cancelDeleteReviewBtn = document.getElementById('cancelDeleteReviewBtn');
 const confirmDeleteReviewBtn = document.getElementById('confirmDeleteReviewBtn');
 
@@ -710,8 +712,8 @@ async function handleEditReviewSubmit(event) {
   updateAdminOverallRating();
   renderAdminTagChoices();
 
-  if (reviewText.length < 8) {
-    setEditorMessage('Review text must be at least 8 characters.');
+  if (reviewText.length < MIN_REVIEW_TEXT_LENGTH) {
+    setEditorMessage(`Review text must be at least ${MIN_REVIEW_TEXT_LENGTH} characters.`);
     return;
   }
 
