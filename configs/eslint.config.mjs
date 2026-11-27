@@ -12,6 +12,7 @@ export default [
       'playwright-report/**',
       'coverage-report/**',
       'reports/**',
+      '.sp-eats-local/**',
     ],
   },
 

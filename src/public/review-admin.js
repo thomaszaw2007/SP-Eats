@@ -1,4 +1,9 @@
 const adminRefreshBtn = document.getElementById('adminRefreshBtn');
+const adminAccessForm = document.getElementById('adminAccessForm');
+const adminAccessInput = document.getElementById('adminAccessInput');
+const adminAccessStatus = document.getElementById('adminAccessStatus');
+const adminAccessPanel = document.getElementById('adminAccessPanel');
+const adminDashboard = document.getElementById('adminDashboard');
 const toggleInsightsBtn = document.getElementById('toggleInsightsBtn');
 const adminInsightsPanel = document.getElementById('adminInsightsPanel');
 
@@ -76,11 +81,48 @@ let searchTimer = null;
 let insightsOpen = false;
 let selectedAdminTags = [];
 let reviewPendingDelete = null;
+let moderatorKey = '';
 
 window.addEventListener('DOMContentLoaded', () => {
   setupAdminEvents();
-  loadAdminDashboard();
+  adminAccessForm.addEventListener('submit', unlockDashboard);
+  document.getElementById('adminLockBtn').addEventListener('click', () => window.location.reload());
 });
+
+function fetchAdmin(path, options = {}, key = moderatorKey) {
+  const headers = new Headers(options.headers);
+  headers.set('Authorization', `Bearer ${key}`);
+  return fetch(path, { ...options, headers, cache: 'no-store' });
+}
+
+async function unlockDashboard(event) {
+  event.preventDefault();
+  const submitButton = adminAccessForm.querySelector('button');
+  submitButton.disabled = true;
+  adminAccessStatus.textContent = 'Checking access…';
+  const key = adminAccessInput.value.trim();
+
+  try {
+    const response = await fetchAdmin('/api/admin/reviews/session', {}, key);
+    if (!response.ok) {
+      adminAccessStatus.textContent =
+        response.status === 401 ? 'The moderator key is incorrect.' : 'Moderation is unavailable.';
+      return;
+    }
+
+    moderatorKey = key;
+    adminAccessForm.reset();
+    adminAccessStatus.textContent = '';
+    adminAccessPanel.hidden = true;
+    adminDashboard.hidden = false;
+    adminRefreshBtn.focus();
+    await loadAdminDashboard();
+  } catch {
+    adminAccessStatus.textContent = 'Unable to check access. Please try again.';
+  } finally {
+    submitButton.disabled = false;
+  }
+}
 
 function setupAdminEvents() {
   if (adminRefreshBtn) {
@@ -182,7 +224,7 @@ async function loadAdminDashboard() {
 
 async function loadAdminSummary() {
   try {
-    const response = await fetch('/api/admin/reviews/summary');
+    const response = await fetchAdmin('/api/admin/reviews/summary');
     const result = await response.json();
 
     if (!response.ok) {
@@ -239,7 +281,7 @@ async function loadAdminReviews() {
   const url = params.toString() ? `/api/admin/reviews?${params.toString()}` : '/api/admin/reviews';
 
   try {
-    const response = await fetch(url);
+    const response = await fetchAdmin(url);
     const result = await response.json();
 
     if (!response.ok) {
@@ -417,7 +459,7 @@ function renderAdminReviews(reviews) {
           <div class="review-mini-thumb">
             ${
               imageUrl
-                ? `<img src="${imageUrl}" alt="${escapeHtml(review.item_name)}" />`
+                ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(review.item_name)}" />`
                 : `<span>No image</span>`
             }
           </div>
@@ -483,7 +525,7 @@ function renderSelectedReview(reviewId) {
   if (selectedReviewImage) {
     if (imageUrl) {
       selectedReviewImage.innerHTML = `
-        <img src="${imageUrl}" alt="${escapeHtml(review.item_name)}" />
+        <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(review.item_name)}" />
       `;
     } else {
       selectedReviewImage.innerHTML = 'No image';
@@ -735,7 +777,7 @@ async function handleEditReviewSubmit(event) {
   try {
     setEditorMessage('Saving review...');
 
-    const response = await fetch(`/api/admin/reviews/${reviewId}`, {
+    const response = await fetchAdmin(`/api/admin/reviews/${reviewId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -759,7 +801,7 @@ async function handleEditReviewSubmit(event) {
 
 async function markReviewHelpful(reviewId) {
   try {
-    const response = await fetch(`/api/admin/reviews/${reviewId}/helpful`, {
+    const response = await fetchAdmin(`/api/admin/reviews/${reviewId}/helpful`, {
       method: 'PATCH',
     });
 
@@ -791,7 +833,7 @@ function openDeleteModal(reviewId) {
 
   if (deleteReviewImage) {
     deleteReviewImage.innerHTML = imageUrl
-      ? `<img src="${imageUrl}" alt="${escapeHtml(review.item_name)}" />`
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(review.item_name)}" />`
       : 'No image';
   }
 
@@ -827,7 +869,7 @@ async function confirmDeleteReview() {
       confirmDeleteReviewBtn.disabled = true;
     }
 
-    const response = await fetch(`/api/admin/reviews/${reviewId}`, {
+    const response = await fetchAdmin(`/api/admin/reviews/${reviewId}`, {
       method: 'DELETE',
     });
 

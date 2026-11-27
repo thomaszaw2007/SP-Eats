@@ -1,243 +1,112 @@
-// =========================================================
-// SP Eats - Welcome Page
-// Handles: Hype Now popular meals, theme button placeholder
-// =========================================================
+const grid = document.getElementById('hypeNowGrid');
+const status = document.getElementById('hypeStatus');
+const template = document.getElementById('popularMealTemplate');
+const themeToggle = document.getElementById('homeThemeToggle');
+const favouriteKey = 'spEatsFavouriteMeals';
+const legacyFavouriteKey = 'quickbiteFavouriteMeals';
+const formatPrice = new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD' });
 
-const hypeNowGrid = document.getElementById('hypeNowGrid');
-const hypeStatus = document.getElementById('hypeStatus');
-const homeThemeToggle = document.getElementById('homeThemeToggle');
-
-window.addEventListener('DOMContentLoaded', () => {
-  setupHomeEvents();
-  loadHypeNowMeals();
+themeToggle.addEventListener('click', () => {
+  const enabled = document.body.classList.toggle('home-dark-mode');
+  themeToggle.setAttribute('aria-pressed', String(enabled));
 });
 
-function setupHomeEvents() {
-  if (homeThemeToggle) {
-    homeThemeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('home-dark-mode');
-    });
+function getFavourites(key) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
   }
 }
 
-function loadHypeNowMeals() {
-  if (!hypeNowGrid) {
-    return;
-  }
-
-  fetch('/api/stalls')
-    .then((response) => response.json())
-    .then((result) => {
-      const stalls = result.data || [];
-
-      if (stalls.length === 0) {
-        showHypeFallbackMeals();
-        return;
-      }
-
-      return Promise.all(
-        stalls.map((stall) => {
-          const stallId = stall.stall_id || stall.id || stall.raw_stall_id;
-          const apiStallId = getApiStallId(stallId);
-
-          return fetch('/api/stalls/' + apiStallId + '/menu')
-            .then((response) => response.json())
-            .then((menuResult) => {
-              const menuItems = menuResult.data || [];
-
-              return menuItems.map((item) => {
-                return {
-                  ...item,
-                  stall_name: stall.stall_name || stall.name || item.stall_name,
-                  home_stall_id: stallId,
-                };
-              });
-            })
-            .catch(() => []);
-        }),
-      );
-    })
-    .then((menuGroups) => {
-      if (!menuGroups) {
-        return;
-      }
-
-      const allMenuItems = menuGroups.flat();
-
-      const popularMeals = allMenuItems
-        .filter((item) => item.is_popular)
-        .sort((firstItem, secondItem) => {
-          const firstScore =
-            Number(firstItem.order_count || 0) +
-            Number(firstItem.item_review_count || 0) +
-            Number(firstItem.item_rating || 0) * 10;
-
-          const secondScore =
-            Number(secondItem.order_count || 0) +
-            Number(secondItem.item_review_count || 0) +
-            Number(secondItem.item_rating || 0) * 10;
-
-          return secondScore - firstScore;
-        })
-        .slice(0, 3);
-
-      if (popularMeals.length === 0) {
-        showHypeFallbackMeals();
-        return;
-      }
-
-      displayHypeMeals(popularMeals);
-    })
-    .catch((error) => {
-      console.error('Error loading hype meals:', error);
-      showHypeFallbackMeals();
-    });
+function isFavourite(meal) {
+  return [favouriteKey, legacyFavouriteKey].some((key) =>
+    getFavourites(key).some((saved) => String(saved.id) === String(meal.food_id)),
+  );
 }
 
-function displayHypeMeals(meals) {
-  hypeNowGrid.innerHTML = '';
+function setFavourite(meal, button) {
+  const alreadySaved = isFavourite(meal);
+  const savedMeal = {
+    id: String(meal.food_id),
+    foodId: meal.food_id,
+    stallId: meal.raw_stall_id,
+    foodCourtId: meal.foodcourt_id,
+    name: meal.item_name,
+    stallName: meal.stall_name,
+    foodCourtName: meal.food_court,
+    imageUrl: meal.image_url,
+    price: Number(meal.price),
+    rating: Number(meal.item_rating),
+    reviewCount: Number(meal.item_review_count),
+    category: meal.category,
+  };
 
-  if (hypeStatus) {
-    hypeStatus.textContent = '';
+  try {
+    for (const key of [favouriteKey, legacyFavouriteKey]) {
+      const remaining = getFavourites(key).filter((saved) => String(saved.id) !== savedMeal.id);
+      const next = alreadySaved ? remaining : [savedMeal, ...remaining];
+      localStorage.setItem(key, JSON.stringify(next.slice(0, 24)));
+    }
+    updateSaveButton(button, !alreadySaved);
+  } catch {
+    status.textContent = 'This browser could not save the meal.';
   }
-
-  meals.forEach((meal) => {
-    const mealCard = createHypeMealCard(meal);
-    hypeNowGrid.appendChild(mealCard);
-  });
 }
 
-function createHypeMealCard(meal) {
-  const card = document.createElement('article');
-  card.className = 'home-meal-card';
+function updateSaveButton(button, saved) {
+  button.textContent = saved ? '♥' : '♡';
+  button.setAttribute('aria-pressed', String(saved));
+}
 
-  const rating = meal.item_rating || meal.rating || 4.5;
-  const reviewCount = meal.item_review_count || meal.review_count || 0;
-  const category = meal.category || 'Meal';
-  const price = meal.price || 0;
-  const stallId = meal.home_stall_id || meal.stall_id;
+function createMealCard(meal) {
+  const card = template.content.cloneNode(true);
+  const image = card.querySelector('img');
+  const placeholder = card.querySelector('.home-meal-placeholder');
+  const save = card.querySelector('.home-heart-btn');
 
-  card.innerHTML = `
-    <div class="home-meal-image-wrap">
-      ${
-        meal.image_url
-          ? `<img
-              src="${meal.image_url}"
-              alt="${meal.item_name}"
-              class="home-meal-image"
-            />`
-          : `<div class="home-meal-image home-meal-placeholder">
-              <span>No image yet</span>
-            </div>`
-      }
+  function usePlaceholder() {
+    image.hidden = true;
+    placeholder.hidden = false;
+  }
 
-      <span class="home-popular-badge">🔥 Popular</span>
+  if (meal.image_url) {
+    image.addEventListener('error', usePlaceholder, { once: true });
+    image.src = meal.image_url;
+  } else {
+    usePlaceholder();
+  }
 
-      <button class="home-heart-btn" type="button" aria-label="Favourite meal">
-        ♡
-      </button>
-    </div>
+  card.querySelector('h3').textContent = meal.item_name;
+  card.querySelector('.home-meal-stall').textContent = meal.stall_name;
+  card.querySelector('.home-meal-price').textContent = formatPrice.format(Number(meal.price));
+  const reviewCount = Number(meal.item_review_count);
+  card.querySelector('.home-meal-rating').textContent = reviewCount
+    ? `★ ${Number(meal.item_rating).toFixed(1)} · ${reviewCount} ${reviewCount === 1 ? 'review' : 'reviews'}`
+    : 'No reviews yet';
+  card.querySelector('.home-meal-link').href =
+    './stall-detail.html?' +
+    new URLSearchParams({ stall_id: meal.raw_stall_id, food_id: meal.food_id });
 
-    <div class="home-meal-body">
-      <div class="home-meal-title-row">
-        <h3>${meal.item_name}</h3>
-        <span>${category}</span>
-      </div>
-
-      <div class="home-meal-rating-row">
-        <span class="home-stars">★★★★★</span>
-        <strong>${formatRating(rating)}</strong>
-        <span>(${reviewCount})</span>
-      </div>
-
-      <div class="home-meal-bottom-row">
-        <strong class="home-meal-price">$${formatPrice(price)}</strong>
-
-        <button class="home-add-btn" type="button" aria-label="Add meal">
-          +
-        </button>
-      </div>
-    </div>
-  `;
-
-  card.addEventListener('click', () => {
-    window.location.href = './stall-detail.html?stall_id=' + encodeURIComponent(stallId);
-  });
-
-  const heartButton = card.querySelector('.home-heart-btn');
-  heartButton.addEventListener('click', (event) => {
-    event.stopPropagation();
-    heartButton.classList.toggle('active');
-    heartButton.textContent = heartButton.classList.contains('active') ? '♥' : '♡';
-  });
-
-  const addButton = card.querySelector('.home-add-btn');
-  addButton.addEventListener('click', (event) => {
-    event.stopPropagation();
-    alert(`${meal.item_name} selected. Cart feature coming soon.`);
-  });
-
+  save.setAttribute('aria-label', `Favourite ${meal.item_name}`);
+  updateSaveButton(save, isFavourite(meal));
+  save.addEventListener('click', () => setFavourite(meal, save));
   return card;
 }
 
-function showHypeFallbackMeals() {
-  const fallbackMeals = [
-    {
-      item_id: 1,
-      item_name: 'Chicken Rice',
-      category: 'Rice',
-      price: 4.0,
-      item_rating: 4.4,
-      item_review_count: 67,
-      image_url: null,
-      is_popular: true,
-      stall_id: 3,
-    },
-    {
-      item_id: 2,
-      item_name: 'Bibimbap',
-      category: 'Rice',
-      price: 6.5,
-      item_rating: 4.7,
-      item_review_count: 45,
-      image_url: null,
-      is_popular: true,
-      stall_id: 1,
-    },
-    {
-      item_id: 3,
-      item_name: 'Korean Fried Chicken',
-      category: 'Snacks',
-      price: 7.5,
-      item_rating: 4.6,
-      item_review_count: 52,
-      image_url: null,
-      is_popular: true,
-      stall_id: 12,
-    },
-  ];
-
-  displayHypeMeals(fallbackMeals);
-}
-
-function getApiStallId(id) {
-  if (!id) {
-    return '';
+async function loadPopularMeals() {
+  try {
+    const response = await fetch('/api/menu-items?popular=true');
+    if (!response.ok) throw new Error('Popular meals request failed.');
+    const { data } = await response.json();
+    const meals = data.filter((meal) => meal.is_available).slice(0, 3);
+    status.textContent = meals.length ? '' : 'Popular meals will appear here when available.';
+    grid.replaceChildren(...meals.map(createMealCard));
+  } catch {
+    status.textContent =
+      'Popular meals are temporarily unavailable. You can still browse the stalls.';
   }
-
-  const textId = String(id);
-
-  if (textId.startsWith('stall_')) {
-    return String(Number(textId.replace('stall_', '')));
-  }
-
-  return textId;
 }
 
-function formatPrice(price) {
-  return Number(price || 0).toFixed(2);
-}
-
-function formatRating(rating) {
-  return Number(rating || 0).toFixed(1);
-}
+loadPopularMeals();

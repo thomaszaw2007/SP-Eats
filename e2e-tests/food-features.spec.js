@@ -1,10 +1,36 @@
 const { test, expect } = require('@playwright/test');
 
-const BASE_URL = 'http://127.0.0.1:3001';
+const BASE_URL = `http://127.0.0.1:${process.env.PORT || 3001}`;
+
+async function unlockModeration(page) {
+  await page.goto(`${BASE_URL}/review-admin.html`);
+  await page.getByLabel('Moderator key').fill(process.env.ADMIN_ACCESS_TOKEN);
+  await page.getByRole('button', { name: 'Unlock dashboard' }).click();
+  await expect(page.getByRole('heading', { name: 'Review Management' })).toBeVisible();
+}
 
 async function waitForFirst(page, selector) {
   await expect(page.locator(selector).first()).toBeVisible();
 }
+
+test('opens a homepage dish and keeps a favourite across pages on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(BASE_URL);
+  const firstCard = page.locator('.home-meal-card').first();
+  await expect(firstCard).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+
+  const name = await firstCard.getByRole('heading').textContent();
+  const favourite = firstCard.getByRole('button', { name: `Favourite ${name}` });
+  await favourite.click();
+  await expect(favourite).toHaveAttribute('aria-pressed', 'true');
+  await firstCard.getByRole('link', { name: 'View dish' }).click();
+  await expect(page.getByRole('button', { name: 'Close meal details' })).toBeVisible();
+  await page.getByRole('button', { name: 'Close meal details' }).click();
+
+  await page.goto(`${BASE_URL}/quiz.html#saved-meals`);
+  await expect(page.locator('#favouriteSlider')).toContainText(name);
+});
 
 async function finishQuiz(page) {
   for (let index = 0; index < 6; index += 1) {
@@ -79,7 +105,9 @@ test.describe('Browse stalls and menus - 3 key journeys', () => {
 
     await page.locator('#clearStallFiltersBtn').click();
     await expect(page.locator('#stallSearchInput')).toHaveValue('');
-    expect(await page.locator('#stallContainer .sd-stall-card').count()).toBeGreaterThan(1);
+    await expect
+      .poll(() => page.locator('#stallContainer .sd-stall-card').count())
+      .toBeGreaterThan(1);
   });
 
   test('opens a stall, searches its menu and stores cart quantity', async ({ page }) => {
@@ -249,7 +277,7 @@ test.describe('Student review hub - 3 key journeys', () => {
 
 test.describe('Admin review management - 3 key journeys', () => {
   test('loads metrics, selectable reviews and visual insights', async ({ page }) => {
-    await page.goto(`${BASE_URL}/review-admin.html`);
+    await unlockModeration(page);
     await waitForFirst(page, '#adminReviewList .review-admin-mini-card');
     await expect(page.getByRole('heading', { name: 'Review Management' })).toBeVisible();
     await expect(page.locator('#adminTotalReviews')).not.toHaveText('0');
@@ -266,7 +294,7 @@ test.describe('Admin review management - 3 key journeys', () => {
     const { reviewId } = await createReviewThroughApi(request, label);
 
     try {
-      await page.goto(`${BASE_URL}/review-admin.html`);
+      await unlockModeration(page);
       await page.locator('#adminSearchInput').fill(label);
       await expect(page.locator('#adminReviewList .review-admin-mini-card')).toHaveCount(1);
 
@@ -282,7 +310,9 @@ test.describe('Admin review management - 3 key journeys', () => {
       expect((await updateResponse).ok()).toBe(true);
       await expect(page.locator('#editReviewText')).toHaveValue(updatedText);
     } finally {
-      await request.delete(`${BASE_URL}/api/admin/reviews/${reviewId}`);
+      await request.delete(`${BASE_URL}/api/admin/reviews/${reviewId}`, {
+        headers: { Authorization: `Bearer ${process.env.ADMIN_ACCESS_TOKEN}` },
+      });
     }
   });
 
@@ -292,7 +322,7 @@ test.describe('Admin review management - 3 key journeys', () => {
   }) => {
     const label = `CA4 Admin Delete ${Date.now()}`;
     const { reviewId } = await createReviewThroughApi(request, label);
-    await page.goto(`${BASE_URL}/review-admin.html`);
+    await unlockModeration(page);
     await page.locator('#adminSearchInput').fill(label);
     await expect(page.locator('#adminReviewList .review-admin-mini-card')).toHaveCount(1);
 

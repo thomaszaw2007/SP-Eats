@@ -455,15 +455,28 @@ describe('Quiz controller', () => {
     expect(res.json.mock.calls[0][0].matching_mode).toBe('strict');
   });
 
-  test('falls back to all candidates when strict dietary, spice or temperature matches fail', () => {
+  test('returns an empty result when no candidate matches the dietary choice', () => {
     const { res } = quizRun({ dietary: 'vegan', spice: 'spicy', temperature: 'cold' }, [
       { ...baseItem, halal: false, dietary_tag: 'None', category: 'Rice' },
     ]);
     expect(res.json.mock.calls[0][0]).toMatchObject({
-      matching_mode: 'fallback',
+      matching_mode: 'none',
       strict_candidates: 0,
       total_candidates: 1,
+      count: 0,
     });
+  });
+
+  test('relaxes spice or temperature only after keeping the dietary constraint', () => {
+    const { res } = quizRun({ dietary: 'vegan', spice: 'spicy', temperature: 'cold' }, [
+      { ...baseItem, food_id: 1, vegan: true, spice_level: 'Not spicy', temperature_type: 'hot' },
+      { ...baseItem, food_id: 2, vegan: false, dietary_tag: 'Contains meat' },
+    ]);
+    const { matching_mode: mode, data } = res.json.mock.calls[0][0];
+    expect(mode).toBe('fallback');
+    expect(data.map((item) => item.food_id)).toEqual([1]);
+    expect(data[0].match_reasons).not.toContain('Good spicy option.');
+    expect(data[0].match_reasons).not.toContain('Matches your cold option preference.');
   });
 
   test.each([

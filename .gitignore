@@ -1,12 +1,16 @@
 node_modules
 
-# Keep environment variables out of version control
-.env
-.env.dev
-.env.test
+# Keep local environment files out of version control at any depth.
+*.env
+*.env.*
+.envrc
+!/.env.example
 
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/coverage/
 /coverage-report/
+/reports/
+/.sp-eats-local/

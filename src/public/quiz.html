@@ -35,6 +35,15 @@
         <div id="progressDots" class="qclean-progress-dots"></div>
 
         <article class="qclean-question-card">
+          <label class="quiz-dietary-filter" for="quizDietary"
+            >Dietary preference
+            <select id="quizDietary">
+              <option value="any">Any</option>
+              <option value="halal">Halal-friendly</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+            </select>
+          </label>
           <p class="qclean-question-number">
             Question <span id="currentQuestionNumber">1</span> of 7
           </p>
@@ -62,7 +71,7 @@
           Your match is based on real dish data and review points.
         </p>
 
-        <h2 class="qclean-result-title">Your Perfect Match</h2>
+        <h2 class="qclean-result-title">Your recommended meals</h2>
 
         <article id="mainRecommendation" class="qclean-main-card">
           <div class="qclean-empty-state">Loading your best match...</div>
@@ -85,7 +94,7 @@
         <div id="patternCards" class="qclean-pattern-grid"></div>
       </section>
 
-      <section class="qclean-saved-section">
+      <section id="saved-meals" class="qclean-saved-section">
         <div class="qclean-saved-heading">
           <div>
             <p>Saved Meals</p>

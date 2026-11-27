@@ -77,7 +77,7 @@ describe('Feature API routing', () => {
 
     reply(FoodMapModel.selectFoodMapMarkers, new Error('map unavailable'), null);
     const failure = await request(app).get('/api/food-map').expect(500);
-    expect(failure.body).toEqual({ error: 'map unavailable' });
+    expect(failure.body).toEqual({ error: 'Something went wrong.' });
   });
 
   test('routes stall discovery, detail and menu requests', async () => {
@@ -169,12 +169,38 @@ describe('Feature API routing', () => {
     expect(response.body.data.review.review_id).toBe(5);
   });
 
-  test('routes all admin review operations', async () => {
+  test('denies anonymous requests, opens moderation with a valid key, and routes all operations', async () => {
+    const original = process.env.ADMIN_ACCESS_TOKEN;
+    const testToken = 'moderation-unit-test-fixture-'.repeat(2);
+    process.env.ADMIN_ACCESS_TOKEN = testToken;
+    try {
+      await request(app).get('/api/admin/reviews/session').expect(401);
+      await request(app)
+        .get('/api/admin/reviews/session')
+        .auth('incorrect', { type: 'bearer' })
+        .expect(401);
+      await request(app)
+        .get('/api/admin/reviews/session')
+        .auth(testToken, { type: 'bearer' })
+        .expect(204);
+      await request(app).delete('/api/admin/reviews/1').expect(401);
+      expect(ReviewAdminModel.deleteAdminReview).not.toHaveBeenCalled();
+      await verifyAdminOperations(testToken);
+    } finally {
+      if (original === undefined) delete process.env.ADMIN_ACCESS_TOKEN;
+      else process.env.ADMIN_ACCESS_TOKEN = original;
+    }
+  });
+
+  async function verifyAdminOperations(testToken) {
     reply(ReviewAdminModel.selectAdminReviews, null, [{ review_id: 1 }]);
-    await request(app).get('/api/admin/reviews').expect(200);
+    await request(app).get('/api/admin/reviews').auth(testToken, { type: 'bearer' }).expect(200);
 
     reply(ReviewAdminModel.selectAdminSummary, null, { total_reviews: 1 });
-    await request(app).get('/api/admin/reviews/summary').expect(200);
+    await request(app)
+      .get('/api/admin/reviews/summary')
+      .auth(testToken, { type: 'bearer' })
+      .expect(200);
 
     reply(ReviewAdminModel.updateAdminReview, null, {
       review_id: 1,
@@ -185,6 +211,7 @@ describe('Feature API routing', () => {
     reply(ReviewAdminModel.selectAdminReviewById, null, { review_id: 1 });
     await request(app)
       .put('/api/admin/reviews/1')
+      .auth(testToken, { type: 'bearer' })
       .send({
         rating: 4,
         taste_rating: 4,
@@ -199,7 +226,10 @@ describe('Feature API routing', () => {
       review_id: 1,
       helpful_count: 2,
     });
-    await request(app).patch('/api/admin/reviews/1/helpful').expect(200);
+    await request(app)
+      .patch('/api/admin/reviews/1/helpful')
+      .auth(testToken, { type: 'bearer' })
+      .expect(200);
 
     reply(ReviewAdminModel.deleteAdminReview, null, {
       review_id: 1,
@@ -207,6 +237,9 @@ describe('Feature API routing', () => {
     });
     reply(ReviewAdminModel.recalculateMenuStats, null, {});
     reply(ReviewAdminModel.recalculateStallStatsByFoodId, null, {});
-    await request(app).delete('/api/admin/reviews/1').expect(200);
-  });
+    await request(app)
+      .delete('/api/admin/reviews/1')
+      .auth(testToken, { type: 'bearer' })
+      .expect(200);
+  }
 });

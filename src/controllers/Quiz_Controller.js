@@ -185,10 +185,6 @@ function matchesTemperaturePreference(item, temperature) {
 }
 
 function shouldKeepItem(item, filters) {
-  if (!matchesDietaryPreference(item, filters.dietary)) {
-    return false;
-  }
-
   if (!matchesSpicePreference(item, filters.spice)) {
     return false;
   }
@@ -382,7 +378,7 @@ function applyCravingScore(result, item, filters) {
 }
 
 function applySpiceScore(result, item, filters) {
-  if (filters.spice === 'any') {
+  if (filters.spice === 'any' || !matchesSpicePreference(item, filters.spice)) {
     return;
   }
 
@@ -418,7 +414,7 @@ function applyDietaryScore(result, item, filters) {
 }
 
 function applyTemperatureScore(result, item, filters) {
-  if (filters.temperature === 'any') {
+  if (filters.temperature === 'any' || !matchesTemperaturePreference(item, filters.temperature)) {
     return;
   }
 
@@ -533,11 +529,14 @@ module.exports.getQuizRecommendations = (req, res, next) => {
       return;
     }
 
-    const strictMatches = menuItems.filter((item) => {
+    const dietaryMatches = menuItems.filter((item) =>
+      matchesDietaryPreference(item, filters.dietary),
+    );
+    const strictMatches = dietaryMatches.filter((item) => {
       return shouldKeepItem(item, filters);
     });
 
-    const itemsToScore = strictMatches.length > 0 ? strictMatches : menuItems;
+    const itemsToScore = strictMatches.length > 0 ? strictMatches : dietaryMatches;
 
     const scoredItems = itemsToScore.map((item) => {
       return scoreMenuItem(item, filters);
@@ -549,7 +548,8 @@ module.exports.getQuizRecommendations = (req, res, next) => {
     res.status(200).json({
       message: 'Meal quiz recommendations retrieved successfully.',
       filters,
-      matching_mode: strictMatches.length > 0 ? 'strict' : 'fallback',
+      matching_mode:
+        strictMatches.length > 0 ? 'strict' : itemsToScore.length ? 'fallback' : 'none',
       count: recommendations.length,
       total_candidates: menuItems.length,
       strict_candidates: strictMatches.length,

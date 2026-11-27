@@ -1,4 +1,5 @@
 const ReviewAdminModel = require('../models/ReviewAdmin_model');
+const isReviewPhotoUrl = require('../validation/reviewPhoto');
 
 const MIN_REVIEW_TEXT_LENGTH = 20;
 
@@ -114,6 +115,9 @@ function validateUpdateReviewBody(body) {
     return {
       error: 'review_photo_url must be 500 characters or less.',
     };
+  }
+  if (reviewPhotoUrl && !isReviewPhotoUrl(reviewPhotoUrl)) {
+    return { error: 'review_photo_url must be a valid HTTPS URL.' };
   }
 
   return {

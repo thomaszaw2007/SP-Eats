@@ -3,89 +3,119 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    <meta
+      name="description"
+      content="Find stalls, browse menus and plan your next meal on campus."
+    />
     <title>SP Eats | Campus Food Discovery</title>
-
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./home.css" />
   </head>
-
   <body class="home-page">
-    <nav class="home-navbar">
+    <a class="home-skip-link" href="#main-content">Skip to content</a>
+    <nav class="home-navbar" aria-label="Main navigation">
       <a href="./index.html" class="home-logo">
-        <span class="home-logo-badge">SP</span>
+        <span class="home-logo-badge" aria-hidden="true">SP</span>
         <span>SP Eats</span>
       </a>
-
       <div class="home-nav-links">
-        <a href="./index.html" class="active">Home</a>
+        <a href="./index.html" class="active" aria-current="page">Home</a>
         <a href="./stalls.html">Stalls</a>
         <a href="./food-map.html">Map</a>
         <a href="./reviews.html">Reviews</a>
         <a href="./quiz.html">Quiz</a>
       </div>
-
-      <button id="homeThemeToggle" class="home-theme-btn" type="button">◐</button>
+      <button
+        id="homeThemeToggle"
+        class="home-theme-btn"
+        type="button"
+        aria-label="Dark theme"
+        aria-pressed="false"
+      >
+        ◐
+      </button>
     </nav>
 
     <header class="home-hero">
-      <div class="home-hero-content">
-        <span class="home-hero-badge">Campus Food Discovery</span>
-
-        <h1>
-          Find Your Next<br />
-          Favourite Campus Meal
-        </h1>
-
-        <div class="home-hero-actions">
-          <a href="./stalls.html" class="home-primary-btn"> Browse Stalls </a>
-
-          <a href="./quiz.html" class="home-dark-btn"> What Should I Eat </a>
+      <div class="home-hero-inner">
+        <div class="home-hero-content">
+          <p class="home-hero-location">Singapore Polytechnic · Campus food guide</p>
+          <h1>Find your next <em>campus meal.</em></h1>
+          <p class="home-hero-description">
+            Browse stalls, compare dishes, and see what’s close before your next break.
+          </p>
+          <div class="home-hero-actions">
+            <a href="./stalls.html" class="home-primary-btn"
+              >Browse stalls <span aria-hidden="true">→</span></a
+            >
+            <a href="./quiz.html" class="home-dark-btn">Take the meal quiz</a>
+          </div>
         </div>
+        <figure class="home-hero-photo">
+          <img
+            src="./images/Menu/Korean_Kitchen/Korean_Kitchen-Bibimbap.jpg"
+            alt="Bibimbap with egg and vegetables"
+            width="1160"
+            height="1524"
+            fetchpriority="high"
+          />
+          <figcaption><strong>Bibimbap</strong><span>Korean Kitchen</span></figcaption>
+        </figure>
       </div>
     </header>
 
-    <main class="home-main">
-      <section class="home-feature-grid">
-        <a href="./stalls.html" class="home-feature-card">
-          <div class="home-feature-icon blue">⌂</div>
-          <h3>Browse Stalls</h3>
-          <p>Explore all campus food courts and their stalls.</p>
-        </a>
-
-        <a href="./quiz.html" class="home-feature-card">
-          <div class="home-feature-icon orange">♢</div>
-          <h3>What Should I Eat</h3>
-          <p>Answer a quick quiz and get a smart recommendation.</p>
-        </a>
-
-        <a href="./reviews.html" class="home-feature-card">
-          <div class="home-feature-icon purple">▢</div>
-          <h3>Review Hub</h3>
-          <p>Read and write reviews. See what students love.</p>
-        </a>
-
-        <a href="./quiz.html" class="home-feature-card">
-          <div class="home-feature-icon green">↗</div>
-          <h3>Pattern Insights</h3>
-          <p>Discover your food patterns and get personalised picks.</p>
-        </a>
-      </section>
-
-      <section class="home-hype-section">
+    <main id="main-content" class="home-main">
+      <section class="home-hype-section" aria-labelledby="popular-title">
         <div class="home-section-title-row">
           <div>
-            <h2>Popular Now</h2>
-            <p>Popular meals students are checking out now.</p>
+            <h2 id="popular-title">Popular picks</h2>
+            <p>Browse featured dishes, with ratings from the review hub.</p>
           </div>
-
-          <a href="./stalls.html">View All →</a>
+          <a href="./stalls.html">Browse all stalls <span aria-hidden="true">→</span></a>
         </div>
-
-        <p id="hypeStatus" class="home-hype-status">Loading popular meals...</p>
-
+        <p id="hypeStatus" class="home-hype-status" role="status">Loading popular meals…</p>
         <div id="hypeNowGrid" class="home-hype-grid"></div>
       </section>
+
+      <section class="home-quick-links" aria-label="Explore campus food">
+        <a href="./food-map.html"
+          ><strong>Find a food court</strong
+          ><span>Explore the campus map <span aria-hidden="true">→</span></span></a
+        >
+        <a href="./reviews.html"
+          ><strong>Read or write a review</strong
+          ><span>Visit the review hub <span aria-hidden="true">→</span></span></a
+        >
+        <a href="./quiz.html#saved-meals"
+          ><strong>Revisit a saved meal</strong
+          ><span>Open your favourites <span aria-hidden="true">→</span></span></a
+        >
+      </section>
     </main>
+
+    <footer class="home-footer">
+      <span>SP Eats · School project</span>
+      <a href="./review-admin.html">Moderation</a>
+    </footer>
+
+    <template id="popularMealTemplate">
+      <article class="home-meal-card">
+        <div class="home-meal-image-wrap">
+          <img class="home-meal-image" alt="" loading="lazy" />
+          <div class="home-meal-placeholder" hidden>Image unavailable</div>
+          <button class="home-heart-btn" type="button" aria-pressed="false">♡</button>
+        </div>
+        <div class="home-meal-body">
+          <p class="home-meal-stall"></p>
+          <h3></h3>
+          <p class="home-meal-rating"></p>
+          <div class="home-meal-bottom-row">
+            <strong class="home-meal-price"></strong>
+            <a class="home-meal-link">View dish <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </article>
+    </template>
 
     <script src="./index.js"></script>
   </body>

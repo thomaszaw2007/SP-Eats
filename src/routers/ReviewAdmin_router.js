@@ -3,6 +3,7 @@ const router = express.Router();
 
 const reviewAdminController = require('../controllers/ReviewAdmin_Controller');
 
+router.get('/session', (req, res) => res.sendStatus(204));
 router.get('/', reviewAdminController.readAdminReviews);
 router.get('/summary', reviewAdminController.readAdminSummary);
 

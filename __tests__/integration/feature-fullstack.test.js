@@ -1,6 +1,7 @@
 const request = require('supertest');
 const app = require('../../src/app');
 const pool = require('../../src/models/db');
+const adminToken = process.env.ADMIN_ACCESS_TOKEN;
 
 async function getFirstFoodId() {
   const result = await pool.query('SELECT "food_id" FROM "Menu" ORDER BY "food_id" LIMIT 1');
@@ -29,11 +30,15 @@ async function createTestReview(label) {
 
 async function removeTestReview(reviewId) {
   if (!reviewId) return;
-  await request(app).delete(`/api/admin/reviews/${reviewId}`);
+  await request(app).delete(`/api/admin/reviews/${reviewId}`).auth(adminToken, { type: 'bearer' });
 }
 
 afterAll(async () => {
   await pool.end();
+});
+
+test('reports readiness against the initialized PostgreSQL schema', async () => {
+  await request(app).get('/healthz').expect(200, { status: 'ok' });
 });
 
 describe('Food map full-stack integration', () => {
@@ -135,13 +140,12 @@ describe('Food quiz full-stack integration', () => {
     });
   });
 
-  test('uses fallback mode when strict preferences cannot be combined', async () => {
+  test('returns no recommendations when the dietary requirement cannot be met', async () => {
     const response = await request(app)
       .post('/api/quiz/recommendations')
       .send({ search: 'Chicken Rice', dietary: 'vegan', temperature: 'cold' })
       .expect(200);
-    expect(['strict', 'fallback']).toContain(response.body.matching_mode);
-    expect(response.body.total_candidates).toBeGreaterThanOrEqual(response.body.count);
+    expect(response.body).toMatchObject({ matching_mode: 'none', count: 0, data: [] });
   });
 });
 
@@ -185,6 +189,7 @@ describe('Review hub and admin full-stack integration', () => {
     try {
       const response = await request(app)
         .put(`/api/admin/reviews/${reviewId}`)
+        .auth(adminToken, { type: 'bearer' })
         .send({
           rating: 5,
           taste_rating: 5,
@@ -206,10 +211,16 @@ describe('Review hub and admin full-stack integration', () => {
 
   test('admin rating filter finds records and delete removes an owned review', async () => {
     const reviewId = await createTestReview(`CA4 Delete ${Date.now()}`);
-    const list = await request(app).get('/api/admin/reviews?rating=4').expect(200);
+    const list = await request(app)
+      .get('/api/admin/reviews?rating=4')
+      .auth(adminToken, { type: 'bearer' })
+      .expect(200);
     expect(list.body.count).toBeGreaterThan(0);
 
-    await request(app).delete(`/api/admin/reviews/${reviewId}`).expect(200);
+    await request(app)
+      .delete(`/api/admin/reviews/${reviewId}`)
+      .auth(adminToken, { type: 'bearer' })
+      .expect(200);
     const stored = await pool.query('SELECT 1 FROM "Reviews" WHERE "review_id" = $1', [reviewId]);
     expect(stored.rows).toHaveLength(0);
   });

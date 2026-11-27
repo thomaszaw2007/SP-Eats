@@ -9,6 +9,7 @@ const questionOptions = document.getElementById('questionOptions');
 const backQuestionBtn = document.getElementById('backQuestionBtn');
 const nextQuestionBtn = document.getElementById('nextQuestionBtn');
 const tryAgainBtn = document.getElementById('tryAgainBtn');
+const dietaryPreference = document.getElementById('quizDietary');
 
 const foodPersonalityText = document.getElementById('foodPersonalityText');
 const resultSubline = document.getElementById('resultSubline');
@@ -300,6 +301,19 @@ function setupEvents() {
   tryAgainBtn.addEventListener('click', restartQuiz);
 
   document.addEventListener('click', handlePageClick);
+  document.addEventListener(
+    'error',
+    (event) => {
+      if (
+        event.target instanceof HTMLImageElement &&
+        event.target.hasAttribute('data-quiz-image')
+      ) {
+        event.target.style.display = 'none';
+        event.target.nextElementSibling.style.display = 'grid';
+      }
+    },
+    true,
+  );
 
   window.addEventListener('focus', () => {
     syncSavedMealsFromStorage();
@@ -551,11 +565,11 @@ async function showResult() {
   } catch (error) {
     console.error('Quiz recommendation API failed, using the local fallback:', error);
 
-    if (allMeals.length === 0) {
+    currentRecommendations = [];
+    if (dietaryPreference.value === 'any') {
       await loadMealsFromMenu();
+      currentRecommendations = buildQuizRecommendations(allMeals);
     }
-
-    currentRecommendations = buildQuizRecommendations(allMeals);
   }
 
   nextQuestionBtn.disabled = false;
@@ -647,6 +661,7 @@ function buildQuizApiPayload() {
     time: timeMap[answers.time] || 'any',
     mood: moodMap[answers.need] || 'any',
     spice: spiceMap[answers.spice] || 'any',
+    dietary: dietaryPreference.value,
     foodCourt: answers.foodCourt === 'any' ? 'all' : answers.foodCourt || 'all',
     sort: sortMap[answers.priority] || 'best-match',
     availableOnly: true,
@@ -1108,6 +1123,7 @@ function renderPatternList(cards) {
 
 function restartQuiz() {
   currentQuestionIndex = 0;
+  dietaryPreference.value = 'any';
 
   questions.forEach((question) => {
     answers[question.key] = question.options[0].value;
@@ -1348,7 +1364,7 @@ function renderMealImage(meal, size) {
     <img
       src="${escapeHtml(imageUrl)}"
       alt="${escapeHtml(name)}"
-      onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
+      data-quiz-image
     />
     <div class="${placeholderClass}" style="display:none;">
       ${escapeHtml(getInitials(name))}
@@ -1364,7 +1380,7 @@ function renderNoMealsFound() {
 
   mainRecommendation.innerHTML = `
     <div class="qclean-empty-state">
-      No available menu dishes were found. Test /api/stalls and /api/stalls/1/menu.
+      No meals match your choices. Try a different preference or browse the campus stalls.
     </div>
   `;
 

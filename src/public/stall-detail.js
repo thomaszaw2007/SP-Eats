@@ -249,6 +249,11 @@ function getStallMenu() {
 
       displayCategoryButtons(menuItemsData);
       filterAndDisplayMenu();
+
+      const foodId = urlParams.get('food_id');
+      if (foodId && menuItemsData.some((item) => String(item.food_id) === foodId)) {
+        openMenuItemDetails(foodId);
+      }
     })
     .catch((error) => {
       console.error('Error loading stall menu:', error);
@@ -684,7 +689,7 @@ function displayMenuItemDetails(item) {
       </div>
 
       <div class="qb-dish-details-panel qb-polished-details-panel">
-        <button class="qb-modal-x" type="button" onclick="closeMenuItemModal()">×</button>
+        <button class="qb-modal-x" type="button" aria-label="Close meal details">×</button>
 
         <div class="qb-polished-title-area">
           <p class="qb-polished-stall-name">
@@ -813,17 +818,19 @@ function displayMenuItemDetails(item) {
             ${
               disableAddButton
                 ? `<button class="qb-add-cart disabled" disabled>Unavailable</button>`
-                : `<button class="qb-add-cart" onclick="prepareCartItem('${escapeHtml(
-                    String(selectedModalItemId),
-                  )}')">
-                    Add to Cart
-                  </button>`
+                : '<button class="qb-add-cart" type="button">Add to Cart</button>'
             }
           </div>
         </div>
       </div>
     </div>
   `;
+  menuItemModalContent.querySelector('.qb-modal-x').addEventListener('click', closeMenuItemModal);
+  menuItemModalContent
+    .querySelector('.qb-add-cart:not(:disabled)')
+    ?.addEventListener('click', () => {
+      prepareCartItem(String(selectedModalItemId));
+    });
 }
 
 function closeMenuItemModal() {

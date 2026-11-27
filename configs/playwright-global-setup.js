@@ -1,10 +1,17 @@
-const { execSync } = require('child_process');
+const { execFileSync } = require('node:child_process');
+const { once } = require('node:events');
+const app = require('../src/app');
+const pool = require('../src/models/db');
 
 module.exports = async () => {
-  // Set environment to 'test' and load .env.test
-  console.log('Setting environment to test');
+  execFileSync(process.execPath, ['scripts/reset.js', '--reset'], { stdio: 'inherit' });
+  const server = app.listen(process.env.PORT || 3001, '127.0.0.1');
+  await once(server, 'listening');
 
-  // Run database reset (drop, migrate, seed) for the test database
-  console.log('Running migrations for test environment...');
-  execSync('node scripts/reset.js', { stdio: 'inherit', env: process.env });
+  return async () => {
+    const closed = once(server, 'close');
+    server.close();
+    await closed;
+    await pool.end();
+  };
 };

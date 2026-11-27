@@ -1,17 +1,4 @@
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  host: process.env.DB_HOST || process.env.POSTGRES_HOST || process.env.PGHOST,
-  port: process.env.DB_PORT || process.env.POSTGRES_PORT || process.env.PGPORT,
-  database:
-    process.env.DB_NAME ||
-    process.env.DB_DATABASE ||
-    process.env.POSTGRES_DB ||
-    process.env.PGDATABASE,
-  user: process.env.DB_USER || process.env.POSTGRES_USER || process.env.PGUSER,
-  password: process.env.DB_PASSWORD || process.env.POSTGRES_PASSWORD || process.env.PGPASSWORD,
-});
+const { withDatabase } = require('./database');
 
 const foodCourts = [
   {
@@ -1956,8 +1943,8 @@ function buildReviewRows(insertedMenuItems) {
   return reviewRows;
 }
 
-async function ensureReviewSchema() {
-  await pool.query(`
+async function ensureReviewSchema(client) {
+  await client.query(`
     CREATE TABLE IF NOT EXISTS "Reviews" (
       "review_id" SERIAL PRIMARY KEY,
       "food_id" INT NOT NULL REFERENCES "Menu"("food_id") ON DELETE CASCADE,
@@ -1990,8 +1977,8 @@ async function ensureReviewSchema() {
   `);
 }
 
-async function clearTables() {
-  await pool.query(`
+async function clearTables(client) {
+  await client.query(`
     TRUNCATE TABLE
       "Reviews",
       "HistoryItems",
@@ -2008,8 +1995,8 @@ async function clearTables() {
   `);
 }
 
-async function seedStarterData() {
-  await pool.query(`
+async function seedStarterData(client) {
+  await client.query(`
     INSERT INTO "Something" ("name") VALUES
     ('Seed 1'),
     ('Seed 2');
@@ -2017,24 +2004,21 @@ async function seedStarterData() {
     INSERT INTO "Person" ("email", "name") VALUES
     ('alice@example.com', 'Alice'),
     ('bob@example.com', 'Bob');
-
-    INSERT INTO "User" ("username", "email", "password", "balance") VALUES
-    ('Admin', 'admin@gmail.com', 'admin', 0);
   `);
 }
 
-async function seedFoodCourts() {
+async function seedFoodCourts(client) {
   const sql = `
     INSERT INTO "FoodCourt" ("name", "location", "description")
     VALUES ($1, $2, $3);
   `;
 
   for (const foodCourt of foodCourts) {
-    await pool.query(sql, [foodCourt.name, foodCourt.location, foodCourt.description]);
+    await client.query(sql, [foodCourt.name, foodCourt.location, foodCourt.description]);
   }
 }
 
-async function seedStalls() {
+async function seedStalls(client) {
   const sql = `
     INSERT INTO "Stalls" (
       "name",
@@ -2061,7 +2045,7 @@ async function seedStalls() {
   `;
 
   for (const stall of stalls) {
-    await pool.query(sql, [
+    await client.query(sql, [
       stall.name,
       stall.foodcourt_id,
       stall.halal,
@@ -2081,7 +2065,7 @@ async function seedStalls() {
   }
 }
 
-async function seedMenuItems() {
+async function seedMenuItems(client) {
   const insertedMenuItems = [];
 
   const sql = `
@@ -2148,7 +2132,7 @@ async function seedMenuItems() {
     const item = menuItems[index];
     const meta = getMenuMeta(item, index);
 
-    const result = await pool.query(sql, [
+    const result = await client.query(sql, [
       item.name,
       item.variation,
       item.description,
@@ -2191,7 +2175,7 @@ async function seedMenuItems() {
   return insertedMenuItems;
 }
 
-async function seedReviews(insertedMenuItems) {
+async function seedReviews(client, insertedMenuItems) {
   const reviews = buildReviewRows(insertedMenuItems);
 
   const sql = `
@@ -2219,7 +2203,7 @@ async function seedReviews(insertedMenuItems) {
   `;
 
   for (const review of reviews) {
-    await pool.query(sql, [
+    await client.query(sql, [
       review.food_id,
       review.reviewer_name,
       review.rating,
@@ -2238,8 +2222,8 @@ async function seedReviews(insertedMenuItems) {
   }
 }
 
-async function updateMenuStatsFromReviews() {
-  await pool.query(`
+async function updateMenuStatsFromReviews(client) {
+  await client.query(`
     UPDATE "Menu"
     SET
       "item_rating" = review_stats.average_rating,
@@ -2264,8 +2248,8 @@ async function updateMenuStatsFromReviews() {
   `);
 }
 
-async function updateStallStatsFromReviews() {
-  await pool.query(`
+async function updateStallStatsFromReviews(client) {
+  await client.query(`
     UPDATE "Stalls"
     SET
       "rating" = stall_stats.average_rating,
@@ -2284,37 +2268,26 @@ async function updateStallStatsFromReviews() {
   `);
 }
 
-async function seed() {
-  console.log('Running seed...');
-
-  try {
-    await pool.query('BEGIN');
-
-    await ensureReviewSchema();
-    await clearTables();
-    await seedStarterData();
-    await seedFoodCourts();
-    await seedStalls();
-
-    const insertedMenuItems = await seedMenuItems();
-
-    await seedReviews(insertedMenuItems);
-    await updateMenuStatsFromReviews();
-    await updateStallStatsFromReviews();
-
-    await pool.query('COMMIT');
-
-    console.log('Seed data inserted successfully.');
-    console.log(`${foodCourts.length} food courts inserted.`);
-    console.log(`${stalls.length} stalls inserted.`);
-    console.log(`${menuItems.length} menu items inserted.`);
-  } catch (error) {
-    await pool.query('ROLLBACK');
-    console.error('Seed failed:', error);
-    process.exitCode = 1;
-  } finally {
-    await pool.end();
-  }
+async function seed(client, { reset = false } = {}) {
+  await ensureReviewSchema(client);
+  if (reset) await clearTables(client);
+  await seedStarterData(client);
+  await seedFoodCourts(client);
+  await seedStalls(client);
+  const insertedMenuItems = await seedMenuItems(client);
+  await seedReviews(client, insertedMenuItems);
+  await updateMenuStatsFromReviews(client);
+  await updateStallStatsFromReviews(client);
+  return `${foodCourts.length} food courts, ${stalls.length} stalls, ${menuItems.length} menu items`;
 }
 
-seed();
+if (require.main === module) {
+  withDatabase((client) => seed(client, { reset: true }), { destructive: true })
+    .then((summary) => console.log(`Sample data reloaded (${summary}).`))
+    .catch((error) => {
+      console.error('Seed failed:', error.message);
+      process.exitCode = 1;
+    });
+}
+
+module.exports = seed;
