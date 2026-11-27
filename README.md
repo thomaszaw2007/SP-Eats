@@ -18,15 +18,15 @@ This repository showcases **my individual development branch from the academic g
 
 ## My contributions
 
-| Area | Contributions |
-| --- | --- |
-| Food discovery | Stall and menu browsing, search and stall detail pages |
-| Campus map | Interactive campus food map |
-| Food Review Hub | Review submission, display, filtering and ratings |
+| Area                    | Contributions                                                    |
+| ----------------------- | ---------------------------------------------------------------- |
+| Food discovery          | Stall and menu browsing, search and stall detail pages           |
+| Campus map              | Interactive campus food map                                      |
+| Food Review Hub         | Review submission, display, filtering and ratings                |
 | Admin review management | Review management interface and supporting backend functionality |
-| Meal preference quiz | Quiz interface, recommendation API and matching logic |
-| Saved meals | Browser-based saved dish interactions |
-| Testing | Automated tests and code quality checks |
+| Meal preference quiz    | Quiz interface, recommendation API and matching logic            |
+| Saved meals             | Browser-based saved dish interactions                            |
+| Testing                 | Automated tests and code quality checks                          |
 
 ## Improvements after the assignment
 
@@ -42,14 +42,14 @@ This repository showcases **my individual development branch from the academic g
 
 ## Technologies used
 
-| Category | Technologies |
-| --- | --- |
-| Frontend | HTML, CSS, JavaScript |
-| Backend | Node.js, Express.js, REST APIs |
-| Database | PostgreSQL, SQL |
-| Testing | Jest, Supertest, Playwright |
-| Code quality | ESLint, Prettier |
-| Version control and CI/CD | Git, GitHub, GitHub Actions |
+| Category                  | Technologies                   |
+| ------------------------- | ------------------------------ |
+| Frontend                  | HTML, CSS, JavaScript          |
+| Backend                   | Node.js, Express.js, REST APIs |
+| Database                  | PostgreSQL, SQL                |
+| Testing                   | Jest, Supertest, Playwright    |
+| Code quality              | ESLint, Prettier               |
+| Version control and CI/CD | Git, GitHub, GitHub Actions    |
 
 ## Application structure
 
@@ -61,12 +61,12 @@ The sample dataset includes 6 food courts, 18 stalls and 72 menu items.
 
 The latest reported local recovery test run passed:
 
-| Test type | Tests passed |
-| --- | ---: |
-| Unit | 209 |
-| Database integration | 221 |
-| Browser end-to-end | 16 |
-| **Total** | **446** |
+| Test type            | Tests passed |
+| -------------------- | -----------: |
+| Unit                 |          209 |
+| Database integration |          221 |
+| Browser end-to-end   |           16 |
+| **Total**            |      **446** |
 
 The application also uses linting, formatting checks, dependency auditing and automated GitHub Actions checks.
 
@@ -128,12 +128,12 @@ This creates tables and sample data only in an empty database. Never run `npm.cm
 
 Render configuration:
 
-| Setting | Value |
-| --- | --- |
-| Build command | `npm ci` |
+| Setting       | Value                |
+| ------------- | -------------------- |
+| Build command | `npm ci`             |
 | Start command | `npm run start:prod` |
-| Health check | `/healthz` |
-| Region | Singapore |
+| Health check  | `/healthz`           |
+| Region        | Singapore            |
 
 Set `DATABASE_URL` and a new `ADMIN_ACCESS_TOKEN` securely in Render's environment settings. The application accepts the port supplied by Render.
 
